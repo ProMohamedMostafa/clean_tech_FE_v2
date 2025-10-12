@@ -1,0 +1,164 @@
+<!-- user-dropdown-section.component.html -->
+<div class="form-container" [formGroup]="userForm">
+  <!-- Dropdown Inputs -->
+  <div class="form-row">
+    <!-- Nationality Dropdown -->
+    <div class="form-group">
+      <label for="nationality">
+        {{
+          (isEditMode ? "EditUser.NATIONALITY" : "AddUser.NATIONALITY")
+            | translate
+        }}
+      </label>
+      <select id="nationality" formControlName="nationalityName">
+        <option value="" disabled>
+          {{
+            (isEditMode
+              ? "EditUser.SELECT_NATIONALITY"
+              : "AddUser.SELECT_NATIONALITY"
+            ) | translate
+          }}
+        </option>
+        <option
+          *ngFor="let nationality of nationalities; trackBy: trackByNationality"
+          [value]="nationality.name"
+        >
+          {{ nationality.name }}
+        </option>
+      </select>
+      <div *ngIf="isInvalid('nationalityName')" class="validation-message">
+        {{
+          (isEditMode
+            ? "EditUser.NATIONALITY_REQUIRED"
+            : "AddUser.NATIONALITY_REQUIRED"
+          ) | translate
+        }}
+      </div>
+    </div>
+
+    <!-- Country Dropdown -->
+    <div class="form-group">
+      <label for="country">
+        {{ (isEditMode ? "EditUser.COUNTRY" : "AddUser.COUNTRY") | translate }}
+      </label>
+      <select id="country" formControlName="countryName">
+        <option value="" disabled>
+          {{
+            (isEditMode ? "EditUser.SELECT_COUNTRY" : "AddUser.SELECT_COUNTRY")
+              | translate
+          }}
+        </option>
+        <option
+          *ngFor="let country of countries; trackBy: trackByCountry"
+          [value]="country.name"
+        >
+          {{ country.name }}
+        </option>
+      </select>
+      <div *ngIf="isInvalid('countryName')" class="validation-message">
+        {{
+          (isEditMode
+            ? "EditUser.COUNTRY_REQUIRED"
+            : "AddUser.COUNTRY_REQUIRED"
+          ) | translate
+        }}
+      </div>
+    </div>
+
+    <!-- Provider Dropdown -->
+    <div class="form-group">
+      <label for="provider">
+        {{
+          (isEditMode ? "EditUser.PROVIDER" : "AddUser.PROVIDER") | translate
+        }}
+      </label>
+      <select id="provider" formControlName="providerId">
+        <option value="" disabled>
+          {{
+            (isEditMode
+              ? "EditUser.SELECT_PROVIDER"
+              : "AddUser.SELECT_PROVIDER"
+            ) | translate
+          }}
+        </option>
+        <option
+          *ngFor="let provider of providers; trackBy: trackByProvider"
+          [value]="provider.id"
+        >
+          {{ provider.name }}
+        </option>
+      </select>
+      <div *ngIf="isInvalid('providerId')" class="validation-message">
+        {{
+          (isEditMode
+            ? "EditUser.PROVIDER_REQUIRED"
+            : "AddUser.PROVIDER_REQUIRED"
+          ) | translate
+        }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Rest of your template remains the same -->
+  <div class="form-row">
+    <div class="form-group">
+      <label for="role">
+        {{ (isEditMode ? "EditUser.ROLE" : "AddUser.ROLE") | translate }}
+      </label>
+      <select
+        id="role"
+        formControlName="roleId"
+        (change)="onRoleChange($event)"
+      >
+        <option value="" disabled>
+          {{
+            (isEditMode ? "EditUser.SELECT_ROLE" : "AddUser.SELECT_ROLE")
+              | translate
+          }}
+        </option>
+        <option
+          *ngFor="let role of roles; trackBy: trackByRole"
+          [value]="role.value"
+        >
+          {{ role.label }}
+        </option>
+      </select>
+      <div *ngIf="isInvalid('roleId')" class="validation-message">
+        {{
+          (isEditMode ? "EditUser.ROLE_REQUIRED" : "AddUser.ROLE_REQUIRED")
+            | translate
+        }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="manager">
+        {{ (isEditMode ? "EditUser.MANAGER" : "AddUser.MANAGER") | translate }}
+      </label>
+      <select id="manager" formControlName="managerId">
+        <option value="" disabled>
+          {{
+            (isEditMode ? "EditUser.SELECT_MANAGER" : "AddUser.SELECT_MANAGER")
+              | translate
+          }}
+        </option>
+        <option
+          *ngFor="let manager of managers; trackBy: trackByManager"
+          [value]="manager.id"
+        >
+          {{ manager.firstName }} {{ manager.lastName }}
+        </option>
+      </select>
+      <div *ngIf="isInvalid('managerId')" class="validation-message">
+        {{
+          (isEditMode
+            ? "EditUser.MANAGER_REQUIRED"
+            : "AddUser.MANAGER_REQUIRED"
+          ) | translate
+        }}
+      </div>
+    </div>
+
+    <div class="form-group spacer"></div>
+  </div>
+</div>

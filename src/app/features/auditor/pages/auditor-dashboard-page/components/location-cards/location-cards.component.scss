@@ -1,0 +1,42 @@
+.location-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #00407e;
+  }
+
+  .count {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    color: #3da53d;
+  }
+}
+
+/* 📱 Extra responsiveness tweaks */
+@media (max-width: 576px) {
+  .location-card {
+    .card-title {
+      font-size: 1rem;
+    }
+    .count {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .location-card {
+    .count {
+      font-size: 1.8rem;
+    }
+  }
+}

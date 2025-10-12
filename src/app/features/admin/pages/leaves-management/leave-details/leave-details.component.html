@@ -1,0 +1,126 @@
+<div class="container py-2 my-3 details-container">
+  <!-- Page title and edit button -->
+  <div class="title-container px-2">
+    <div class="title-text d-flex align-items-center gap-2">
+      <div class="title-badge"></div>
+      <div class="title-info">
+        <h1>{{ "LEAVE-DETAILS.DETAILS_TITLE" | translate }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leave type and status badges -->
+  <div class="badges-container px-2 mb-3">
+    <div class="leave-type-badge" [ngClass]="getTypeClass(leave?.type)">
+      <span class="leave-type">{{ leave?.type || "N/A" }}</span>
+    </div>
+    <div class="leave-status-badge" [ngClass]="getStatusClass(leave?.status)">
+      <span class="leave-status">{{ getStatusText(leave?.status) }}</span>
+    </div>
+  </div>
+
+  <!-- Table part -->
+  <div class="table-responsive">
+    <table class="table border table-design">
+      <tbody>
+        <tr>
+          <td class="key-part">{{ "LEAVE-DETAILS.EMPLOYEE" | translate }}</td>
+          <td class="value-part text-end">{{ leave?.userName || "N/A" }}</td>
+        </tr>
+        <tr>
+          <td class="key-part">{{ "LEAVE-DETAILS.LEAVE_TYPE" | translate }}</td>
+          <td class="value-part text-end">{{ leave?.type || "N/A" }}</td>
+        </tr>
+        <tr>
+          <td class="key-part">{{ "LEAVE-DETAILS.START_DATE" | translate }}</td>
+          <td class="value-part text-end">
+            {{ leave?.startDate | date : "mediumDate" }}
+          </td>
+        </tr>
+        <tr>
+          <td class="key-part">{{ "LEAVE-DETAILS.END_DATE" | translate }}</td>
+          <td class="value-part text-end">
+            {{ leave?.endDate | date : "mediumDate" }}
+          </td>
+        </tr>
+        <tr>
+          <td class="key-part">{{ "LEAVE-DETAILS.DURATION" | translate }}</td>
+          <td class="value-part text-end">
+            {{ calculateDuration(leave?.startDate, leave?.endDate) }} days
+          </td>
+        </tr>
+        <tr>
+          <td class="key-part">{{ "LEAVE-DETAILS.STATUS" | translate }}</td>
+          <td class="value-part text-end">
+            <span class="status-text" [ngClass]="getStatusClass(leave?.status)">
+              {{ getStatusText(leave?.status) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Reason/Description Part -->
+  @if (leave?.reason) {
+  <div class="description-container">
+    <div class="description-title">
+      {{ "LEAVE-DETAILS.REASON_TITLE" | translate }}.
+    </div>
+    <div class="description-text">
+      {{ leave?.reason }}
+    </div>
+  </div>
+  } @else {
+  <div class="description-container">
+    <div class="description-title">
+      {{ "LEAVE-DETAILS.REASON_TITLE" | translate }}.
+    </div>
+    <div class="description-text text-muted">
+      {{ "LEAVE-DETAILS.NO_REASON" | translate }}.
+    </div>
+  </div>
+  }
+
+  <!-- Attachment Section -->
+  @if (leave?.file) {
+  <div class="attachment-container mt-4">
+    <div class="description-title">
+      {{ "LEAVE-DETAILS.ATTACHMENT_TITLE" | translate }}.
+    </div>
+    <div class="file-preview-container">
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fas fa-file-alt file-icon"></i>
+          <span class="file-name">{{
+            "LEAVE-DETAILS.LEAVE_DOCUMENT" | translate
+          }}</span>
+        </div>
+        <a [href]="leave?.file" download class="download-btn">
+          <i class="fas fa-download"></i>
+          {{ "LEAVE-DETAILS.DOWNLOAD" | translate }}
+        </a>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <div class="left-buttons" *ngIf="showApproveReject">
+      <button class="btn approve-btn" (click)="approveLeave(leave?.id)">
+        <i class="fas fa-check"></i> {{ "LEAVE-DETAILS.APPROVE" | translate }}
+      </button>
+      <button class="btn reject-btn" (click)="rejectLeave(leave?.id)">
+        <i class="fas fa-times"></i> {{ "LEAVE-DETAILS.REJECT" | translate }}
+      </button>
+    </div>
+    <button
+      class="btn delete-btn"
+      (click)="deleteleave(leave?.id)"
+      *ngIf="!isCleaner"
+    >
+      {{ "LEAVE-DETAILS.DELETE" | translate }}
+    </button>
+  </div>
+</div>

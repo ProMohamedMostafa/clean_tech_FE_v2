@@ -1,0 +1,37 @@
+<div class="data-part">
+  <table class="task-table">
+    <thead>
+      <tr>
+        <th class="table-header" colspan="4">
+          {{ "TASKS.DETAILS" | translate }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="info-label">{{ "TASKS.CREATED_BY" | translate }}</td>
+        <td class="info-value">{{ task?.createdUserName }}</td>
+        <td class="info-label">{{ "TASKS.ORGANIZATION" | translate }}</td>
+        <td class="info-value">{{ task?.organizationName || ("TASKS.NA" | translate) }}</td>
+      </tr>
+      <tr>
+        <td class="info-label">{{ "TASKS.START_DATE" | translate }}</td>
+        <td class="info-value">{{ task?.startDate }} / {{ task?.startTime }}</td>
+        <td class="info-label">{{ "TASKS.BUILDING" | translate }}</td>
+        <td class="info-value">{{ task?.buildingName || ("TASKS.NA" | translate) }}</td>
+      </tr>
+      <tr>
+        <td class="info-label">{{ "TASKS.END_DATE" | translate }}</td>
+        <td class="info-value">{{ task?.endDate }} / {{ task?.endTime }}</td>
+        <td class="info-label">{{ "TASKS.FLOOR" | translate }}</td>
+        <td class="info-value">{{ task?.floorName || ("TASKS.NA" | translate) }}</td>
+      </tr>
+      <tr>
+        <td class="info-label">{{ "TASKS.CURRENTLY_READING" | translate }}</td>
+        <td class="info-value">{{ task?.currentReading ?? ("TASKS.NA" | translate) }}</td>
+        <td class="info-label">{{ "TASKS.POINT" | translate }}</td>
+        <td class="info-value">{{ task?.pointName || ("TASKS.NA" | translate) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

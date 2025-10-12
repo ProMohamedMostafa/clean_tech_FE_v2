@@ -1,0 +1,72 @@
+<div class="login-card">
+  <div class="login-title">
+    <h1>{{ "auth.LOGIN" | translate }}</h1>
+  </div>
+
+  <p class="subtitle text-center">
+    {{ "auth.PLEASE_ENTER_CREDENTIALS" | translate }}
+  </p>
+
+  <form [formGroup]="loginForm" class="login-form" (ngSubmit)="onLogin()">
+    <!-- Username or Email -->
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="username"
+        formControlName="USERNAME_OR_EMAIL"
+        placeholder=""
+        required
+      />
+      <label for="username">{{ "auth.USERNAME_OR_EMAIL" | translate }}*</label>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group password-field">
+      <input
+        [type]="hidePassword ? 'password' : 'text'"
+        id="password"
+        formControlName="password"
+        placeholder=" "
+        required
+      />
+      <label for="password">{{ "auth.PASSWORD" | translate }}*</label>
+      <span class="password-toggle" (click)="togglePasswordVisibility()">
+        <i class="material-icons">{{
+          hidePassword ? "visibility_off" : "visibility"
+        }}</i>
+      </span>
+    </div>
+
+    <!-- Forgot Password Link -->
+    <div class="options d-flex align-items-end justify-content-end">
+      <a [routerLink]="'/public/forget-password'" class="forgot-password">
+        {{ "auth.FORGOT_PASSWORD" | translate }}
+      </a>
+    </div>
+
+    <!-- Submit Button with Spinner -->
+    <app-applly-btn
+      [label]="'auth.LOGIN' | translate"
+      (clicked)="onLogin()"
+    ></app-applly-btn>
+  </form>
+
+  <!-- Username/Email Error -->
+  @if ( loginForm.get('auth.USERNAME_OR_EMAIL')?.invalid &&
+  loginForm.get('auth.USERNAME_OR_EMAIL')?.touched ) {
+  <div>
+    <p class="error-message">
+      {{ getErrorMessage("auth.USERNAME_OR_EMAIL") }}
+    </p>
+  </div>
+  }
+
+  <!-- Password Error -->
+  @if ( loginForm.get('password')?.invalid && loginForm.get('password')?.touched
+  ) {
+  <div>
+    <p class="error-message">{{ getErrorMessage("password") }}</p>
+  </div>
+  }
+</div>

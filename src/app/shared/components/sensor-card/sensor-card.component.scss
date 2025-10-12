@@ -1,0 +1,197 @@
+/* Main container for a single card */
+.sensor-container {
+  width: 100%;
+  max-width: 400px; /* Adjust as needed for single card */
+  min-height: 50vh;
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 11px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Sensor card */
+.sensor-card {
+  max-width: 100%;
+  min-width: 310px;
+  height: auto;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(167, 167, 167, 0.5);
+  box-sizing: border-box;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 146, 223, 0.15);
+    border-color: #0092df;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  img[src*="sensor-reload-read"],
+  img[src*="sensor-on-off"],
+  img[src*="sensor-edit-assign-point"],
+  img[src*="sensor-assign-point"],
+  img[src*="sensor-restore"],
+  .see-more-link {
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Values info */
+.values-info {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #3db64a;
+  box-shadow: 0px 0px 2px rgba(61, 182, 74, 0.16);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.value-item {
+  flex: 1;
+  text-align: center;
+  border-right: 1px solid #3db64a;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  .key {
+    font-size: 14px;
+    color: #6f767e;
+    margin-bottom: 4px;
+  }
+
+  .value {
+    font-size: 16px;
+    font-weight: 500;
+    color: black;
+  }
+}
+
+/* Header and Status */
+.sensor-card-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #efefef;
+}
+
+.sensor-name {
+  font-weight: 600;
+  font-size: 17px;
+  color: #000;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sensor-last-read {
+  font-size: 11px;
+  color: #0092df;
+  margin: 0;
+}
+
+.status-card {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  align-items: center;
+}
+
+.label {
+  font-size: 13px;
+  color: #000;
+
+  &.active {
+    color: #28a745;
+  }
+
+  &.inactive {
+    color: #dc3545;
+  }
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: red;
+
+  &.active {
+    background-color: #28a745;
+  }
+
+  &.inactive {
+    background-color: #dc3545;
+  }
+}
+
+.battery {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+}
+
+.battery-icon {
+  width: 20px;
+  height: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sensor-container {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .sensor-name {
+    font-size: 15px;
+  }
+
+  .sensor-last-read {
+    font-size: 10px;
+  }
+
+  .label,
+  .value {
+    font-size: 14px;
+  }
+}

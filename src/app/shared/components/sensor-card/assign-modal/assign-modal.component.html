@@ -1,0 +1,343 @@
+<!-- assign-modal.component.html -->
+<div
+  class="modal fade"
+  id="assignLocationModal"
+  tabindex="-1"
+  aria-labelledby="assignLocationModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="my-profile-title mb-3">
+          <div class="title-container">
+            <div class="title-bage"></div>
+            <div class="title-info">
+              <h1>{{ "SENSOR.EDIT_MODAL.TITLE" | translate }}</h1>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="filterForm">
+          <!-- Basic Information Section -->
+          <div class="edit-section mb-4">
+            <h3 class="section-title">
+              {{ "SENSOR.EDIT_MODAL.BASIC_INFO" | translate }}
+            </h3>
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label for="sensorName" class="form-label">{{
+                  "SENSOR.EDIT_MODAL.NAME" | translate
+                }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="sensorName"
+                  [(ngModel)]="sensorName"
+                  name="sensorName"
+                  [placeholder]="
+                    'SENSOR.EDIT_MODAL.NAME_PLACEHOLDER' | translate
+                  "
+                />
+              </div>
+              <div class="col-md-12">
+                <label for="description" class="form-label">{{
+                  "SENSOR.EDIT_MODAL.DESCRIPTION" | translate
+                }}</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  rows="2"
+                  [(ngModel)]="sensorDescription"
+                  name="sensorDescription"
+                  [placeholder]="
+                    'SENSOR.EDIT_MODAL.DESCRIPTION_PLACEHOLDER' | translate
+                  "
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Section -->
+          <div class="edit-section">
+            <h3 class="section-title">
+              {{ "SENSOR.EDIT_MODAL.LOCATION" | translate }}
+            </h3>
+            <div class="location-stepper">
+              <!-- Stepper Navigation -->
+              <div class="stepper-nav mb-4">
+                <div
+                  class="stepper-step"
+                  [class.active]="currentStep === 1"
+                  (click)="setStep(1)"
+                >
+                  <span class="step-number">1</span>
+                  <span class="step-label">{{
+                    "SENSOR.EDIT_MODAL.ORGANIZATION" | translate
+                  }}</span>
+                </div>
+                <div
+                  class="stepper-connector"
+                  [class.active]="currentStep > 1"
+                ></div>
+                <div
+                  class="stepper-step"
+                  [class.active]="currentStep === 2"
+                  (click)="setStep(2)"
+                  [class.disabled]="!selectedOrganization"
+                >
+                  <span class="step-number">2</span>
+                  <span class="step-label">{{
+                    "SENSOR.EDIT_MODAL.BUILDING" | translate
+                  }}</span>
+                </div>
+                <div
+                  class="stepper-connector"
+                  [class.active]="currentStep > 2"
+                ></div>
+                <div
+                  class="stepper-step"
+                  [class.active]="currentStep === 3"
+                  (click)="setStep(3)"
+                  [class.disabled]="!selectedBuilding"
+                >
+                  <span class="step-number">3</span>
+                  <span class="step-label">{{
+                    "SENSOR.EDIT_MODAL.FLOOR" | translate
+                  }}</span>
+                </div>
+                <div
+                  class="stepper-connector"
+                  [class.active]="currentStep > 3"
+                ></div>
+                <div
+                  class="stepper-step"
+                  [class.active]="currentStep === 4"
+                  (click)="setStep(4)"
+                  [class.disabled]="!selectedFloor"
+                >
+                  <span class="step-number">4</span>
+                  <span class="step-label">{{
+                    "SENSOR.EDIT_MODAL.SECTION" | translate
+                  }}</span>
+                </div>
+                <div
+                  class="stepper-connector"
+                  [class.active]="currentStep > 4"
+                ></div>
+                <div
+                  class="stepper-step"
+                  [class.active]="currentStep === 5"
+                  (click)="setStep(5)"
+                  [class.disabled]="!selectedsection"
+                >
+                  <span class="step-number">5</span>
+                  <span class="step-label">{{
+                    "SENSOR.EDIT_MODAL.POINT" | translate
+                  }}</span>
+                </div>
+              </div>
+
+              <!-- Stepper Content -->
+              <div class="stepper-content">
+                <!-- Step 1: Organization -->
+                <div *ngIf="currentStep === 1" class="step-pane">
+                  <label class="form-label">{{
+                    "SENSOR.EDIT_MODAL.SELECT_ORGANIZATION" | translate
+                  }}</label>
+                  <select
+                    [(ngModel)]="selectedOrganization"
+                    name="selectedOrganizations"
+                    class="form-select"
+                    (change)="onOrganizationChange()"
+                  >
+                    <option value="" disabled selected>
+                      {{ "SENSOR.EDIT_MODAL.SELECT_ORGANIZATION" | translate }}
+                    </option>
+                    @for (org of organizations; track org.id) {
+                    <option [value]="org.id">{{ org.name }}</option>
+                    }
+                  </select>
+                  <div class="step-actions mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      (click)="nextStep()"
+                      [disabled]="!selectedOrganization"
+                    >
+                      {{ "COMMON.NEXT" | translate }}
+                    </button>
+                    @if (pointId) {
+                    <button
+                      (click)="sendWithNoPoint()"
+                      class="btn btn-warning ms-2"
+                      type="button"
+                    >
+                      {{ "SENSOR.EDIT_MODAL.REMOVE_LOCATION" | translate }}
+                    </button>
+                    }
+                  </div>
+                </div>
+
+                <!-- Step 2: Building -->
+                <div *ngIf="currentStep === 2" class="step-pane">
+                  <label class="form-label">{{
+                    "SENSOR.EDIT_MODAL.SELECT_BUILDING" | translate
+                  }}</label>
+                  <select
+                    [(ngModel)]="selectedBuilding"
+                    name="selectedBuildings"
+                    class="form-select"
+                    (change)="onBuildingChange()"
+                  >
+                    <option value="" disabled selected>
+                      {{ "SENSOR.EDIT_MODAL.SELECT_BUILDING" | translate }}
+                    </option>
+                    @for (building of buildings; track building.id) {
+                    <option [value]="building.id">{{ building.name }}</option>
+                    }
+                  </select>
+                  <div class="step-actions mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      (click)="prevStep()"
+                    >
+                      {{ "COMMON.BACK" | translate }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary ms-2"
+                      (click)="nextStep()"
+                      [disabled]="!selectedBuilding"
+                    >
+                      {{ "COMMON.NEXT" | translate }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Step 3: Floor -->
+                <div *ngIf="currentStep === 3" class="step-pane">
+                  <label class="form-label">{{
+                    "SENSOR.EDIT_MODAL.SELECT_FLOOR" | translate
+                  }}</label>
+                  <select
+                    [(ngModel)]="selectedFloor"
+                    name="selectedFloors"
+                    class="form-select"
+                    (change)="onFloorChange()"
+                  >
+                    <option value="" disabled selected>
+                      {{ "SENSOR.EDIT_MODAL.SELECT_FLOOR" | translate }}
+                    </option>
+                    @for (floor of floors; track floor.id) {
+                    <option [value]="floor.id">{{ floor.name }}</option>
+                    }
+                  </select>
+                  <div class="step-actions mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      (click)="prevStep()"
+                    >
+                      {{ "COMMON.BACK" | translate }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary ms-2"
+                      (click)="nextStep()"
+                      [disabled]="!selectedFloor"
+                    >
+                      {{ "COMMON.NEXT" | translate }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Step 4: Section -->
+                <div *ngIf="currentStep === 4" class="step-pane">
+                  <label class="form-label">{{
+                    "SENSOR.EDIT_MODAL.SELECT_SECTION" | translate
+                  }}</label>
+                  <select
+                    [(ngModel)]="selectedsection"
+                    name="selectedSections"
+                    class="form-select"
+                    (change)="onSectionChange()"
+                  >
+                    <option value="" disabled selected>
+                      {{ "SENSOR.EDIT_MODAL.SELECT_SECTION" | translate }}
+                    </option>
+                    @for (section of sections; track section.id) {
+                    <option [value]="section.id">{{ section.name }}</option>
+                    }
+                  </select>
+                  <div class="step-actions mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      (click)="prevStep()"
+                    >
+                      {{ "COMMON.BACK" | translate }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary ms-2"
+                      (click)="nextStep()"
+                      [disabled]="!selectedsection"
+                    >
+                      {{ "COMMON.NEXT" | translate }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Step 5: Point -->
+                <div *ngIf="currentStep === 5" class="step-pane">
+                  <label class="form-label">{{
+                    "SENSOR.EDIT_MODAL.SELECT_POINT" | translate
+                  }}</label>
+                  <select
+                    [(ngModel)]="selectedPoint"
+                    name="selectedPoints"
+                    class="form-select"
+                  >
+                    <option value="" disabled selected>
+                      {{ "SENSOR.EDIT_MODAL.SELECT_POINT" | translate }}
+                    </option>
+                    @for (point of points; track point.id) {
+                    <option [value]="point.id">{{ point.name }}</option>
+                    }
+                  </select>
+                  <div class="step-actions mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      (click)="prevStep()"
+                    >
+                      {{ "COMMON.BACK" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          {{ "COMMON.CANCEL" | translate }}
+        </button>
+        <button type="button" class="btn btn-success" (click)="saveChanges()">
+          {{ "COMMON.SAVE_CHANGES" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

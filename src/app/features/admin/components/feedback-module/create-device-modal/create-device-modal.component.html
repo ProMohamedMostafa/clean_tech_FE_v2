@@ -1,0 +1,149 @@
+<!-- create-feedback-modal.component.html -->
+<div
+  class="modal fade"
+  style="max-width: 100%; display: block"
+  [ngClass]="{ show: true }"
+  tabindex="-1"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1 [translate]="modalTitle"></h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body custom-scroll">
+        <form>
+          <!-- Feedback Name -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <label
+                class="shift-form-label"
+                translate="FEEDBACK_MODULE.NAME"
+              ></label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="device.name"
+                name="feedbackName"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Location Hierarchy -->
+          <div class="row mb-3">
+            <!-- Building -->
+            <div class="col-12 col-md-6 mb-3">
+              <label
+                class="shift-form-label"
+                translate="COMMON.BUILDING"
+              ></label>
+              <select
+                class="form-select"
+                [(ngModel)]="selectedBuilding"
+                (change)="onBuildingChange()"
+                name="building"
+                [disabled]="isLoadingBuildings"
+              >
+                <option
+                  [ngValue]="null"
+                  translate="COMMON.SELECT_DEFAULT"
+                ></option>
+                <option
+                  *ngFor="let building of buildings"
+                  [ngValue]="building.id"
+                >
+                  {{ building.name }}
+                </option>
+              </select>
+              <div *ngIf="isLoadingBuildings" class="mt-2">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">{{
+                    "COMMON.LOADING" | translate
+                  }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floor -->
+            <div class="col-12 col-md-6 mb-3">
+              <label class="shift-form-label" translate="COMMON.FLOOR"></label>
+              <select
+                class="form-select"
+                [(ngModel)]="selectedFloor"
+                (change)="onFloorChange()"
+                name="floor"
+                [disabled]="!selectedBuilding || isLoadingFloors"
+              >
+                <option
+                  [ngValue]="null"
+                  translate="COMMON.SELECT_DEFAULT"
+                ></option>
+                <option *ngFor="let floor of floors" [ngValue]="floor.id">
+                  {{ floor.name }}
+                </option>
+              </select>
+              <div *ngIf="isLoadingFloors" class="mt-2">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">{{
+                    "COMMON.LOADING" | translate
+                  }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section -->
+            <div class="col-12 col-md-6 mb-3">
+              <label
+                class="shift-form-label"
+                translate="COMMON.SECTION"
+              ></label>
+              <select
+                class="form-select"
+                [(ngModel)]="selectedSection"
+                name="section"
+                [disabled]="!selectedFloor || isLoadingSections"
+              >
+                <option
+                  [ngValue]="null"
+                  translate="COMMON.SELECT_DEFAULT"
+                ></option>
+                <option *ngFor="let section of sections" [ngValue]="section.id">
+                  {{ section.name }}
+                </option>
+              </select>
+              <div *ngIf="isLoadingSections" class="mt-2">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">{{
+                    "COMMON.LOADING" | translate
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div
+        class="modal-footer mx-auto d-flex gap-2 flex-wrap justify-content-center"
+      >
+        <button
+          type="button"
+          class="btn apply-btn"
+          (click)="onSubmit()"
+          [disabled]="!isFormValid()"
+        >
+          {{ submitButtonText | translate }}
+        </button>
+        <button type="button" class="btn clear-btn" (click)="closeModal()">
+          {{ "COMMON.CANCEL" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

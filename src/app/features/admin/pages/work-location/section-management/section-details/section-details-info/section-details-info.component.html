@@ -1,0 +1,65 @@
+<div class="left-side">
+  <div class="city-info-card">
+    <div class="info-section">
+      <h3 class="info-section-title">
+        {{ "DETAILS.location-info.INFO" | translate }}
+      </h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.NAME" | translate }}
+          </span>
+          <span class="info-value">{{ sectionData?.name || "--" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3 class="info-section-title">
+        {{ "DETAILS.location-info.LOCATION_DETAILS" | translate }}
+      </h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.AREA_NAME" | translate }}
+          </span>
+          <span class="info-value">{{ sectionData?.areaName || "--" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.COUNTRY_NAME" | translate }}
+          </span>
+          <span class="info-value">{{ sectionData?.countryName || "--" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.CITY_NAME" | translate }}
+          </span>
+          <span class="info-value">{{ sectionData?.cityName || "--" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.ORGANIZATION_NAME" | translate }}
+          </span>
+          <span class="info-value">{{
+            sectionData?.organizationName || "--"
+          }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.BUILDING_NAME" | translate }}
+          </span>
+          <span class="info-value">{{
+            sectionData?.buildingName || "--"
+          }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.FLOOR_NAME" | translate }}
+          </span>
+          <span class="info-value">{{ sectionData?.floorName || "--" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

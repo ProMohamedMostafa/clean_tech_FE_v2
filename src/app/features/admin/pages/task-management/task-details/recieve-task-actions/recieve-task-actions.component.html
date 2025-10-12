@@ -1,0 +1,26 @@
+<!-- task-actions.component.html -->
+<div class="mt-auto">
+  <div class="action-buttons mt-1">
+    <!-- Pending (0) - Show Start and Not Resolved -->
+    @if (taskStatusId === 0) {
+    <button (click)="handleAction('Start')">Start</button>
+    <button (click)="handleAction('Not Resolved')">Not Resolved</button>
+    }
+
+    <!-- In Progress (1) - Show Complete and Not Resolved -->
+    @if (taskStatusId === 1) {
+    <button (click)="handleAction('Complete')">Complete</button>
+    <button (click)="handleAction('Not Resolved')">Not Resolved</button>
+    }
+
+    <!-- Rejected (4) - Show Complete -->
+    @if (taskStatusId === 4) {
+    <button (click)="handleAction('Complete')">Complete</button>
+    }
+
+    <!-- Not Resolved (5) - Show Complete -->
+    @if (taskStatusId === 5) {
+    <button (click)="handleAction('Complete')">Complete</button>
+    }
+  </div>
+</div>

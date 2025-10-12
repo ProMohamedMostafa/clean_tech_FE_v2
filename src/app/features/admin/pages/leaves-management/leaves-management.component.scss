@@ -1,0 +1,54 @@
+/* Chart Section */
+.leave-charts {
+  width: 100%;
+  max-width: 1200px; /* Ensure the charts don't get too wide */
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.charts {
+  width: 100%;
+  min-height: 300px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.charts .apexcharts-canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1200px) {
+  .leave-charts,
+  .my-profile-title {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .leave-charts {
+    width: 100%;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .title-info h1 {
+    font-size: 22px; /* Adjust font size for smaller screens */
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .title-info h1 {
+    font-size: 20px; /* Ensure h1 fits well on small screens */
+  }
+
+  .leave-charts {
+    width: 100%;
+    gap: 1rem;
+  }
+}

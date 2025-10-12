@@ -1,0 +1,199 @@
+<div class="feedback-container d-flex flex-column">
+  <!-- Header Section - Responsive (unchanged) -->
+  <div
+    class="feedback-header d-flex flex-column flex-sm-row align-items-center justify-content-between mb-3"
+  >
+    <div
+      *ngIf="showCheck"
+      class="select-all-container d-flex align-items-center mb-2 mb-sm-0"
+    >
+      <input
+        type="checkbox"
+        id="selectAll"
+        class="select-all-checkbox"
+        [checked]="isSelectAllChecked"
+        [indeterminate]="isSelectAllIndeterminate"
+        (change)="onSelectAllChange($event)"
+      />
+      <label for="selectAll" class="select-all-label ms-2">
+        {{ "FEEDBACK.SELECT_ALL" | translate }}
+      </label>
+    </div>
+
+    <div class="header-actions d-flex align-items-center gap-2">
+      <button
+        class="collapse-all-btn btn btn-sm btn-outline-secondary"
+        (click)="onCollapseAll()"
+      >
+        <i class="fas fa-minus"></i>
+        <span class="d-none d-sm-inline ms-1">{{
+          "FEEDBACK.COLLAPSE_ALL" | translate
+        }}</span>
+      </button>
+      <button
+        class="expand-all-btn btn btn-sm btn-outline-secondary"
+        (click)="onExpandAll()"
+      >
+        <i class="fas fa-plus"></i>
+        <span class="d-none d-sm-inline ms-1">{{
+          "FEEDBACK.EXPAND_ALL" | translate
+        }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Items Count and Page Size Selector - Responsive -->
+  <div
+    class="items-info-bar d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-3"
+  >
+    <div class="items-count text-muted mb-2 mb-sm-0">
+      <ng-container *ngIf="totalCount > 0">
+        {{ "FEEDBACK.SHOW" | translate }} {{ getItemRange().start }} -
+        {{ getItemRange().end }} {{ "FEEDBACK.OF" | translate }}
+        {{ totalCount }}
+      </ng-container>
+      <span *ngIf="totalCount === 0">{{
+        "FEEDBACK.NO_QUESTIONS_FOUND" | translate
+      }}</span>
+    </div>
+
+    <div
+      class="page-size-selector d-flex align-items-center"
+      *ngIf="totalCount > 0"
+    >
+      <label class="text-muted me-2 d-none d-sm-block"
+        >{{ "FEEDBACK.SHOW" | translate }}:</label
+      >
+      <select
+        class="form-select form-select-sm"
+        [value]="pageSize"
+        (change)="onPageSizeChange($event)"
+      >
+        <option class="" *ngFor="let size of pageSizeOptions" [value]="size">
+          {{ size }} 
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Empty State (unchanged) -->
+  <div
+    *ngIf="feedbacks.length === 0"
+    class="empty-state d-flex flex-column align-items-center justify-content-center py-5"
+  >
+    <div class="empty-icon mb-3">
+      <i class="fas fa-question-circle fa-3x text-muted"></i>
+    </div>
+    <h5 class="text-muted mb-2">
+      {{ "FEEDBACK.NO_QUESTIONS_FOUND" | translate }}
+    </h5>
+    <p class="text-muted text-center mb-4">
+      {{ "FEEDBACK.ADD_OR_ADJUST" | translate }}
+    </p>
+  </div>
+
+  <!-- Question Cards Container (unchanged) -->
+  <div class="cards-scrollable-container flex-grow-1">
+    <div class="question-cards-list">
+      <div
+        *ngFor="let feedback of feedbacks; trackBy: trackByFeedbackId"
+        class="question-card-wrapper mb-3"
+      >
+        <app-question-card
+          [showButtons]="showButtons"
+          [showCheck]="showCheck"
+          [questionText]="feedback.text"
+          [typeId]="feedback.typeId"
+          [answers]="feedback.choices"
+          [isSelected]="isSelected(feedback.id)"
+          [isPreChecked]="feedback.isChecked"
+          [isCollapsed]="isCollapsed(feedback.id)"
+          (selectChange)="onQuestionSelect(feedback.id, $event)"
+          (edit)="onEditFeedback(feedback)"
+          (delete)="onDeleteFeedback(feedback)"
+          (toggleAnswers)="onToggleAnswers(feedback.id, $event)"
+          (unassignPreChecked)="onUnassignPreChecked(feedback.id)"
+        ></app-question-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compact Pagination -->
+  <div class="compact-pagination mt-3" *ngIf="totalPages > 1">
+    <div
+      class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2"
+    >
+      <!-- Pagination info -->
+      <div class="pagination-info text-muted small">
+        {{ "FEEDBACK.SHOW" | translate }} {{ getItemRange().start }} -
+        {{ getItemRange().end }} {{ "FEEDBACK.OF" | translate }}
+        {{ totalCount }}
+      </div>
+
+      <!-- Compact pagination controls -->
+      <div class="d-flex align-items-center gap-1">
+        <!-- First page button -->
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(1)"
+          [title]="'FEEDBACK.FIRST' | translate"
+        >
+          <i class="fas fa-angle-double-left"></i>
+        </button>
+
+        <!-- Previous page button -->
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)"
+          [title]="'FEEDBACK.PREVIOUS' | translate"
+        >
+          <i class="fas fa-angle-left"></i>
+        </button>
+
+        <!-- Page dropdown -->
+        <div class="dropdown" ngbDropdown>
+          <button
+            class="btn btn-sm btn-outline-secondary dropdown-toggle"
+            ngbDropdownToggle
+            type="button"
+          >
+            {{ "FEEDBACK.PAGE" | translate }} {{ currentPage }} /
+            {{ totalPages }}
+          </button>
+          <div ngbDropdownMenu class="dropdown-menu">
+            <button
+              *ngFor="let page of getPageNumbers()"
+              ngbDropdownItem
+              [class.active]="page === currentPage"
+              (click)="onPageChange(page)"
+            >
+              {{ "FEEDBACK.PAGE" | translate }} {{ page }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Next page button -->
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)"
+          [title]="'FEEDBACK.NEXT' | translate"
+        >
+          <i class="fas fa-angle-right"></i>
+        </button>
+
+        <!-- Last page button -->
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(totalPages)"
+          [title]="'FEEDBACK.LAST' | translate"
+        >
+          <i class="fas fa-angle-double-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

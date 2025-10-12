@@ -1,0 +1,122 @@
+<div
+  class="modal fade show d-block"
+  tabindex="-1"
+  role="dialog"
+  aria-modal="true"
+  style="background-color: rgba(0, 0, 0, 0.5)"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1 class="mb-0">
+              {{ "QUESTION_MANAGEMENT.ASSIGN_QUESTION" | translate }}
+            </h1>
+            <small class="text-muted" *ngIf="questions.length > 0">
+              {{ questions.length }}
+              {{ "QUESTION_MANAGEMENT.QUESTIONS_WILL_BE_ASSIGNED" | translate }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <!-- Section Selection -->
+        <div class="form-group mb-4">
+          <label class="shift-form-label">
+            {{ "QUESTION_MANAGEMENT.SELECT_SECTION" | translate }} *
+          </label>
+
+          <!-- Loading -->
+          <div *ngIf="isLoadingSections" class="text-center py-2">
+            <div
+              class="spinner-border spinner-border-sm text-primary"
+              role="status"
+            >
+              <span class="visually-hidden">{{
+                "COMMON.LOADING" | translate
+              }}</span>
+            </div>
+            <span class="ms-2">{{
+              "COMMON.LOADING_SECTIONS" | translate
+            }}</span>
+          </div>
+
+          <!-- Error -->
+          <div
+            *ngIf="sectionsError && !isLoadingSections"
+            class="alert alert-warning"
+          >
+            {{ sectionsError }}
+            <button
+              class="btn btn-sm btn-link p-0 ms-2"
+              (click)="retryLoadSections()"
+            >
+              {{ "COMMON.RETRY" | translate }}
+            </button>
+          </div>
+
+          <!-- Dropdown -->
+          <select
+            *ngIf="!isLoadingSections && !sectionsError"
+            class="form-control"
+            [(ngModel)]="selectedSectionId"
+          >
+            <option [ngValue]="null" disabled>
+              {{ "COMMON.SELECT_OPTION" | translate }}
+            </option>
+            <option *ngFor="let section of sections" [ngValue]="section.id">
+              {{ section.name }}
+            </option>
+          </select>
+
+          <!-- No Sections -->
+          <div
+            *ngIf="
+              !isLoadingSections && !sectionsError && sections.length === 0
+            "
+            class="text-muted"
+          >
+            {{ "QUESTION_MANAGEMENT.NO_SECTIONS_AVAILABLE" | translate }}
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div
+          class="selection-summary mt-3 p-2 bg-light rounded"
+          *ngIf="questions.length > 0"
+        >
+          <small class="text-muted">
+            <strong>{{ questions.length }}</strong>
+            {{ "QUESTION_MANAGEMENT.QUESTIONS_WILL_BE_ASSIGNED" | translate }}
+            <span *ngIf="selectedSectionId">
+              {{ "COMMON.TO" | translate }}
+              <strong>{{ getSectionName(selectedSectionId) }}</strong>
+            </span>
+          </small>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn clear-btn" (click)="close()">
+          {{ "COMMON.CANCEL" | translate }}
+        </button>
+
+        <button
+          type="button"
+          class="btn apply-btn"
+          (click)="assign()"
+          [disabled]="!canAssign()"
+        >
+          {{ "COMMON.ASSIGN" | translate }} ({{ questions.length }})
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show"></div>

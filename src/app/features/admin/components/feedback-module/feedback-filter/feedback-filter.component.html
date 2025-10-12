@@ -1,0 +1,61 @@
+<!-- feedback-filter.component.html -->
+<div
+  class="modal fade"
+  style="max-width: 100%; display: block"
+  [ngClass]="{ show: true }"
+  tabindex="-1"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1 translate="FEEDBACK_MODULE.FILTER_TITLE"></h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body custom-scroll">
+        <div class="row mb-3">
+          <!-- Section Dropdown -->
+          <div class="col-12 mb-3">
+            <label
+              class="shift-form-label"
+              translate="FEEDBACK_MODULE.SECTION"
+            ></label>
+            <select
+              class="form-select"
+              [(ngModel)]="filterData.sectionId"
+              [disabled]="isLoadingSections"
+            >
+              <option
+                [ngValue]="null"
+                translate="COMMON.SELECT_DEFAULT"
+              ></option>
+              <option *ngFor="let section of sections" [ngValue]="section.id">
+                {{ section.name }}
+              </option>
+            </select>
+            <div *ngIf="isLoadingSections" class="mt-2">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal-footer mx-auto d-flex gap-2 flex-wrap justify-content-center"
+      >
+        <button type="button" class="btn apply-btn" (click)="applyFilters()">
+          {{ "COMMON.APPLY" | translate }}
+        </button>
+        <button type="button" class="btn clear-btn" (click)="closeModal()">
+          {{ "COMMON.CANCEL" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

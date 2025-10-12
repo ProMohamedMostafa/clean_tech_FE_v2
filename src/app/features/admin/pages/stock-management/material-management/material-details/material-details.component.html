@@ -1,0 +1,117 @@
+<div class="container py-2 my-3 details-container">
+  <!-- page title and export button -->
+  <div class="title-container px-2">
+    <div class="title-text d-flex align-items-center gap-2">
+      <div class="title-badge"></div>
+      <div class="title-info">
+        <h1>{{ "MATERIAL.DETAILS_TITLE" | translate }}</h1>
+      </div>
+    </div>
+    <div class="edit-btn-container">
+      <button class="btn edit-btn" (click)="setEditMaterial()">
+        {{ "MATERIAL.EDIT_MATERIAL" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- table part -->
+  <div class="w-100 pt-5">
+    <div class="w-50">
+      <table class="table border table-design w-75">
+        <tbody>
+          <tr>
+            <td class="key-part">{{ "MATERIAL.CATEGORY" | translate }}</td>
+            <td class="value-part text-end">{{ selectedCategoryName }}</td>
+          </tr>
+          <tr>
+            <td class="key-part">{{ "MATERIAL.NAME" | translate }}</td>
+            <td class="value-part text-end">{{ selectedName }}</td>
+          </tr>
+          <tr>
+            <td class="key-part">{{ "MATERIAL.QUANTITY" | translate }}</td>
+            <td class="value-part text-end">{{ selectedQuantity }}</td>
+          </tr>
+          <tr>
+            <td class="key-part">{{ "MATERIAL.MINIMUM" | translate }}</td>
+            <td class="value-part text-end">{{ selectedMinThreshold }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Description Part -->
+  @if (selectedDescription) {
+  <div class="description-container w-100">
+    <div class="description-title">
+      {{ "MATERIAL.DESCRIPTION_TITLE" | translate }}
+    </div>
+    <div class="description-text">
+      {{
+        showFullDescription
+          ? selectedDescription
+          : (selectedDescription | slice : 0 : 150) + "..."
+      }}
+    </div>
+    @if (selectedDescription.length > 150) {
+    <button (click)="toggleDescription()" class="toggle-btn">
+      {{
+        showFullDescription
+          ? ("MATERIAL.SHOW_LESS" | translate)
+          : ("MATERIAL.SHOW_MORE" | translate)
+      }}
+    </button>
+    }
+  </div>
+  } @else {
+  <div class="description-container w-100">
+    <div class="description-title">
+      {{ "MATERIAL.DESCRIPTION_TITLE" | translate }}
+    </div>
+    <div class="description-text text-muted">
+      {{ "MATERIAL.NO_DESCRIPTION" | translate }}
+    </div>
+  </div>
+  }
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <div class="left-buttons">
+      <button class="btn add-btn" (click)="openAddModal(selectedId)">
+        {{ "MATERIAL.ADD.TITLE" | translate }}
+      </button>
+      <button class="btn cut-btn" (click)="openMinusModal(selectedId)">
+        {{ "MATERIAL.CUT" | translate }}
+      </button>
+    </div>
+    <button class="btn delete-btn" (click)="deleteMaterial(selectedId)">
+      {{ "MATERIAL.DELETE" | translate }}
+    </button>
+  </div>
+</div>
+
+<!-- Add Modal Component -->
+@if (showAddModal) {
+<app-increase-quality
+  [addnewMaterial]="addnewMaterial"
+  [providers]="providers"
+  (addStockIn)="onAddStockInSuccess()"
+  (close)="showAddModal = false"
+></app-increase-quality>
+}
+
+<!-- Minus Modal Component -->
+@if (showMinusModal) {
+<app-decrease-quality
+  [removenewMaterial]="removenewMaterial"
+  [providers]="providers"
+  (addStockOut)="onAddStockOutSuccess()"
+  (close)="showMinusModal = false"
+></app-decrease-quality>
+}
+
+<!-- Offcanvas Edit Component -->
+<app-material-offcanvas
+  [materialEditData]="currentMaterial"
+  (materialUpdated)="onMaterialUpdated()"
+></app-material-offcanvas>

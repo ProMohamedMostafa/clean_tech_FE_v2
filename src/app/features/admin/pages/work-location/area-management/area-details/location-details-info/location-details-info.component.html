@@ -1,0 +1,31 @@
+<div class="left-side">
+  <div class="area-info-card">
+    <div class="info-section">
+      <h3 class="info-section-title">
+        {{ "DETAILS.location-info.INFO" | translate }}
+      </h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.AREA_NAME" | translate }}
+          </span>
+          <span class="info-value">{{ areaData?.name || "--" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3 class="info-section-title">
+        {{ "DETAILS.location-info.LOCATION_DETAILS" | translate }}
+      </h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">
+            {{ "DETAILS.location-info.COUNTRY_NAME" | translate }}
+          </span>
+          <span class="info-value">{{ areaData?.countryName || "--" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

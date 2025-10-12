@@ -1,0 +1,44 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.AREA_MANAGEMENT_OVERVIEW" />
+
+  <!-- Area Cards Section -->
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="isAdmin()"
+    [showRecycleButton]="isAdmin()"
+    [addButtonRoute]="'/admin/add-area'"
+    [recycleButtonRoute]="'/admin/deleted-areas'"
+    (searchChange)="onSearchChange($event)"
+    (filterClick)="openFilterModal()"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+  ></reusable-filter-bar>
+
+  <!-- Reusable Table Section -->
+  <app-table-data
+    [data]="areas"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [currentUserRole]="currentUserRole"
+    [showPagination]="true"
+    [trackByField]="'id'"
+    (pageChanged)="onPageChange($event)"
+    (pageSizeChanged)="onPageSizeChange($event)"
+  ></app-table-data>
+
+  <!-- Filter Modal -->
+  <app-area-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-area-filter>
+</div>

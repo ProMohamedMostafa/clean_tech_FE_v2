@@ -1,0 +1,50 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.TASK_MANAGEMENT" />
+
+  <app-daily-calendar
+    class="calendar"
+    (dateSelected)="onDateSelected($event)"
+  ></app-daily-calendar>
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="canCreateTasks()"
+    [showRecycleButton]="isRecycleVisible()"
+    [recycleButtonRoute]="`/${this.currentUserRole.toLowerCase()}/deleted-tasks`"
+    (searchChange)="onSearchChange($event)"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+    (addClick)="openAddModal()"
+    (filterClick)="openFilterModal()"
+  ></reusable-filter-bar>
+
+  <div class="tasks-container">
+    <!-- Task Container with Cards -->
+    <app-task-container
+      [tasks]="tasks"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [totalCount]="totalCount"
+      [pageSize]="pageSize"
+      (pageChanged)="onPageChange($event)"
+      (pageSizeChanged)="onPageSizeChange($event)"
+      [currentRoute]="currentRoute"
+      (viewTask)="onViewTask($event)"
+      (editTask)="editTask($event)"
+      (deleteTask)="deleteTask($event)"
+      (archiveTask)="archiveTask($event)"
+      (unarchiveTask)="unarchiveTask($event)"
+      (statusFilterChange)="onStatusFilterChange($event)"
+    ></app-task-container>
+  </div>
+  <!-- Task Modal -->
+  <app-task-filter
+    *ngIf="showFilterModal"
+    (closeModalEvent)="closeFilterModal()"
+    (filterChange)="onFilterApplied($event)"
+  ></app-task-filter>
+</div>

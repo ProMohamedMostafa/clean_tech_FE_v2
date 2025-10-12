@@ -1,0 +1,47 @@
+<!-- Modal -->
+<div
+  class="modal fade show"
+  tabindex="-1"
+  style="display: block"
+  aria-hidden="false"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+    <app-page-title translationKey="USER_LOCATION_FILTER.EXPORT.FILTER"></app-page-title>
+
+      </div>
+      <div class="modal-body">
+        <select class="form-control" (change)="onCountryChange($event)">
+          <option value="">
+            {{ "FILTER_SECTION.MODAL.ALL_COUNTRIES" | translate }}
+          </option>
+          @for (country of countries; track country) {
+          <option [value]="country">
+            {{ country }}
+          </option>
+          }
+        </select>
+      </div>
+      <div
+        class="modal-footer d-flex justify-content-between align-items-center"
+      >
+        <div class="mx-auto d-flex gap-2">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="btn clear-btn"
+            (click)="closeFilterModal()"
+          >
+            {{ "USER_DETAILS_FILTER.ACTIONS.CLOSE" | translate }}
+          </button>
+
+          <!-- Apply Filter Button -->
+          <button type="button" class="btn add-btn" (click)="applyFilter()">
+            {{ "USER_DETAILS_FILTER.ACTIONS.APPLY_FILTER" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

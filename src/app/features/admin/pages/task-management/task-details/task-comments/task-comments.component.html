@@ -1,0 +1,143 @@
+<div class="comments-container">
+  <div class="comments-card">
+    <!-- Comment History Section -->
+    @if (comments.length) {
+    <div #commentContainer class="comments-history">
+      @for (comment of comments; track comment.id) {
+      <div class="comment-item">
+        <div class="comment-avatar">
+          <img
+            [src]="comment.image || 'assets/default-avatar.png'"
+            alt="User Avatar"
+            class="avatar-img"
+            (error)="onImageError($event)"
+          />
+        </div>
+        <div class="comment-body">
+          <div class="comment-header">
+            <span class="comment-author">
+              {{ comment.userName || ("Unknown User" | translate) }}
+            </span>
+            <span class="comment-meta">
+              <span
+                class="user-role-badge {{ comment.userRole?.toLowerCase() }}"
+              >
+                {{ comment.userRole || ("Unknown Role" | translate) }}
+              </span>
+              <span class="comment-date">
+                {{ comment.createdAt | date : "MMM dd, yyyy 'at' hh:mm a" }}
+              </span>
+            </span>
+          </div>
+
+          @if (comment.comment || comment.message) {
+          <div class="comment-text">
+            {{ comment.comment || comment.message }}
+          </div>
+          }
+
+          <!-- Attached Files -->
+          @if (comment.files?.length) {
+          <div class="attachments">
+            <div class="attachments-label">
+              <i class="fas fa-paperclip"></i>
+              {{ "Attachments" | translate }}
+            </div>
+            <div class="files-grid">
+              @for (file of comment.files; track file) {
+              <a
+                [href]="file.path"
+                target="_blank"
+                class="file-card"
+                [ngClass]="{
+                  'image-file': isImageFile(file.path),
+                  'special-file': isSpecialFile(file.path)
+                }"
+              >
+                <div class="file-icon">
+                  <i class="fas {{ getFileIcon(file.path) }}"></i>
+                </div>
+                <div class="file-name" [title]="file.path.split('/').pop()">
+                  {{ file.path.split("/").pop() }}
+                </div>
+                <div class="file-size">
+                  {{ formatFileSize(file.size) }}
+                </div>
+              </a>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- New Comment Section -->
+    <div class="new-comment">
+      <div class="comment-form">
+        <div class="comment-input-container">
+          <textarea
+            [(ngModel)]="newComment"
+            class="comment-input"
+            placeholder="{{ 'Write a comment or update...' | translate }}"
+            rows="3"
+          ></textarea>
+
+          <div class="comment-actions">
+            <div class="file-upload-container">
+              <label class="upload-btn" [title]="'Attach file' | translate">
+                <i class="fas fa-paperclip"></i>
+                <input
+                  type="file"
+                  (change)="onFileChange($event)"
+                  class="file-input"
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip"
+                  multiple
+                  hidden
+                />
+              </label>
+              @if (selectedFiles.length) {
+              <div class="file-preview-container">
+                <div class="file-preview-scroll">
+                  @for (file of selectedFiles; track file; let i = $index) {
+                  <div class="file-preview-item">
+                    <span class="file-preview-name">{{ file.name }}</span>
+                    <button
+                      class="file-remove-btn"
+                      (click)="removeFile(i)"
+                      [title]="'Remove file' | translate"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  }
+                </div>
+                <div class="file-count-badge">
+                  {{ selectedFiles.length }}
+                  {{
+                    selectedFiles.length !== 1
+                      ? ("files" | translate)
+                      : ("file" | translate)
+                  }}
+                </div>
+              </div>
+              }
+            </div>
+
+            <button
+              class="submit-btn"
+              (click)="addComment()"
+              [disabled]="!newComment.trim() && !selectedFiles.length"
+              [title]="'Post comment' | translate"
+            >
+              <i class="fas fa-paper-plane"></i>
+              {{ "Post" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

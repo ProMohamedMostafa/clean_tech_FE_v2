@@ -1,0 +1,115 @@
+<!-- notification.component.html -->
+<div ngbDropdown class="notification-dropdown d-inline-block">
+  <!-- Notification Icon with badge - made more accessible -->
+  <button
+    class="notification-toggle btn btn-link p-0 border-0 custom-gray-toggle"
+    id="dropdownMenuButton"
+    ngbDropdownToggle
+    aria-label="Notifications"
+    aria-haspopup="true"
+    >
+    <i class="fas fa-bell fs-5"></i>
+    @if (unreadCount > 0) {
+      <span class="notification-badge" aria-hidden="true">
+        {{ unreadCount > 9 ? "9+" : unreadCount }}
+      </span>
+    }
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div
+    ngbDropdownMenu
+    class="dropdown-menu dropdown-menu-container dropdown-menu-end position-absolute"
+    aria-labelledby="dropdownMenuButton"
+    >
+    <!-- Header -->
+    <div class="dropdown-header">
+      <div class="title-info">
+        <h1>Notifications</h1>
+      </div>
+      <small class="text-muted">
+        {{ notifications.length }}
+        {{ showUnreadOnly ? "Total" : "Unread" }}
+      </small>
+    </div>
+
+    <!-- Tabs -->
+    <div class="notification-tabs">
+      <div class="tabs-left">
+        <span
+          [class.text-primary]="!showUnreadOnly"
+          (click)="showUnreadOnly = true; loadNotifications()"
+          >
+          All
+        </span>
+        <span
+          [class.text-primary]="showUnreadOnly"
+          (click)="showUnreadOnly = false; loadNotifications()"
+          >
+          Unread
+        </span>
+      </div>
+      @if (notifications.length > 0) {
+        <span
+          class="mark-all-read"
+          (click)="markAllAsRead()"
+          >
+          Mark all as read
+        </span>
+      }
+    </div>
+
+    <!-- Scrollable Notifications -->
+    <div class="notification-scroll-container">
+      @if (notifications.length > 0) {
+        @for (notification of notifications; track notification) {
+          <a
+            [class.unread]="!notification.isRead"
+            [class.read]="notification.isRead"
+            class="notification-item"
+            >
+            <i
+              class="fas fa-envelope notification-icon"
+              [class.unread]="!notification.isRead"
+            ></i>
+            <div class="notification-content">
+              <div class="notification-header">
+                <p class="user-info">
+                  {{ notification.userName }}
+                  <span class="user-role">({{ notification.role }})</span>
+                </p>
+                <small class="notification-time">
+                  {{ notification.createdAt | date : "shortTime" }}
+                </small>
+              </div>
+              <p class="notification-message">
+                {{ notification.message }}
+              </p>
+              <div class="notification-meta">
+                @if (notification.module) {
+                  <span>
+                    <i class="fas fa-puzzle-piece"></i>
+                    {{ notification.module }}
+                  </span>
+                }
+                @if (notification.actionType) {
+                  <span>
+                    <i class="fas fa-bolt"></i>
+                    {{ notification.actionType }}
+                  </span>
+                }
+              </div>
+            </div>
+          </a>
+        }
+      } @else {
+        <div class="no-notifications">
+          No {{ showUnreadOnly ? "unread" : "" }} notifications found
+        </div>
+      }
+
+    </div>
+
+
+  </div>
+</div>

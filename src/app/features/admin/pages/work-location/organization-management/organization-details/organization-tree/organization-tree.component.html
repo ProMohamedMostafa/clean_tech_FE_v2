@@ -1,0 +1,203 @@
+<div class="tree-container" dir="ltr">
+  <div class="text-center">
+    <!-- Wrap search and zoom controls in a flex container -->
+    <div
+      class="d-flex flex-wrap justify-content-center align-items-center gap-5"
+    >
+      <!-- Search Controls -->
+      <div class="search-controls">
+        <div class="input-group search-input-group">
+          <span class="input-group-text">
+            <fa-icon [icon]="faSearch"></fa-icon>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search nodes..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearchInput()"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            (click)="clearSearch()"
+            [disabled]="!searchQuery"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Zoom Controls -->
+      <div class="zoom-controls d-flex align-items-center">
+        <button
+          (click)="zoomOut()"
+          class="btn btn-outline-secondary btn-sm"
+          title="Zoom Out"
+          [disabled]="zoomLevel <= minZoom"
+        >
+          <fa-icon [icon]="faSearchMinus"></fa-icon> Zoom Out
+        </button>
+
+        <div class="zoom-level-display mx-2">
+          <span class="zoom-percentage">{{ zoomLevel }}%</span>
+        </div>
+
+        <button
+          (click)="zoomIn()"
+          class="btn btn-outline-secondary btn-sm"
+          title="Zoom In"
+          [disabled]="zoomLevel >= maxZoom"
+        >
+          <fa-icon [icon]="faSearchPlus"></fa-icon> Zoom In
+        </button>
+
+        <button
+          (click)="resetZoom()"
+          class="btn btn-outline-secondary btn-sm ms-2"
+          title="Reset Zoom"
+          [disabled]="zoomLevel === 70"
+        >
+          <fa-icon [icon]="faSyncAlt"></fa-icon> Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="tree-wrapper"
+    #treeWrapper
+    (mousedown)="startDrag($event)"
+    (mousemove)="onDrag($event)"
+    (mouseup)="endDrag()"
+    (mouseleave)="endDrag()"
+  >
+    <div
+      class="tree"
+      [style.transform]="'scale(' + zoomLevel / 100 + ')'"
+      [style.transform-origin]="'top center'"
+      [style.cursor]="
+        isDragging ? 'grabbing' : zoomLevel > 100 ? 'grab' : 'default'
+      "
+    >
+      <ul>
+        @for (org of treeData; track org) {
+        <li>
+          <a
+            class="tree-node org-node"
+            [class.highlight-match]="isMatch(org)"
+            [class.pulse]="shouldPulse(org)"
+          >
+            <i class="fas fa-building node-icon"></i>
+            <span class="node-content">{{ org.name }}</span>
+            @if (isMatch(org)) {
+            <span class="match-badge">Match</span>
+            }
+          </a>
+          @if (org.buildings?.length) {
+          <ul>
+            @for (building of org.buildings; track building) {
+            <li>
+              <a
+                (click)="navigateToBuilding(building.id)"
+                class="tree-node building-node"
+                [class.highlight-match]="isMatch(building)"
+                [class.pulse]="shouldPulse(building)"
+              >
+                <i class="fas fa-hotel node-icon"></i>
+                <span class="node-content">{{ building.name }}</span>
+                @if (isMatch(building)) {
+                <span class="match-badge">Match</span>
+                }
+              </a>
+              @if (building.floors?.length) {
+              <ul>
+                @for (floor of building.floors; track floor) {
+                <li>
+                  <a
+                    (click)="navigateToFloor(floor.id)"
+                    class="tree-node floor-node"
+                    [class.highlight-match]="isMatch(floor)"
+                    [class.pulse]="shouldPulse(floor)"
+                  >
+                    <i class="fas fa-layer-group node-icon"></i>
+                    <span class="node-content">{{ floor.name }}</span>
+                    @if (isMatch(floor)) {
+                    <span class="match-badge">Match</span>
+                    }
+                  </a>
+                  @if (floor.sections?.length) {
+                  <ul>
+                    @for (section of floor.sections; track section) {
+                    <li>
+                      <a
+                        (click)="navigateToSection(section.id)"
+                        class="tree-node section-node"
+                        [class.highlight-match]="isMatch(section)"
+                        [class.pulse]="shouldPulse(section)"
+                      >
+                        <i class="fas fa-th-large node-icon"></i>
+                        <span class="node-content">{{ section.name }}</span>
+                        @if (isMatch(section)) {
+                        <span class="match-badge">Match</span>
+                        }
+                      </a>
+                      @if (section.points?.length) {
+                      <ul>
+                        @for (point of section.points; track point) {
+                        <li>
+                          <a
+                            (click)="navigateToPoint(point.id)"
+                            class="tree-node point-node"
+                            [class.highlight-match]="isMatch(point)"
+                            [class.pulse]="shouldPulse(point)"
+                          >
+                            <i class="fas fa-map-marker-alt node-icon"></i>
+                            <span class="node-content">{{ point.name }}</span>
+                            @if (isMatch(point)) {
+                            <span class="match-badge">Match</span>
+                            }
+                          </a>
+
+                          <!-- Devices Layer -->
+                          @if (point.device && getRolePath() === 'admin') {
+                          <ul class="child-nodes device-nodes">
+                            <li>
+                              <a
+                                (click)="navigateToSensor(point.device.id)"
+                                class="tree-node device-node"
+                                [class.highlight-match]="isMatch(point.device)"
+                                [class.pulse]="shouldPulse(point.device)"
+                              >
+                                <i class="fas fa-microchip node-icon"></i>
+                                <span class="node-content">{{
+                                  point.device.name
+                                }}</span>
+                                @if (isMatch(point.device)) {
+                                <span class="match-badge">Match</span>
+                                }
+                              </a>
+                            </li>
+                          </ul>
+                          }
+                        </li>
+                        }
+                      </ul>
+                      }
+                    </li>
+                    }
+                  </ul>
+                  }
+                </li>
+                }
+              </ul>
+              }
+            </li>
+            }
+          </ul>
+          }
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

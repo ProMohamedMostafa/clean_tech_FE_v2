@@ -1,0 +1,111 @@
+<!-- Feedback Overview -->
+<div class="feedback-overview">
+  <!-- Title Section -->
+  <div class="title-section">
+    <div class="tag"></div>
+    <h2 class="title">{{ "FEEDBACK_OVERVIEW" | translate }}</h2>
+  </div>
+
+  <!-- Cards Flex Container -->
+  <div class="cards-flex">
+    <div
+      *ngFor="let card of cards; let i = index"
+      class="card"
+      [class]="card.icon + '-card'"
+    >
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="icon-container">
+          <div class="icon-bg">
+            <img
+              [src]="card.iconPath"
+              [alt]="card.title | translate"
+              class="icon"
+            />
+          </div>
+        </div>
+        <span class="card-title">{{ card.title | translate }}</span>
+      </div>
+
+      <!-- Card Value -->
+      <div class="card-value" [style.color]="card.color">
+        {{ card.value }}
+      </div>
+
+      <!-- Global Month Filter (first card only) -->
+      <div *ngIf="i === 0" class="filter-dropdown">
+        <select
+          id="monthFilter"
+          class="month-select filter-btn"
+          (change)="onMonthFilterChange($event)"
+          [value]="selectedMonth"
+        >
+          <option value="all">{{ "ALL_MONTHS" | translate }}</option>
+          <option
+            *ngFor="let month of months; let idx = index"
+            [value]="idx + 1"
+          >
+            {{ month | translate }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Location Filter Modal Trigger (second card only) -->
+      <div *ngIf="i === 1" class="filter-dropdown">
+        <button class="filter-btn" type="button" (click)="openLocationFilter()">
+          <span class="filter-text">{{
+            card.filterText ?? "" | translate
+          }}</span>
+        </button>
+      </div>
+
+      <!-- Regular per-card filter dropdown (if needed for other cards) -->
+      <div *ngIf="card.hasFilter && i > 1" class="filter-dropdown">
+        <button
+          class="filter-btn"
+          type="button"
+          (click)="toggleFilter(i, $event)"
+        >
+          <div class="filter-content">
+            <span class="filter-text">{{ getFilterDisplayText(card) }}</span>
+            <div class="dropdown-arrow">
+              <div class="arrow-down"></div>
+            </div>
+          </div>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div
+          *ngIf="activeFilterIndex === i"
+          class="dropdown-menu"
+          (click)="$event.stopPropagation()"
+        >
+          <button
+            type="button"
+            class="dropdown-item"
+            (click)="selectAllMonths(card, $event)"
+          >
+            {{ "ALL_MONTHS" | translate }}
+          </button>
+          <button
+            *ngFor="let month of months; let idx = index"
+            type="button"
+            class="dropdown-item"
+            [class.active]="card.selectedMonth === idx + 1"
+            (click)="selectMonth(card, month, idx, $event)"
+          >
+            {{ month | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Location Filter Modal -->
+<div *ngIf="showLocationFilter">
+  <app-location-filter
+    (close)="closeLocationFilter()"
+    (filterChange)="onLocationFilterChange($event)"
+  ></app-location-filter>
+</div>

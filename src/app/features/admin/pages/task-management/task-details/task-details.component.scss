@@ -1,0 +1,132 @@
+.container {
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Outer Grid - Main container */
+.parent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1400px;
+  min-height: 400px;
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+/* Inner Grid - Primary layout */
+.inner-parent {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(6, auto);
+  gap: 20px;
+}
+
+/* Grid Item Assignments */
+.div1 { grid-column: 1 / -1; }
+.div8 { width: 100%; }
+.div10 { grid-column: span 3; grid-row: 1; }
+.div11 { grid-column: span 3; grid-row: 2 / span 2; }
+.div12 { grid-column: span 3; grid-row: 4 / span 2; }
+.div13 { grid-column: 4 / span 2; grid-row: 1 / span 3; }
+.div14 { grid-column: 4 / span 2; grid-row: 4 / span 3; }
+.div9 { grid-column: 1 / -1; grid-row: 6; }
+
+/* Responsive Breakpoints */
+
+/* Large tablets (992px - 1200px) */
+@media (max-width: 1200px) {
+  .inner-parent {
+    gap: 15px;
+  }
+  
+  .div13, .div14 {
+    grid-column: span 3;
+  }
+  
+  .div13 { grid-row: 1 / span 2; }
+  .div14 { grid-row: 3 / span 2; }
+}
+
+/* Small tablets (768px - 992px) */
+@media (max-width: 992px) {
+  .inner-parent {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .div10, .div11, .div12 {
+    grid-column: span 2;
+  }
+  
+  .div13, .div14 {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+  
+  .div9 {
+    grid-row: auto;
+  }
+}
+
+/* Large phones (576px - 768px) */
+@media (max-width: 768px) {
+  .parent {
+    gap: 15px;
+    padding: 10px;
+  }
+  
+  .inner-parent {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 12px;
+  }
+  
+  /* Stack all items vertically */
+  .div1, .div8, .div9, 
+  .div10, .div11, .div12, 
+  .div13, .div14 {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+  
+  /* Add some spacing between stacked items */
+  .div10, .div11, .div12, 
+  .div13, .div14 {
+    margin-bottom: 10px;
+  }
+}
+
+/* Small phones (< 576px) */
+@media (max-width: 576px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .parent {
+    border-radius: 6px;
+    gap: 12px;
+  }
+  
+  .inner-parent {
+    gap: 10px;
+  }
+}
+
+/* Optional: Add smooth transitions for layout changes */
+.inner-parent {
+  transition: all 0.3s ease;
+}
+
+/* Optional: Add min-height to prevent content squishing */
+.div10, .div11, .div12, 
+.div13, .div14 {
+  min-height: 100px;
+}

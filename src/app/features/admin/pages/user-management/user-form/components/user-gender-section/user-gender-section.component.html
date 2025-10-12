@@ -1,0 +1,25 @@
+<div class="gender-section" [formGroup]="userForm">
+  <label>{{
+    (isEditMode ? "EditUser.GENDER" : "AddUser.GENDER") | translate
+  }}</label>
+  <div class="gender-options">
+    <label>
+      <input type="radio" value="0" formControlName="gender" />
+      {{ (isEditMode ? "EditUser.MALE" : "AddUser.MALE") | translate }}
+    </label>
+    <label>
+      <input type="radio" value="1" formControlName="gender" />
+      {{
+        (isEditMode ? "EditUser.FEMALE" : "AddUser.FEMALE") | translate
+      }}
+    </label>
+  </div>
+  <div *ngIf="isInvalid('gender')" class="validation-message">
+    {{
+      (isEditMode
+        ? "EditUser.GENDER_REQUIRED"
+        : "AddUser.GENDER_REQUIRED"
+      ) | translate
+    }}
+  </div>
+</div>

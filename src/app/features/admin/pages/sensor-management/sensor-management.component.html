@@ -1,0 +1,66 @@
+<!-- sensor-management.component.html -->
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.SENSOR_MANAGEMENT" />
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="false"
+    [showRecycleButton]="isAdmin()"
+    [showExportButtons]="true"
+    [showPrintButton]="true"
+    [recycleButtonRoute]="'/admin/deleted-sensors'"
+    (searchChange)="onSearchChange($event)"
+    (filterClick)="openFilterModal()"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+    (recycleClick)="onRecycleButtonClick()"
+  ></reusable-filter-bar>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Sensor Container with Cards -->
+  <app-sensor-container
+    *ngIf="!loading"
+    [devices]="devices"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [loading]="false"
+    (pageChange)="onPageChange($event)"
+    (assignLocation)="onAssignLocation($event)"
+    (editSensor)="onEditSensor($event)"
+    (reloadSensor)="onReloadSensor($event)"
+    (toggleStatus)="onToggleStatus($event)"
+    (viewDetails)="onViewDetails($event)"
+  ></app-sensor-container>
+
+  <!-- Sensor Filter Modal -->
+  <app-sensor-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-sensor-filter>
+</div>
+
+<!-- Assign Location Modal -->
+<app-assign-modal
+  [sensorId]="assignModalData.sensorId"
+  [sensorName]="assignModalData.sensorName"
+  [sensorDescription]="assignModalData.sensorDescription"
+  [pointId]="assignModalData.pointId"
+  [organizationId]="assignModalData.organizationId"
+  [buildingId]="assignModalData.buildingId"
+  [floorId]="assignModalData.floorId"
+  [sectionId]="assignModalData.sectionId"
+  (saveSuccess)="handleAssignSuccess()"
+></app-assign-modal>

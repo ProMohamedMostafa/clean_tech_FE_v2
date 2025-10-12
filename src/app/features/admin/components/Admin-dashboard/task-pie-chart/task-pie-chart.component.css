@@ -1,0 +1,166 @@
+.task-pie-container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 11px;
+  height: 100%;
+}
+
+.section-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+}
+
+/* Optional: Add an icon before the header */
+.section-header::before {
+  content: "📊";
+  margin-right: 0.75rem;
+  font-size: 1.3rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .section-header {
+    color: #ecf0f1;
+    border-bottom-color: #444;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: end; /* Align filter groups to bottom for better visual alignment */
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1; /* Allow filter groups to grow equally */
+  min-width: 160px; /* Minimum width to prevent too narrow filters */
+}
+
+/* Special styling for full-width filter group */
+.filter-group.w-100 {
+  flex: 1 1 100%; /* Take full width on its own row */
+}
+
+.filter-group label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent label wrapping */
+}
+
+.time-selector,
+.year-selector,
+.user-selector {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 14px;
+  width: 100%; /* Take full width of parent filter-group */
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin-top: 16px;
+}
+
+.chart-loading,
+.chart-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch; /* Make filter groups full width on mobile */
+  }
+
+  .filter-group {
+    flex: none;
+    min-width: auto;
+    width: 100%;
+  }
+
+  .filter-group.w-100 {
+    flex: none;
+  }
+
+  .time-selector,
+  .year-selector,
+  .user-selector {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Additional responsive breakpoint for small tablets */
+@media (max-width: 992px) and (min-width: 769px) {
+  .filter-group {
+    min-width: 140px; /* Slightly smaller minimum width for tablets */
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .task-pie-container {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .filters {
+    gap: 10px;
+  }
+  
+  .filter-group label {
+    font-size: 13px;
+  }
+  
+  .time-selector,
+  .year-selector,
+  .user-selector {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}

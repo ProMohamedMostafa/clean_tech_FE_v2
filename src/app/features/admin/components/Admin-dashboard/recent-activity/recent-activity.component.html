@@ -1,0 +1,82 @@
+<div class="recent-activity-container">
+  <div class="activity-header">
+    <div class="tabs-header">
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'myActivity'"
+        (click)="setActiveTab('myActivity')"
+      >
+        {{ "dashboard.MY_ACTIVITY" | translate }}
+      </button>
+      @if(this.userRole!='cleaner' ){
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'teamActivity'"
+        (click)="setActiveTab('teamActivity')"
+      >
+        {{ "dashboard.TEAM_ACTIVITY" | translate }}
+      </button>
+      }
+    </div>
+    @if(this.userRole!='auditor' ){
+    <a class="see-all-link" (click)="navigateToUserManagement()">
+      {{ "dashboard.SEE_ALL_RECENT" | translate }}
+    </a>
+    }
+  </div>
+
+  <div class="tab-content">
+    @if (isLoading) {
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      {{ "dashboard.LOADING_ACTIVITIES" | translate }}
+    </div>
+    } @if (!isLoading && activeTab === 'myActivity') {
+    <div class="activity-list-container">
+      <div class="activity-list">
+        <!-- My Activity Content -->
+        @for (activity of myActivities; track activity) {
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i [class]="activity.icon"></i>
+          </div>
+          <div class="activity-details">
+            <p class="activity-description">
+              <strong>{{ activity.user }}</strong> {{ activity.action }}
+            </p>
+            <p class="activity-time">{{ activity.time | date : "medium" }}</p>
+          </div>
+        </div>
+        } @if (myActivities.length === 0) {
+        <div class="no-activities">
+          {{ "dashboard.NO_ACTIVITIES_FOUND" | translate }}
+        </div>
+        }
+      </div>
+    </div>
+    } @if (!isLoading && activeTab === 'teamActivity') {
+    <div class="activity-list-container">
+      <div class="activity-list">
+        <!-- Team Activity Content -->
+        @for (activity of teamActivities; track activity) {
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i [class]="activity.icon"></i>
+          </div>
+          <div class="activity-details">
+            <p class="activity-description">
+              <strong>{{ activity.user }}</strong> {{ activity.action }}
+            </p>
+            <p class="activity-time">{{ activity.time | date : "medium" }}</p>
+          </div>
+        </div>
+        } @if (teamActivities.length === 0) {
+        <div class="no-activities">
+          {{ "dashboard.NO_TEAM_ACTIVITIES_FOUND" | translate }}
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>

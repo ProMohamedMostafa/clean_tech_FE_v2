@@ -1,0 +1,100 @@
+<div class="modal fade show d-block" style="max-width: 100%" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1>{{ "QUESTION_MANAGEMENT.FILTER_TITLE" | translate }}</h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body custom-scroll">
+        <div class="row mb-3">
+          <!-- Question Type Dropdown -->
+          <div class="col-12 mb-3">
+            <label class="shift-form-label">
+              {{ "QUESTION_MANAGEMENT.TYPE" | translate }}
+            </label>
+            <select class="form-select" [(ngModel)]="filterData.type">
+              <option [ngValue]="null">
+                {{ "COMMON.SELECT_DEFAULT" | translate }}
+              </option>
+              <option *ngFor="let type of questionTypes" [ngValue]="type.value">
+                {{ type.label | translate }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Section Dropdown -->
+          <div class="col-12 mb-3">
+            <label class="shift-form-label">
+              {{ "QUESTION_MANAGEMENT.SECTION" | translate }}
+            </label>
+            <select
+              class="form-select"
+              [(ngModel)]="filterData.sectionId"
+              (change)="onSectionChange(filterData.sectionId)"
+              [disabled]="isLoadingSections"
+            >
+              <option [ngValue]="null">
+                {{ "COMMON.SELECT_DEFAULT" | translate }}
+              </option>
+              <option *ngFor="let section of sections" [ngValue]="section.id">
+                {{ section.name }}
+              </option>
+            </select>
+            <div *ngIf="isLoadingSections" class="mt-2">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">{{
+                  "COMMON.LOADING" | translate
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Point Dropdown -->
+          <div class="col-12 mb-3">
+            <label class="shift-form-label">
+              {{ "QUESTION_MANAGEMENT.POINT" | translate }}
+            </label>
+            <select
+              class="form-select"
+              [(ngModel)]="filterData.pointId"
+              [disabled]="!filterData.sectionId || isLoadingPoints"
+            >
+              <option [ngValue]="null">
+                {{ "COMMON.SELECT_DEFAULT" | translate }}
+              </option>
+              <option *ngFor="let point of points" [ngValue]="point.id">
+                {{ point.name }}
+              </option>
+            </select>
+            <div *ngIf="isLoadingPoints" class="mt-2">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">{{
+                  "COMMON.LOADING" | translate
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="modal-footer mx-auto d-flex gap-2 flex-wrap justify-content-center"
+      >
+        <button type="button" class="btn apply-btn" (click)="applyFilters()">
+          {{ "COMMON.APPLY" | translate }}
+        </button>
+        <button type="button" class="btn clear-btn" (click)="closeModal()">
+          {{ "COMMON.CANCEL" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

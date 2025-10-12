@@ -1,0 +1,86 @@
+<!-- Modal -->
+<div
+  class="modal fade show"
+  tabindex="-1"
+  style="display: block"
+  aria-hidden="false"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <app-page-title translationKey="FILTER_SECTION.MODAL.TITLE"></app-page-title>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="country" class="step-label">
+            {{ "FILTER_SECTION.MODAL.COUNTRY_LABEL" | translate }}
+          </label>
+          <select
+            id="country"
+            class="form-control"
+            [value]="selectedCountry || ''"
+            (change)="onCountryChange($event)"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_COUNTRIES" | translate }}
+            </option>
+            @for (country of countries; track country.name) {
+            <option [value]="country.name">
+              {{ country.name }}
+            </option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{ "FILTER_SECTION.MODAL.SELECTION_HINT" | translate }}
+          </small>
+        </div>
+
+        <div class="form-group mt-3">
+          <label class="step-label">
+            {{ "FILTER_SECTION.MODAL.AREA_LABEL" | translate }}
+          </label>
+          <select
+            class="form-control"
+            [value]="selectedArea || ''"
+            (change)="onAreaChange($event)"
+            [disabled]="!selectedCountry"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_AREAS" | translate }}
+            </option>
+            @for (area of areas; track area.id) {
+            <option [value]="area.name">
+              {{ area.name }}
+            </option>
+            }
+          </select>
+          @if (!selectedCountry) {
+          <small class="form-text text-muted">
+            {{ "FILTER_SECTION.MODAL.SELECTION_HINT" | translate }}
+          </small>
+          }
+        </div>
+      </div>
+
+      <div
+        class="modal-footer d-flex justify-content-between align-items-center"
+      >
+        <div class="mx-auto d-flex gap-2">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="btn clear-btn"
+            (click)="closeFilterModal()"
+          >
+            {{ "FILTER_SECTION.MODAL.CLOSE_BUTTON" | translate }}
+          </button>
+
+          <!-- Apply Filter Button -->
+          <button type="button" class="btn add-btn" (click)="applyFilter()">
+            {{ "FILTER_SECTION.MODAL.APPLY_BUTTON" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

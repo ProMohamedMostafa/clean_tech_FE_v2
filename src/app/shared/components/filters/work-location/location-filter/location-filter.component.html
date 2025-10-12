@@ -1,0 +1,88 @@
+<!-- location-filter.component.html -->
+<div class="modal fade show">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ "LOCATION_FILTER.TITLE" | translate : { type: typeLabel } }}
+        </h5>
+      </div>
+      <div class="modal-body">
+        <!-- Primary Selection -->
+        <div class="form-group">
+          <label [for]="typeLabel" class="step-label">
+            {{ "LOCATION_FILTER." + typeLabel | translate }}
+          </label>
+          <select
+            [id]="typeLabel"
+            class="form-control"
+            [(ngModel)]="parentId"
+            (change)="onItemChange($event)"
+            [disabled]="isLoading"
+          >
+            <option value="">
+              {{ "LOCATION_FILTER.SELECT" | translate : { type: typeLabel } }}
+            </option>
+            <option *ngFor="let item of items" [value]="item.id">
+              {{ item.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoading" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+
+        <!-- Child Selection (if applicable) -->
+        <div class="form-group mt-3" *ngIf="childType">
+          <label [for]="childType" class="step-label">
+            {{ "LOCATION_FILTER." + childTypeLabel | translate }}
+          </label>
+          <select
+            [id]="childType"
+            class="form-control"
+            [(ngModel)]="selectedId"
+            (change)="onChildItemChange($event)"
+            [disabled]="!parentId || isLoadingChildren"
+          >
+            <option value="">
+              {{
+                "LOCATION_FILTER.SELECT" | translate : { type: childTypeLabel }
+              }}
+            </option>
+            <option *ngFor="let child of childItems" [value]="child.id">
+              {{ child.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingChildren" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+      </div>
+
+      <div
+        class="modal-footer d-flex justify-content-between align-items-center"
+      >
+        <div class="mx-auto d-flex gap-2">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="btn clear-btn"
+            (click)="closeFilterModal()"
+          >
+            {{ "COMMON.CLOSE" | translate }}
+          </button>
+
+          <!-- Apply Filter Button -->
+          <button
+            type="button"
+            class="btn add-btn"
+            (click)="applyFilter()"
+            [disabled]="!parentId"
+          >
+            {{ "COMMON.APPLY" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

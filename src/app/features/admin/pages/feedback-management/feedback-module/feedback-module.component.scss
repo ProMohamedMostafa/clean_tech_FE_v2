@@ -1,0 +1,52 @@
+.feedback-container {
+  width: 95%;
+  max-width: 100%;
+  height: 70vh;
+  display: flex;
+
+  // This will make the task container take up available space but not overflow
+  app-feedback-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+app-feedback-filter-bar {
+  width: 95%;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 992px) {
+  .feedback-container {
+    width: 100%;
+    padding: 0 12px;
+    height: auto;
+    app-feedback-container {
+      flex: unset;
+    }
+  }
+
+  app-feedback-filter-bar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .feedback-container {
+    min-height: auto; // Avoid too much empty space
+    gap: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .feedback-container {
+    gap: 12px;
+    padding: 0 8px;
+    height: auto;
+  }
+
+  app-feedback-filter-bar {
+    margin-bottom: 12px;
+  }
+}

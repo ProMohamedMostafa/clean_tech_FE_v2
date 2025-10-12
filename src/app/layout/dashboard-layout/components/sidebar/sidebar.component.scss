@@ -1,0 +1,232 @@
+/* ===========================
+   Sidebar Container
+   =========================== */
+#sidebar {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  background: #025d8d;
+  color: #fff;
+  height: 100vh;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+
+  /* ===========================
+     Collapsed / toggled state
+     =========================== */
+}
+
+
+
+
+/* ===========================
+   Sidebar Header
+   =========================== */
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  width: 100%;
+  margin: 0 auto;
+
+  .logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .small-logo {
+    width: 160px;
+  }
+}
+
+/* ===========================
+   Navigation / Components
+   =========================== */
+.components {
+  flex-grow: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+/* ===========================
+   Menu Items
+   =========================== */
+#sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#sidebar ul li {
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    i {
+      flex-shrink: 0;
+      margin-inline-end: 1.25rem; // logical property: works for LTR/RTL
+    }
+
+    .menu-item-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-grow: 1;
+    }
+
+    .submenu-indicator {
+      margin-inline-start: auto; // pushes it to the end (RTL/LTR aware)
+      transition: transform 0.3s ease;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* ===========================
+   Submenu Styling
+   =========================== */
+.submenu {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submenu-item {
+  margin: 0.25rem 0;
+  position: relative;
+
+  a {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1rem 0.6rem 3rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    position: relative;
+
+    &:hover,
+    &.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding-left: 3.25rem; // slight slide effect
+      transform: translateX(2px);
+    }
+
+    i {
+      margin-inline-end: 1rem;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    &:hover i,
+    &.active i {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Visual connector lines */
+    &::before {
+      content: "";
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      width: 1rem;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-50%);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 1.5rem;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  &:last-child a::after {
+    height: 50%; // last item vertical line ends
+  }
+}
+
+/* Rotate submenu indicator when active */
+.has-submenu.active > a .submenu-indicator {
+  transform: rotate(90deg);
+}
+:dir(rtl) .has-submenu.active > a .submenu-indicator {
+  transform: rotate(-90deg);
+}
+
+/* ===========================
+   Scrollbar Styling
+   =========================== */
+#sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+#sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+#sidebar::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===========================
+   Collapse Button
+   =========================== */
+.sidebar-collapse-btn {
+  position: fixed;
+  bottom: 1rem;
+  inset-inline-start: 1rem; // logical property: works LTR/RTL
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  z-index: 1001;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}

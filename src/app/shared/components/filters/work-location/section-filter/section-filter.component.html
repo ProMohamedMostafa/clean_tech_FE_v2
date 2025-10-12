@@ -1,0 +1,82 @@
+<!-- Modal -->
+<div class="modal fade show">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <app-page-title translationKey="FILTER_SECTION.MODAL.TITLE"></app-page-title>
+      </div>
+      <div class="modal-body">
+        <!-- Building Selection -->
+        <div class="form-group">
+          <label for="building" class="step-label">
+            {{ "FILTER_SECTION.MODAL.BUILDING_LABEL" | translate }}
+          </label>
+          <select
+            id="building"
+            class="form-control"
+            [(ngModel)]="selectedBuilding"
+            (change)="onBuildingChange($event)"
+            [disabled]="isLoadingBuildings"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_BUILDINGS" | translate }}
+            </option>
+            <option *ngFor="let building of buildings" [value]="building.id">
+              {{ building.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingBuildings" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+
+        <!-- Floor Selection -->
+        <div class="form-group mt-3">
+          <label for="floor" class="step-label">
+            {{ "FILTER_SECTION.MODAL.FLOOR_LABEL" | translate }}
+          </label>
+          <select
+            id="floor"
+            class="form-control"
+            [(ngModel)]="selectedFloor"
+            (change)="onFloorChange($event)"
+            [disabled]="!selectedBuilding || isLoadingFloors"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_FLOORS" | translate }}
+            </option>
+            <option *ngFor="let floor of floors" [value]="floor.id">
+              {{ floor.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingFloors" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-between align-items-center">
+        <div class="mx-auto d-flex gap-2">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="btn clear-btn"
+            (click)="closeFilterModal()"
+          >
+            {{ "FILTER_SECTION.MODAL.CLOSE_BUTTON" | translate }}
+          </button>
+
+          <!-- Apply Filter Button -->
+          <button
+            type="button"
+            class="btn add-btn"
+            (click)="applyFilter()"
+            [disabled]="!selectedBuilding"
+          >
+            {{ "FILTER_SECTION.MODAL.APPLY_BUTTON" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

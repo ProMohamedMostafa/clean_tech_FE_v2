@@ -1,0 +1,29 @@
+<h3 class="file-title">{{ "TASKS.FILES" | translate }} ({{ files.length }})</h3>
+
+<div class="files-part">
+  <ul class="file-list">
+    @for (file of files; track file) {
+    <li class="file-item">
+      <div class="file-details">
+        <img
+          src="assets/file-content.svg"
+          alt="File Image"
+          class="file-image"
+        />
+        <span class="file-name">
+          {{ file.name || ("TASKS.FILE" | translate) }}
+        </span>
+      </div>
+      <a
+        [href]="file.path"
+        download
+        target="_blank"
+        class="download-icon"
+        [title]="'TASKS.DOWNLOAD' | translate"
+      >
+        <img src="assets/download.svg" alt="Download" />
+      </a>
+    </li>
+    }
+  </ul>
+</div>

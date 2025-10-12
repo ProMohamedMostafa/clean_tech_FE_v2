@@ -1,0 +1,241 @@
+<!-- Audit Modal -->
+<div *ngIf="showModal" class="modal-backdrop" (click)="onCloseModal()">
+  <div class="modal show d-block" (click)="$event.stopPropagation()">
+    <div
+      class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ "AUDIT_MODAL.TITLE" | translate }}</h5>
+        </div>
+        <div class="modal-body">
+          <!-- Loading questions -->
+          <div *ngIf="isLoading" class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">{{
+                "AUDIT_MODAL.LOADING_QUESTIONS" | translate
+              }}</span>
+            </div>
+            <p class="mt-2">
+              {{ "AUDIT_MODAL.LOADING_QUESTIONS_TEXT" | translate }}
+            </p>
+          </div>
+
+          <!-- Questions form -->
+          <form *ngIf="!isLoading && questions.length > 0">
+            <div class="question-item mb-4" *ngFor="let question of questions">
+              <h6 class="question-text">{{ question.text | translate }}</h6>
+
+              <!-- Radio buttons -->
+              <div *ngIf="question.typeId === 0" class="choices-container">
+                <div
+                  *ngIf="
+                    question.choices && question.choices.length > 0;
+                    else noChoices
+                  "
+                >
+                  <div
+                    *ngFor="let choice of question.choices"
+                    class="form-check"
+                  >
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      [name]="'question_' + question.id"
+                      [id]="'choice_' + choice.id"
+                      [value]="choice.id"
+                      [(ngModel)]="answers[question.id]"
+                    />
+                    <label
+                      class="form-check-label"
+                      [for]="'choice_' + choice.id"
+                    >
+                      {{ choice.text | translate }}
+                      <img
+                        *ngIf="choice.image"
+                        [src]="choice.image"
+                        class="choice-image ms-2"
+                        style="max-height: 40px"
+                      />
+                    </label>
+                  </div>
+                </div>
+                <ng-template #noChoices>
+                  <p class="text-muted">
+                    {{ "AUDIT_MODAL.NO_CHOICES" | translate }}
+                  </p>
+                </ng-template>
+              </div>
+
+              <!-- Checkboxes -->
+              <div *ngIf="question.typeId === 1" class="choices-container">
+                <div
+                  *ngIf="
+                    question.choices && question.choices.length > 0;
+                    else noChoicesCheckbox
+                  "
+                >
+                  <div
+                    *ngFor="let choice of question.choices"
+                    class="form-check"
+                  >
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [id]="'choice_' + choice.id"
+                      [value]="choice.id"
+                      (change)="
+                        onCheckboxChange(question.id, choice.id, $event)
+                      "
+                    />
+                    <label
+                      class="form-check-label"
+                      [for]="'choice_' + choice.id"
+                    >
+                      {{ choice.text | translate }}
+                      <img
+                        *ngIf="choice.image"
+                        [src]="choice.image"
+                        class="choice-image ms-2"
+                        style="max-height: 40px"
+                      />
+                    </label>
+                  </div>
+                </div>
+                <ng-template #noChoicesCheckbox>
+                  <p class="text-muted">
+                    {{ "AUDIT_MODAL.NO_CHOICES" | translate }}
+                  </p>
+                </ng-template>
+              </div>
+
+              <!-- Text input -->
+              <div *ngIf="question.typeId === 2" class="form-group">
+                <textarea
+                  class="form-control"
+                  [(ngModel)]="answers[question.id]"
+                  [name]="'question_' + question.id"
+                  rows="3"
+                  placeholder="{{ 'AUDIT_MODAL.ENTER_ANSWER' | translate }}"
+                ></textarea>
+              </div>
+
+              <!-- Rating (Stars) - Type 3 -->
+              <div *ngIf="question.typeId === 3" class="rating-container">
+                <div class="btn-group" role="group">
+                  <button
+                    *ngFor="let star of starOptions"
+                    type="button"
+                    class="btn btn-outline-primary rating-star-btn"
+                    [class.active]="answers[question.id] === star.id"
+                    (click)="answers[question.id] = star.id"
+                    [title]="star.text"
+                  >
+                    {{ star.icon }}
+                  </button>
+                </div>
+              </div>
+              <!-- Rating (Stars) - Type 5 -->
+              <div *ngIf="question.typeId === 5" class="rating-container">
+                <div class="btn-group" role="group">
+                  <button
+                    *ngFor="let star of starOptions"
+                    type="button"
+                    class="btn btn-outline-primary rating-star-btn"
+                    [class.active]="answers[question.id] === star.id"
+                    (click)="answers[question.id] = star.id"
+                    [title]="star.text"
+                  >
+                    {{ star.icon }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Boolean -->
+              <div *ngIf="question.typeId === 4" class="boolean-container">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    [name]="'question_' + question.id"
+                    id="true_{{ question.id }}"
+                    value="true"
+                    [(ngModel)]="answers[question.id]"
+                  />
+                  <label class="form-check-label" for="true_{{ question.id }}">
+                    {{ "AUDIT_MODAL.TRUE" | translate }}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    [name]="'question_' + question.id"
+                    id="false_{{ question.id }}"
+                    value="false"
+                    [(ngModel)]="answers[question.id]"
+                  />
+                  <label class="form-check-label" for="false_{{ question.id }}">
+                    {{ "AUDIT_MODAL.FALSE" | translate }}
+                  </label>
+                </div>
+              </div>
+
+              <!-- Rating Emoji - Type 6 -->
+              <div *ngIf="question.typeId === 6" class="emoji-rating-container">
+                <div class="emoji-group" role="group">
+                  <button
+                    *ngFor="let emoji of emojiOptions"
+                    type="button"
+                    class="btn btn-outline-primary emoji-btn"
+                    [class.active]="answers[question.id] === emoji.id"
+                    (click)="answers[question.id] = emoji.id"
+                    [title]="emoji.text"
+                  >
+                    <span class="emoji-icon">{{ emoji.icon }}</span>
+                    <span class="emoji-text">{{ emoji.text }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- No questions message -->
+          <div
+            *ngIf="!isLoading && questions.length === 0"
+            class="text-center py-4"
+          >
+            <p class="text-muted">
+              {{ "AUDIT_MODAL.NO_QUESTIONS" | translate }}
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onCloseModal()"
+          >
+            {{ "AUDIT_MODAL.CANCEL" | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="onSubmitAudit()"
+            [disabled]="isSubmitting || questions.length === 0"
+          >
+            <span
+              *ngIf="isSubmitting"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            {{
+              isSubmitting
+                ? ("AUDIT_MODAL.SUBMITTING" | translate)
+                : ("AUDIT_MODAL.SUBMIT" | translate)
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

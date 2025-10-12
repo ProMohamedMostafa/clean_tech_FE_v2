@@ -1,0 +1,347 @@
+<!-- start Model -->
+<div
+  class="modal fade"
+  style="max-width: 100%; display: block"
+  [ngClass]="{ show: true }"
+  tabindex="-1"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-lg"
+    [ngClass]="{ 'modal-sm': isSmallScreen }"
+  >
+    <div class="modal-content">
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1>{{ "modal.FILTER_TITLE" | translate }}</h1>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <!-- Group Nationality, Role, Gender into one row (max 3 filters per row) -->
+        <div class="row">
+          <!-- First Column -->
+          <div
+            [class.col-md-12]="selectedLevel === 'area'"
+            [class.col-md-6]="selectedLevel && selectedLevel !== 'area'"
+          >
+            <!-- Role Selection -->
+            <div class="mb-3">
+              <label for="role" class="shift-form-label">{{
+                "modal.SELECT_ROLE" | translate
+              }}</label>
+              <select
+                id="role"
+                class="form-control"
+                name="role"
+                [(ngModel)]="selectedRole"
+              >
+                <option value="" disabled selected>
+                  {{ "SELECT_ROLE" | translate }}
+                </option>
+                <option value="1">{{ "modal.ROLE_ADMIN" | translate }}</option>
+                <option value="2">
+                  {{ "modal.ROLE_MANAGER" | translate }}
+                </option>
+                <option value="3">
+                  {{ "modal.ROLE_SUPERVISOR" | translate }}
+                </option>
+                <option value="4">
+                  {{ "modal.ROLE_CLEANER" | translate }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Gender Selection -->
+            <div class="mb-3">
+              <label for="gender" class="shift-form-label">{{
+                "modal.SELECT_GENDER" | translate
+              }}</label>
+              <select
+                id="gender"
+                class="form-control"
+                name="gender"
+                [(ngModel)]="selectedGender"
+              >
+                <option value="" disabled selected>
+                  {{ "modal.SELECT_GENDER" | translate }}
+                </option>
+                <option value="0">{{ "modal.MALE" | translate }}</option>
+                <option value="1">{{ "modal.FEMALE" | translate }}</option>
+              </select>
+            </div>
+
+            <!-- Nationality Selection -->
+            <div class="mb-3">
+              <label for="nationality" class="shift-form-label">{{
+                "modal.SELECT_NATIONALITY" | translate
+              }}</label>
+
+              <select
+                id="nationality"
+                class="form-control"
+                name="nationality"
+                [(ngModel)]="selectedNationality"
+              >
+                <option value="" disabled selected>Select Nationality</option>
+                @for (country of countries; track country) {
+                <option [value]="country.name">
+                  {{ country.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Provider Selection -->
+            <div class="mb-3">
+              <label for="provider" class="shift-form-label">{{
+                "modal.SELECT_PROVIDER" | translate
+              }}</label>
+              <select
+                id="provider"
+                class="form-control"
+                name="provider"
+                [(ngModel)]="selectedProvider"
+              >
+                <option value="" disabled selected>Select Provider</option>
+                @for (provider of providers; track provider) {
+                <option [value]="provider.id">
+                  {{ provider.name }}
+                </option>
+                }
+              </select>
+            </div>
+            <!-- Level Dropdown -->
+            <div class="mb-3">
+              <label for="level" class="shift-form-label">{{
+                "modal.SELECT_LOCATION" | translate
+              }}</label>
+              <select
+                [(ngModel)]="selectedLevel"
+                name="selectedLevel"
+                class="form-select"
+              >
+                <option value="" disabled selected>Select Location</option>
+                @for (level of levels; track level) {
+                <option [value]="level">
+                  {{ level }}
+                </option>
+                }
+              </select>
+            </div>
+            @if (levels.includes(selectedLevel)) {
+            <div>
+              <!-- Country Selection -->
+              <div class="mb-3">
+                <label for="country" class="shift-form-label">{{
+                  "modal.COUNTRY" | translate
+                }}</label>
+                <select
+                  id="country"
+                  class="form-control"
+                  name="country"
+                  [(ngModel)]="selectedCountry"
+                  (change)="onCountryChange()"
+                >
+                  @for (country of countries; track country) {
+                  <option [value]="country.name">
+                    {{ country.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              <!-- Area Selection -->
+              @if ( [ 'area', 'city', 'Organization', 'Building', 'Floor',
+              'Section', 'Point' ].includes(selectedLevel) ) {
+              <div class="mb-3">
+                <label for="area" class="shift-form-label">{{
+                  "modal.AREA" | translate
+                }}</label>
+                <select
+                  [(ngModel)]="selectedArea"
+                  id="area"
+                  name="selectedArea"
+                  class="form-control"
+                  (change)="onAreaChange()"
+                >
+                  <option value="" disabled selected>Select Area</option>
+                  @for (area of areas; track area) {
+                  <option [value]="area.id">
+                    {{ area.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Second Column (Conditional Display Based on Level Selection) -->
+          @if (selectedLevel) {
+          <div class="col-md-6">
+            <!-- Conditional Country/Area/City/Organization Selection Based on Level -->
+            @if (levels.includes(selectedLevel)) {
+            <div>
+              <!-- City Selection -->
+              @if ( [ 'city', 'Organization', 'Building', 'Floor', 'Section',
+              'Point' ].includes(selectedLevel) ) {
+              <div class="mb-3">
+                <label for="city" class="shift-form-label">{{
+                  "modal.CITY" | translate
+                }}</label>
+                <select
+                  [(ngModel)]="selectedCity"
+                  id="city"
+                  name="selectedCity"
+                  class="form-control"
+                  (change)="onCityChange()"
+                >
+                  <option value="" disabled selected>Select City</option>
+                  @for (city of cities; track city) {
+                  <option [value]="city.id">
+                    {{ city.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+            <!-- Organization, Building Selection and Conditional Floor, Section, Point -->
+            @if ( [ 'Organization', 'Building', 'Floor', 'Section', 'Point'
+            ].includes(selectedLevel) ) {
+            <div>
+              <!-- Organization Selection -->
+              <div class="mb-3">
+                <label class="shift-form-label">{{
+                  "modal.ORGANIZATION" | translate
+                }}</label>
+
+                <select
+                  [(ngModel)]="selectedOrganization"
+                  name="selectedOrganizations"
+                  class="form-select"
+                  (change)="onOrganizationChange()"
+                >
+                  <option value="" disabled selected>
+                    Select Organization
+                  </option>
+                  @for (org of organizations; track org) {
+                  <option [value]="org.id">
+                    {{ org.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              <!-- Building Selection -->
+              @if ( ['Building', 'Floor', 'Section', 'Point'].includes(
+              selectedLevel ) ) {
+              <div class="mb-3">
+                <label class="shift-form-label">{{
+                  "modal.BUILDING" | translate
+                }}</label>
+                <select
+                  [(ngModel)]="selectedBuilding"
+                  name="selectedBuildings"
+                  class="form-select"
+                  (change)="onBuildingChange()"
+                >
+                  <option value="" disabled selected>Select Building</option>
+                  @for (building of buildings; track building) {
+                  <option [value]="building.id">
+                    {{ building.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+            <!-- Floor and Point in the Same Row -->
+            @if (['Floor', 'Section', 'Point'].includes(selectedLevel)) {
+            <div>
+              <!-- Floor Selection -->
+              <div class="mb-3">
+                <label class="shift-form-label">{{
+                  "modal.FLOOR" | translate
+                }}</label>
+                <select
+                  [(ngModel)]="selectedFloor"
+                  name="selectedFloors"
+                  class="form-select"
+                  (change)="onFloorChange()"
+                >
+                  <option value="" disabled selected>Select Floor</option>
+                  @for (floor of floors; track floor) {
+                  <option [value]="floor.id">
+                    {{ floor.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              <!-- Section Selection -->
+              @if (['Section', 'Point'].includes(selectedLevel)) {
+              <div class="mb-3">
+                <label class="shift-form-label">{{
+                  "modal.SECTION" | translate
+                }}</label>
+                <select
+                  [(ngModel)]="selectedsection"
+                  name="selectedSections"
+                  class="form-select"
+                  (change)="onSectionChange()"
+                >
+                  <option value="" disabled selected>Select Section</option>
+                  @for (section of sections; track section) {
+                  <option [value]="section.id">
+                    {{ section.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+              <!-- Point Selection -->
+              @if (selectedLevel === 'Point') {
+              <div class="mb-3">
+                <label class="shift-form-label">{{
+                  "modal.POINT" | translate
+                }}</label>
+                <select
+                  [(ngModel)]="selectedPoint"
+                  name="selectedPoints"
+                  class="form-select"
+                >
+                  <option value="" disabled selected>Select Point</option>
+                  @for (point of points; track point) {
+                  <option [value]="point.id">
+                    {{ point.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="mx-auto d-flex gap-2">
+        <button type="button" class="btn apply-btn" (click)="applyFilter()">
+          {{ "modal.FILTER" | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn clear-btn me-2"
+          (click)="closeFilterModal()"
+        >
+          {{ "modal.CANCEL" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end Model -->

@@ -1,0 +1,58 @@
+<nav id="sidebar" class="sidebar">
+  <!-- Sidebar Header with Logo -->
+  <div class="sidebar-header text-center">
+    <img
+      src="assets/Clean-Tech.png"
+      onerror="this.onerror=null; this.src='../../../../../assets/Clean-Tech.png'"
+      alt="{{ 'PRIVATE_MENUS.COMPANY_LOGO_ALT' | translate }}"
+      class="logo small-logo pt-3"
+      role="img"
+      aria-label="Company Logo"
+    />
+  </div>
+
+  <!-- Sidebar Navigation Links -->
+  <ul
+    class="list-unstyled components"
+    role="navigation"
+    aria-label="Main navigation"
+  >
+    @for (item of menuItems; track trackByMenuItem(i, item); let i = $index) {
+    <li
+      class="mb-2"
+      [class.has-submenu]="hasChildren(item)"
+      [class.active]="expandedIndex === i"
+      [attr.aria-expanded]="hasChildren(item) && expandedIndex === i"
+    >
+      <!-- Main Menu Item -->
+      <a
+        [routerLink]="item.route"
+        class="d-flex align-items-center menu-item-link"
+        (click)="hasChildren(item) ? toggleSubmenu.emit(i) : null"
+        [attr.aria-haspopup]="hasChildren(item)"
+        [attr.aria-controls]="hasChildren(item) ? 'submenu-' + i : null"
+      >
+        <i [class]="item.icon" aria-hidden="true"></i>
+        <span class="menu-item-text">{{ item.label | translate }}</span>
+        @if (hasChildren(item)) {
+        <i class="fas fa-chevron-right submenu-indicator"></i>
+        }
+      </a>
+
+      <!-- Submenu -->
+      @if (hasChildren(item) && expandedIndex === i) {
+      <ul class="list-unstyled submenu" [id]="'submenu-' + i">
+        @for (child of item.children; track child) {
+        <li class="submenu-item">
+          <a [routerLink]="child.route" class="d-flex align-items-center">
+            <i [class]="child.icon" aria-hidden="true"></i>
+            <span>{{ child.label | translate }}</span>
+          </a>
+        </li>
+        }
+      </ul>
+      }
+    </li>
+    }
+  </ul>
+</nav>

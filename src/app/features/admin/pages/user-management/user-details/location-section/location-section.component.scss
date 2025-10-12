@@ -1,0 +1,257 @@
+/* General styling */
+:host {
+  display: block;
+}
+.scrollable-data-section {
+  max-height: 75vh; /* Adjust height as needed */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+h3,
+h4 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+h4 {
+  font-size: 1.25rem;
+  color: #025d8d;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.section-spacing {
+  margin-bottom: 2.5rem;
+}
+
+/* Table Styling */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border: 1px solid #e0e0e0;
+}
+
+.data-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  position: sticky;
+  top: 0;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Message Containers */
+.loading-container,
+.error-container,
+.no-data-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  margin: 20px auto;
+  text-align: center;
+  border-radius: 8px;
+  max-width: 500px;
+}
+
+.loading-container {
+  background-color: #f0f8ff;
+  color: #007bff;
+  border: 1px solid #b3d7ff;
+}
+
+.loading-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: #007bff;
+}
+
+.error-container {
+  background-color: #ffe5e5;
+  color: #d9534f;
+  border: 1px solid #f5c6cb;
+}
+
+.error-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: #d9534f;
+}
+
+.retry-btn {
+  margin-top: 15px;
+  padding: 8px 20px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-btn:hover {
+  background-color: #c9302c;
+}
+
+.no-data-container {
+  background-color: #f9f9f9;
+  color: #666;
+  border: 2px dashed #ccc;
+  padding: 30px;
+}
+
+.no-data-icon {
+  font-size: 40px;
+  color: #bbb;
+  margin-bottom: 15px;
+}
+
+/* Links */
+.area-link {
+  color: #025d8d;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.area-link:hover {
+  color: #014a70;
+  text-decoration: underline;
+}
+
+/* Export Button */
+.add-btn {
+  background: #025d8d;
+  border: none;
+  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #ffffff;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.add-btn:hover {
+  background: #014a70;
+  transform: translateY(-1px);
+}
+
+.add-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+.dropdown-item.disabled {
+  color: #6c757d;
+  pointer-events: none;
+  background-color: transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :host {
+    padding: 15px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+  }
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.scrollable-data-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Rest of your existing styles can remain mostly the same, but with these additions: */
+
+.data-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+.table-responsive {
+  max-width: 100%;
+}
+
+/* Ensure message containers stay within bounds */
+.loading-container,
+.error-container,
+.no-data-container {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .div3 {
+    grid-column: 1 / -1; /* Take full width on small screens */
+    grid-row: auto;
+    margin: 0 10px;
+  }
+  
+  .scrollable-data-section {
+    padding: 10px;
+  }
+  
+  .data-table th,
+  .data-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+}

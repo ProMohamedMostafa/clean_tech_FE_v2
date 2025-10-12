@@ -1,0 +1,203 @@
+.parent {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: auto;
+  gap: 18px;
+  height: auto;
+  padding: 15px;
+}
+
+.div1 {
+  grid-column: 1 / -1;
+}
+
+.div2 {
+  grid-column: 1 / -1;
+}
+
+.div3 {
+  grid-column: 1 / -1;
+}
+
+.div4 {
+  grid-column: 1 / -1;
+}
+
+.div5 {
+  grid-column: 1 / -1;
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 768px) {
+  .parent {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .div1 {
+    grid-column: 1 / -1;
+  }
+
+  .div2 {
+    grid-column: 1 / 2;
+    grid-row: 2;
+  }
+
+  .div4 {
+    grid-column: 1 / 2;
+    grid-row: 3;
+  }
+
+  .div3 {
+    grid-column: 2 / 3;
+    grid-row: 2 / span 2; /* span two rows to match div2 + div4 */
+  }
+
+  .div5 {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 1024px) {
+  .parent {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .div1 {
+    grid-column: span 5;
+  }
+
+  .div2 {
+    grid-column: span 3;
+    grid-row: 2;
+  }
+
+  .div4 {
+    grid-column: span 3;
+    grid-row: 3;
+  }
+
+  .div3 {
+    grid-column: span 2;
+    grid-row: 2 / span 2; /* Right side for both charts */
+  }
+
+  .div5 {
+    grid-column: span 5;
+    grid-row: 4;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1280px) {
+  .parent {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .div1 {
+    grid-column: span 5;
+  }
+
+  .div2 {
+    grid-column: span 4;
+    grid-row: 2;
+  }
+
+  .div4 {
+    grid-column: span 4;
+    grid-row: 3;
+  }
+
+  .div3 {
+    grid-column: 5;
+    grid-row: 2 / span 2; /* Right side for both charts */
+  }
+
+  .div5 {
+    grid-column: span 5;
+    grid-row: 4;
+  }
+}
+
+/* Optional: Add smooth transitions */
+.div1,
+.div2,
+.div3,
+.div4,
+.div5 {
+  transition: all 0.3s ease;
+}
+
+/* Ensure content doesn't get too wide on very large screens */
+@media (min-width: 1536px) {
+  .parent {
+    max-width: 1536px;
+    margin: 0 auto;
+  }
+}
+
+
+/* Large screens (desktops) */
+@media (min-width: 1024px) {
+  .parent {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .div1 {
+    grid-column: span 5;
+  }
+
+  .div2 {
+    grid-column: span 3;
+    grid-row: 2;
+  }
+
+  .div4 {
+    grid-column: span 3;
+    grid-row: 3;
+  }
+
+  .div3.span-two-rows {
+    grid-column: span 2;
+    grid-row: 2 / span 2; /* Right side for both charts */
+  }
+
+  .div3.span-one-row {
+    grid-column: span 2;
+    grid-row: 2; /* Only span one row if pie is hidden */
+  }
+
+  .div5 {
+    grid-column: span 5;
+    grid-row: 4;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1280px) {
+  .div2 {
+    grid-column: span 4;
+    grid-row: 2;
+  }
+
+  .div4 {
+    grid-column: span 4;
+    grid-row: 3;
+  }
+
+  .div3.span-two-rows {
+    grid-column: 5;
+    grid-row: 2 / span 2; /* Right side for both charts */
+  }
+
+  .div3.span-one-row {
+    grid-column: 5;
+    grid-row: 2; /* Only span one row if pie is hidden */
+  }
+
+  .div5 {
+    grid-column: span 5;
+    grid-row: 4;
+  }
+}

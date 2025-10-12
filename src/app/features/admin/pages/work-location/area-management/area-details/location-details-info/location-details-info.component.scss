@@ -1,0 +1,289 @@
+:host {
+  width: 100%;
+}
+
+/* LEFT SIDE STYLES */
+.left-side {
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.area-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #025d8d;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.info-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+  max-width: 60%;
+}
+
+
+/* location-details-info.component.scss */
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+/* LEFT SIDE STYLES */
+.left-side {
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.area-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #025d8d;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.info-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+  max-width: 60%;
+}
+
+/* ====================== */
+/* MOBILE RESPONSIVENESS  */
+/* ====================== */
+
+/* For screens 599px and below (where the issue occurs) */
+@media (max-width: 599px) {
+  .left-side {
+    padding: 15px;
+    gap: 20px;
+    overflow: visible;
+  }
+
+  .area-info-card {
+    gap: 20px;
+  }
+
+  .info-section {
+    gap: 10px;
+  }
+
+  .info-section-title {
+    font-size: 14px;
+    padding-bottom: 6px;
+  }
+
+  .info-grid {
+    gap: 10px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-label {
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  .info-value {
+    font-size: 12px;
+    text-align: left;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* Extra small mobile optimization */
+@media (max-width: 380px) {
+  .left-side {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .area-info-card {
+    gap: 16px;
+  }
+
+  .info-section-title {
+    font-size: 13px;
+  }
+
+  .info-label {
+    font-size: 11px;
+  }
+
+  .info-value {
+    font-size: 11px;
+  }
+
+  .info-item {
+    gap: 3px;
+  }
+}
+
+/* Very small screens (320px and below) */
+@media (max-width: 320px) {
+  .left-side {
+    padding: 10px;
+    gap: 12px;
+  }
+
+  .info-section-title {
+    font-size: 12px;
+  }
+
+  .info-label {
+    font-size: 10px;
+  }
+
+  .info-value {
+    font-size: 10px;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 599px) and (orientation: landscape) {
+  .left-side {
+    padding: 10px;
+  }
+
+  .info-item {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .info-value {
+    text-align: right;
+    max-width: 50%;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .info-section-title {
+    font-weight: 600;
+  }
+}
+
+/* Custom scrollbar for webkit browsers */
+.left-side::-webkit-scrollbar {
+  width: 4px;
+}
+
+.left-side::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.left-side::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.left-side::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

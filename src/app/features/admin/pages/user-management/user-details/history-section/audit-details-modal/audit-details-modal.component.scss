@@ -1,0 +1,348 @@
+// Modal Styles
+.modal {
+  &.show {
+    opacity: 1;
+  }
+
+  .modal-dialog {
+    margin: 1rem auto;
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - 2rem);
+
+    &.modal-xl {
+      max-width: clamp(300px, 40%, 900px);
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    flex-shrink: 0;
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .btn-close {
+      font-size: 1.2rem;
+    }
+  }
+
+  .modal-body {
+    padding: 2rem;
+    background: #f8f9fa;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 2rem;
+    background: white;
+    flex-shrink: 0;
+  }
+}
+
+// Audit Info Card
+.audit-info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #007bff;
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    i {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .label {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+
+    .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #343a40;
+    }
+  }
+}
+
+// Questions Container
+.questions-container {
+  .section-title {
+    color: #495057;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+  }
+}
+
+// Question Card
+.question-card {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #dee2e6;
+
+  &.answered {
+    border-left-color: #28a745;
+
+    .question-header {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    }
+  }
+
+  &.not-answered {
+    border-left-color: #ffc107;
+
+    .question-header {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    }
+  }
+
+  .question-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+
+    .question-number {
+      background: #007bff;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .question-type {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      color: #6c757d;
+
+      i {
+        font-size: 1.1rem;
+      }
+    }
+
+    .answer-status {
+      .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+
+        &.answered {
+          background: #d4edda;
+          color: #155724;
+        }
+
+        &.unanswered {
+          background: #fff3cd;
+          color: #856404;
+        }
+      }
+    }
+  }
+
+  .question-content {
+    padding: 1.5rem;
+
+    .question-text {
+      color: #343a40;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .choices-preview {
+      margin-bottom: 1rem;
+
+      .choice-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+
+        &.selected {
+          background: #e3f2fd;
+          border-color: #2196f3;
+          box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
+        }
+
+        .choice-content {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex-grow: 1;
+
+          .choice-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          .choice-text {
+            color: #495057;
+            font-weight: 500;
+          }
+        }
+
+        .choice-selected {
+          color: #28a745;
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    .answer-section {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .answer-label {
+        font-weight: 600;
+        color: #495057;
+        min-width: 60px;
+      }
+
+      .answer-value {
+        font-weight: 500;
+
+        &.has-answer {
+          color: #28a745;
+        }
+
+        &.no-answer {
+          color: #6c757d;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}
+
+// Modal Backdrop
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+
+  &.show {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .audit-info-card .row .col-md-3 {
+    margin-bottom: 1rem;
+  }
+
+  .modal .modal-dialog {
+    margin: 0.5rem auto;
+    min-height: calc(100vh - 1rem);
+
+    &.modal-xl {
+      max-width: 95%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .modal {
+    .modal-dialog {
+      margin: 0.25rem auto;
+      min-height: calc(100vh - 0.5rem);
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+  }
+
+  .audit-info-card {
+    padding: 1rem;
+  }
+
+  .question-card {
+    .question-header {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+
+      .question-number {
+        align-self: flex-start;
+      }
+    }
+
+    .question-content {
+      padding: 1rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 0.125rem auto !important;
+    min-height: calc(100vh - 0.25rem);
+  }
+
+  .choices-preview .choice-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .choice-selected {
+      align-self: flex-end;
+    }
+  }
+}

@@ -1,0 +1,126 @@
+<div class="feedback-container d-flex flex-column">
+  <div
+    class="items-info-bar d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-3"
+  >
+    <div class="items-count text-muted mb-2 mb-sm-0">
+      <ng-container *ngIf="totalCount > 0">
+        {{ "FEEDBACK_MODULE.SHOWING" | translate }}
+        {{ getItemRange().start }} {{ "FEEDBACK_MODULE.TO" | translate }}
+        {{ getItemRange().end }} {{ "FEEDBACK_MODULE.OF" | translate }}
+        {{ totalCount }} {{ "FEEDBACK_MODULE.DEVICE_ITEMS" | translate }}
+      </ng-container>
+      <span *ngIf="totalCount === 0">{{
+        "FEEDBACK_MODULE.NO_DEVICE_ITEMS" | translate
+      }}</span>
+    </div>
+
+    <div
+      class="page-size-selector d-flex align-items-center"
+      *ngIf="totalCount > 0"
+    >
+      <label class="text-muted me-2 d-none d-sm-block">{{
+        "FEEDBACK_MODULE.SHOW" | translate
+      }}</label>
+      <select
+        class="form-select form-select-sm"
+        [value]="pageSize"
+        (change)="onPageSizeChange($event)"
+      >
+        <option *ngFor="let size of pageSizeOptions" [value]="size">
+          {{ size }} {{ "FEEDBACK_MODULE.ITEMS" | translate }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="devices.length === 0"
+    class="empty-state d-flex flex-column align-items-center justify-content-center py-5"
+  >
+    <div class="empty-icon mb-3">
+      <i class="fas fa-microchip fa-3x text-muted"></i>
+    </div>
+    <h5 class="text-muted mb-2">
+      {{ "FEEDBACK_MODULE.NO_DEVICE_ITEMS" | translate }}
+    </h5>
+    <p class="text-muted text-center mb-4">
+      {{ "FEEDBACK_MODULE.ADD_NEW_OR_ADJUST_FILTERS" | translate }}
+    </p>
+  </div>
+
+  <!-- Card Grid with scrollable container -->
+  <div class="cards-scrollable-container">
+    <div class="cards-grid">
+      <div *ngFor="let device of devices; trackBy: trackByDeviceId">
+        <app-device-card
+          [device]="device"
+          (edit)="onEditDevice(device)"
+          (delete)="onDeleteDevice(device)"
+          (view)="onViewDevice(device)"
+        ></app-device-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="custom-pagination mt-auto">
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-light">
+        {{ currentPage }} {{ "FEEDBACK_MODULE.OF" | translate }}
+        {{ totalPages }}
+      </button>
+      <div class="dropdown">
+        <button
+          class="btn btn-light dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          {{ "FEEDBACK_MODULE.PAGE" | translate }} {{ currentPage }}
+        </button>
+        <ul class="dropdown-menu">
+          <li *ngFor="let page of getPageNumbers()">
+            <a
+              class="dropdown-item"
+              href="#"
+              (click)="onPageChange(page); $event.preventDefault()"
+              >{{ "FEEDBACK_MODULE.PAGE" | translate }} {{ page }}</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+    <ul class="pagination mb-0">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a
+          class="page-link"
+          href="#"
+          attr.aria-label="{{ 'FEEDBACK_MODULE.PREVIOUS' | translate }}"
+          (click)="onPageChange(currentPage - 1); $event.preventDefault()"
+          >&lsaquo;</a
+        >
+      </li>
+      <li
+        class="page-item"
+        *ngFor="let page of getPageNumbers()"
+        [class.active]="page === currentPage"
+      >
+        <a
+          class="page-link"
+          href="#"
+          (click)="onPageChange(page); $event.preventDefault()"
+          >{{ page }}</a
+        >
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a
+          class="page-link"
+          href="#"
+          attr.aria-label="{{ 'FEEDBACK_MODULE.NEXT' | translate }}"
+          (click)="onPageChange(currentPage + 1); $event.preventDefault()"
+          >&rsaquo;</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>

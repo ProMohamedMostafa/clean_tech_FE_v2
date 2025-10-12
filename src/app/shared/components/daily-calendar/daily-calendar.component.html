@@ -1,0 +1,46 @@
+<div class="calendar-container">
+  <div class="d-flex align-items-center justify-content-between w-100 mb-3">
+    <!-- Year Selector with localized buttons -->
+    <div class="w-25 year-selector">
+      <i
+        class="fas fa-arrow-left arrow"
+        (click)="goToPreviousMonth()"
+        [title]="'CALENDAR.BUTTONS.PREVIOUS_MONTH' | translate"
+      ></i>
+      <span class="year">{{ currentYear }}</span>
+      <i
+        class="fas fa-arrow-right arrow"
+        (click)="goToNextMonth()"
+        [title]="'CALENDAR.BUTTONS.NEXT_MONTH' | translate"
+      ></i>
+    </div>
+
+    <!-- Month Names with translation -->
+    <div class="w-75 month-names">
+      @for (month of months; track month; let i = $index) {
+      <span
+        [class.selected-month]="i === selectedMonth"
+        (click)="selectMonth(i)"
+      >
+        {{ month | translate }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <!-- Days -->
+  <div class="date-container">
+    @for (item of daysArray; track item) {
+    <div
+      [class.placeholder]="item.isPlaceholder"
+      [class.date-item]="!item.isPlaceholder"
+      [class.selected-day]="item.day === selectedDay && !item.isPlaceholder"
+      (click)="!item.isPlaceholder && selectDay(item.day)"
+    >
+      @if (!item.isPlaceholder) {
+      <span>{{ item.day }}</span>
+      }
+    </div>
+    }
+  </div>
+</div>

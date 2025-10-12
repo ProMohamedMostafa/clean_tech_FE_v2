@@ -1,0 +1,275 @@
+<div>
+  <div class="container-fluid py-3">
+    <div class="row justify-content-center">
+      <div class="col-lg-11">
+        <div class="card border-0">
+          <div class="card-body p-4">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="d-flex align-items-center justify-center gap-2">
+                <div class="title-badge"></div>
+                <div class="title-info">
+                  <h1>{{ "ACTIVITY.RECENT_ACTIVITY" | translate }}</h1>
+                </div>
+              </div>
+              <div
+                class="d-flex align-items-center justify-center gap-4 activity-taps"
+              >
+                <h5
+                  class="activity-head"
+                  [class.active]="myActivity"
+                  (click)="setActivityFilter(true)"
+                >
+                  {{ "ACTIVITY.MY_ACTIVITY" | translate }}
+                </h5>
+                @if(this.userRole !="cleaner"){
+                <h5
+                  class="activity-head"
+                  [class.active]="!myActivity"
+                  (click)="setActivityFilter(false)"
+                >
+                  {{ "ACTIVITY.TEAM_ACTIVITY" | translate }}
+                </h5>
+                }
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn filter-btn" (click)="openFilterModal()">
+                  <i class="fas fa-filter me-2"></i>
+                  {{ "COMMON.FILTER" | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Search -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="search-box bg-white d-flex align-items-center px-2">
+                  <i class="fas fa-search text-muted me-2"></i>
+                  <input
+                    type="text"
+                    class="border-0 w-100"
+                    [placeholder]="'ACTIVITY.SEARCH_PLACEHOLDER' | translate"
+                    [(ngModel)]="searchQuery"
+                    (input)="onSearchChange()"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="activity-timeline">
+              @if (logs.length > 0) { @for (log of logs; track log) {
+              <div
+                class="activity-item bg-white"
+                (click)="navigateToModule(log)"
+                style="cursor: pointer"
+              >
+                <div class="d-flex gap-3">
+                  <div
+                    class="activity-icon"
+                    [ngClass]="getActivityClass(log.actionType)"
+                  >
+                    <i [ngClass]="getActivityIcon(log.actionType)"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-2"
+                    >
+                      <h6 class="mb-0">{{ log.message }}</h6>
+                      <span class="activity-date">{{
+                        log.createdAt | date : "short"
+                      }}</span>
+                    </div>
+                    <p class="text-muted mb-2">
+                      {{ log.module }} -
+                      {{ "ACTIVITY.PERFORMED_BY" | translate }}
+                      <span class="text-primary">{{ log.userName }}</span> ({{
+                        log.role
+                      }})
+                    </p>
+                    @if (log.ipAddress) {
+                    <div class="d-flex align-items-center">
+                      <span class="text-muted small"
+                        >IP: {{ log.ipAddress }}</span
+                      >
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              } } @else {
+              <div class="text-center text-muted py-4">
+                <i class="fas fa-exclamation-circle fa-2x"></i>
+                <p class="mt-2">{{ "ACTIVITY.NO_ACTIVITIES" | translate }}</p>
+              </div>
+              }
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <span class="text-muted small">
+                {{ "PAGINATION.SHOWING" | translate }}
+                {{ (currentPage - 1) * pageSize + 1 }} - {{ getMinValue() }}
+                {{ "PAGINATION.OF" | translate }} {{ totalCount }}
+                {{ "ACTIVITY.ACTIVITIES" | translate }}
+              </span>
+
+              <nav>
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="changePage(currentPage - 1)">
+                      <i class="fas fa-chevron-left"></i>
+                    </a>
+                  </li>
+
+                  @for (page of getPageNumbers(); track page) {
+                  <li
+                    class="page-item"
+                    [class.active]="page === currentPage"
+                    [class.disabled]="page === '...'"
+                  >
+                    <a
+                      class="page-link"
+                      (click)="onPageClick(page)"
+                      style="cursor: pointer"
+                    >
+                      {{ page }}
+                    </a>
+                  </li>
+                  }
+
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPage === totalPages"
+                  >
+                    <a class="page-link" (click)="changePage(currentPage + 1)">
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Modal -->
+<div
+  class="modal fade"
+  [ngClass]="{ show: showFilterModal }"
+  tabindex="-1"
+  [ngStyle]="{ display: showFilterModal ? 'block' : 'none' }"
+  [attr.aria-hidden]="showFilterModal ? null : 'true'"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ "COMMON.FILTER" | translate }}</h5>
+      </div>
+      <div class="modal-body">
+        <!-- Module Dropdown -->
+        <label for="moduleSelect" class="form-label mt-3">{{
+          "ACTIVITY.MODULE" | translate
+        }}</label>
+        <select
+          id="moduleSelect"
+          class="form-control"
+          [(ngModel)]="selectedModule"
+          (change)="onModuleChange()"
+        >
+          <option [ngValue]="null">{{ "COMMON.SELECT" | translate }}</option>
+          @for (i of moduleKeys; track i) {
+          <option [ngValue]="i">{{ moduleNames[i] }}</option>
+          }
+        </select>
+
+        <!-- Action Dropdown -->
+        <label for="actionSelect" class="form-label mt-3">{{
+          "ACTIVITY.ACTION" | translate
+        }}</label>
+        <select
+          id="actionSelect"
+          class="form-control"
+          [(ngModel)]="selectedAction"
+        >
+          <option [ngValue]="null">{{ "COMMON.SELECT" | translate }}</option>
+          @for (action of availableActions; track action) {
+          <option [ngValue]="action">{{ action }}</option>
+          }
+        </select>
+
+        <!-- Role Dropdown -->
+        <label for="roleSelect" class="form-label mt-3">{{
+          "ACTIVITY.ROLE" | translate
+        }}</label>
+        <select id="roleSelect" class="form-control" [(ngModel)]="selectedRole">
+          <option value="">{{ "COMMON.SELECT" | translate }}</option>
+          <option value="1">{{ "ROLES.ADMIN" | translate }}</option>
+          <option value="2">{{ "ROLES.MANAGER" | translate }}</option>
+          <option value="3">{{ "ROLES.SUPERVISOR" | translate }}</option>
+          <option value="4">{{ "ROLES.CLEANER" | translate }}</option>
+        </select>
+
+        <!-- Start Date -->
+        <label for="startDate" class="form-label mt-3">{{
+          "ACTIVITY.START_DATE" | translate
+        }}</label>
+        <input
+          type="date"
+          id="startDate"
+          class="form-control"
+          [(ngModel)]="startDate"
+        />
+
+        <!-- End Date -->
+        <label for="endDate" class="form-label mt-3">{{
+          "ACTIVITY.END_DATE" | translate
+        }}</label>
+        <input
+          type="date"
+          id="endDate"
+          class="form-control"
+          [(ngModel)]="endDate"
+        />
+
+        <!-- User Dropdown -->
+        <label for="userSelect" class="form-label mt-3">{{
+          "ACTIVITY.USER" | translate
+        }}</label>
+        <select id="userSelect" class="form-control" [(ngModel)]="selectedUser">
+          <option value="">{{ "COMMON.SELECT" | translate }}</option>
+          @for (user of users; track user) {
+          <option [value]="user.id">
+            {{ user.firstName }} {{ user.lastName }} ({{ user.role }})
+          </option>
+          }
+        </select>
+
+        <div
+          class="modal-footer d-flex justify-content-between align-items-center"
+        >
+          <button type="button" class="btn reset-btn" (click)="resetFilters()">
+            {{ "ACTIVITY.RESET_FILTERS" | translate }}
+          </button>
+
+          <div class="d-flex align-items-center justify-between gap-2">
+            <button
+              type="button"
+              class="btn btn-secondary clear-btn"
+              (click)="closeFilterModal()"
+            >
+              {{ "COMMON.CLOSE" | translate }}
+            </button>
+
+            <button type="button" class="btn add-btn" (click)="applyFilters()">
+              {{ "ACTIVITY.APPLY_FILTER" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

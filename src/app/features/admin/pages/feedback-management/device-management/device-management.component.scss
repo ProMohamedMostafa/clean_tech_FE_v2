@@ -1,0 +1,57 @@
+.device-container {
+  width: 95%;
+  max-width: 100%;
+  height: 70vh;
+  flex-direction: column;
+
+  // This will make the task container take up available space but not overflow
+  app-feedback-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Large screens (desktops) */
+  @media (max-width: 1200px) {
+    width: 100%;
+    height: 65vh;
+    margin: 0.75rem;
+  }
+
+  /* Medium devices (tablets) */
+  @media (max-width: 992px) {
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  /* Small tablets */
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  /* Mobile devices */
+  @media (max-width: 576px) {
+    width: 100%;
+    height: auto;
+    margin: 0.5rem 0;
+    padding: 0.25rem;
+  }
+
+  /* Very small devices */
+  @media (max-width: 400px) {
+    width: 100%;
+    height: auto;
+    margin: 0.25rem 0;
+    padding: 0.25rem;
+  }
+}
+
+app-feedback-filter-bar {
+  width: 95%;
+}

@@ -1,0 +1,64 @@
+/* increase-quality.component.scss */
+
+.modal-header {
+  .title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    padding: 0px;
+    gap: 10px;
+    height: 50px;
+  }
+
+  .title-bage {
+    width: 8px;
+    height: 24px;
+    background: #025d8d;
+    border-radius: 2px;
+  }
+
+  .title-info {
+    height: 32px;
+
+    h1 {
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 32px;
+      color: #1a1d1f;
+      order: 1;
+      flex-grow: 0;
+      letter-spacing: -0.02em;
+    }
+  }
+}
+
+.add-modal-btn {
+  background: #2571b1;
+  border-radius: 4px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+/* Form styles */
+.modal-body {
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bi {
+    font-size: 1.2rem;
+  }
+
+  .text-muted {
+    display: block;
+    margin-top: 4px;
+  }
+}
+

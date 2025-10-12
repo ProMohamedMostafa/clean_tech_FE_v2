@@ -1,0 +1,51 @@
+<!-- section-questions.component.html -->
+<div class="container-fluid d-flex flex-column justify-content-start">
+  <!-- Page Title -->
+
+  <!-- Filter Bar with only delete functionality -->
+  <app-feedback-filter-bar
+    [showCreateButton]="false"
+    [showAssignButton]="false"
+    [showDeleteButton]="isAdmin()"
+    [showExportButtons]="true"
+    [showPrintButton]="true"
+    [searchPlaceholder]="''"
+    [filterModalTitle]="'SECTION_QUESTIONS.FILTER_TITLE'"
+    (searchChange)="onSearchChange($event)"
+    (deleteClick)="onBulkDelete()"
+    (filterClick)="openFilterModal()"
+  ></app-feedback-filter-bar>
+
+  <!-- Questions Container with delete functionality -->
+  <div class="feedback-container">
+    <app-question-container
+      [feedbacks]="questions"
+      [showButtons]="false"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [totalCount]="totalCount"
+      [pageSize]="pageSize"
+      (pageChanged)="onPageChange($event)"
+      (pageSizeChanged)="onPageSizeChange($event)"
+      (deleteFeedback)="onDeleteQuestion($event)"
+      (selectAllChanged)="onSelectAllChanged($event)"
+      (questionSelectionChanged)="
+        onQuestionSelectionChanged($event.questionId, $event.isSelected)
+      "
+    ></app-question-container>
+  </div>
+
+  <!-- Filter Modal -->
+  <app-question-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-question-filter>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>

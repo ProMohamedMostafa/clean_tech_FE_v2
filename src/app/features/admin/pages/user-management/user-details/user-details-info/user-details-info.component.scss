@@ -1,0 +1,467 @@
+/* user-details-info.component.scss */
+
+.user-img {
+  display: flex;
+  width: 100%;
+  padding: 20px 5px;
+  border-bottom: 1px solid #e4e4ef;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.user-img img {
+  display: block;
+  margin: 0 auto;
+  width: 96px;
+  height: 96px;
+  background: #efefef;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* MAIN FIX: Contain user-info within its parent */
+.user-info {
+  width: 100%;
+  height: calc(100% - 136px); /* Account for image section height */
+  overflow-y: auto; /* Allow scrolling if content is too long */
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.left-side {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  padding: 15px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.profile-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: auto;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #025d8d;
+  margin: 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 20px;
+}
+
+.info-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.info-value.email {
+  word-break: break-all;
+}
+
+/* Tablet responsiveness (768px and below) */
+@media (max-width: 768px) {
+  .user-info {
+    height: calc(100% - 100px);
+  }
+
+  .info-label,
+  .info-value {
+    font-size: 10px;
+  }
+
+  .info-section-title {
+    font-size: 12px;
+  }
+}
+
+/* Mobile responsiveness (480px and below) */
+@media (max-width: 480px) {
+  .div1 {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .user-img {
+    width: auto;
+    padding: 0;
+    border-bottom: none;
+    border-right: 1px solid #e4e4ef;
+    margin-right: 10px;
+  }
+
+  .user-img img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .user-info {
+    height: auto;
+    flex: 1;
+  }
+
+  .left-side {
+    padding: 5px;
+  }
+
+  .info-section {
+    gap: 6px;
+  }
+
+  .info-grid {
+    gap: 4px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .info-value {
+    text-align: left;
+    max-width: 100%;
+  }
+}
+
+/* Extra small mobile (320px and below) */
+@media (max-width: 320px) {
+  .info-label,
+  .info-value {
+    font-size: 9px;
+  }
+
+  .info-section-title {
+    font-size: 11px;
+  }
+}
+
+/* Custom scrollbar for webkit browsers */
+.user-info::-webkit-scrollbar {
+  width: 4px;
+}
+
+.user-info::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.user-info::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.user-info::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* user-details-info.component.scss */
+
+.user-img {
+  display: flex;
+  width: 100%;
+  padding: 20px 5px;
+  border-bottom: 1px solid #e4e4ef;
+  flex-shrink: 0;
+}
+
+.user-img img {
+  display: block;
+  margin: 0 auto;
+  width: 96px;
+  height: 96px;
+  background: #efefef;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  width: 100%;
+  height: calc(100% - 136px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.left-side {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  padding: 15px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.profile-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: auto;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #025d8d;
+  margin: 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 20px;
+}
+
+.info-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.info-value.email {
+  word-break: break-all;
+}
+
+/* ====================== */
+/* MOBILE RESPONSIVENESS  */
+/* ====================== */
+
+/* For screens 599px and below (where the issue occurs) */
+@media (max-width: 599px) {
+  .user-img {
+    width: auto;
+    padding: 10px;
+    border-bottom: none;
+    border-right: 1px solid #e4e4ef;
+    margin-right: 0;
+    flex-shrink: 0;
+  }
+
+  .user-img img {
+    width: 60px;
+    height: 60px;
+    margin: 0;
+  }
+
+  .user-info {
+    height: auto;
+    flex: 1;
+    overflow: visible;
+  }
+
+  .left-side {
+    padding: 10px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .profile-info-card {
+    gap: 15px;
+  }
+
+  .info-section {
+    gap: 8px;
+  }
+
+  .info-grid {
+    gap: 6px;
+  }
+
+  .info-item {
+    flex-direction: row;
+    gap: 6px;
+    min-height: auto;
+  }
+
+  .info-label {
+    font-size: 10px;
+    min-width: 80px; /* Ensure labels don't get too small */
+  }
+
+  .info-value {
+    font-size: 10px;
+    max-width: 55%;
+    text-align: right;
+  }
+
+  .info-section-title {
+    font-size: 12px;
+  }
+}
+
+/* Extra small mobile optimization */
+@media (max-width: 380px) {
+  .user-img {
+    padding: 8px;
+  }
+
+  .user-img img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .left-side {
+    padding: 8px;
+  }
+
+  .info-label {
+    font-size: 9px;
+    min-width: 70px;
+  }
+
+  .info-value {
+    font-size: 9px;
+    max-width: 50%;
+  }
+
+  .info-section-title {
+    font-size: 11px;
+  }
+
+  .info-item {
+    gap: 4px;
+  }
+}
+
+/* Very small screens (320px and below) */
+@media (max-width: 320px) {
+  .user-img {
+    padding: 6px;
+  }
+
+  .user-img img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .info-label {
+    font-size: 8px;
+    min-width: 65px;
+  }
+
+  .info-value {
+    font-size: 8px;
+  }
+
+  .info-section-title {
+    font-size: 10px;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 599px) and (orientation: landscape) {
+  .user-img {
+    padding: 8px;
+  }
+
+  .user-img img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .left-side {
+    padding: 8px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .info-value {
+    text-align: left;
+    max-width: 100%;
+  }
+}
+
+/* Custom scrollbar for webkit browsers */
+.user-info::-webkit-scrollbar {
+  width: 4px;
+}
+
+.user-info::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.user-info::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.user-info::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

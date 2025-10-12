@@ -1,0 +1,420 @@
+<div class="modal show" [ngClass]="{ show: true }" tabindex="-1">
+  <div
+    class="modal-dialog modal-dialog-centered modal-lg"
+    [ngClass]="{ 'modal-sm': isSmallScreen }"
+  >
+    <div class="modal-content">
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1>{{ "TASK_MANAGEMENT.FILTER_TITLE" | translate }}</h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body custom-scroll">
+        <div class="row g-3">
+          <!-- First Column -->
+          <div
+            [class.col-md-12]="selectedLevel === 'country'"
+            [class.col-md-6]="selectedLevel && selectedLevel !== 'country'"
+          >
+            <!-- Created By Dropdown -->
+            <div class="form-group">
+              <label for="createdBy" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.CREATED_BY" | translate }}
+              </label>
+              <select
+                id="createdBy"
+                class="form-control"
+                [(ngModel)]="selectedCreatedBy"
+              >
+                <option value="" disabled selected>
+                  {{ "TASK_MANAGEMENT.SELECT_CREATOR" | translate }}
+                </option>
+                @for (creator of creators; track creator.id) {
+                <option [value]="creator.id">
+                  {{ creator.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Assigned To Dropdown -->
+            <div class="form-group">
+              <label for="assignedTo" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.ASSIGNED_TO" | translate }}
+              </label>
+              <select
+                id="assignedTo"
+                class="form-control"
+                [(ngModel)]="selectedAssignedTo"
+              >
+                <option value="" disabled selected>
+                  {{ "TASK_MANAGEMENT.SELECT_ASSIGNEE" | translate }}
+                </option>
+                @for (assignee of assignees; track assignee.id) {
+                <option [value]="assignee.id">
+                  {{ assignee.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="form-group">
+              <label for="status" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.STATUS" | translate }}
+              </label>
+              <select
+                id="status"
+                class="form-control"
+                [(ngModel)]="selectedStatus"
+              >
+                <option value="" disabled selected>
+                  {{ "TASK_MANAGEMENT.SELECT_STATUS" | translate }}
+                </option>
+                @for (status of statuses; track status.id) {
+                <option [value]="status.id">
+                  {{ status.name | translate }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Priority Dropdown -->
+            <div class="form-group">
+              <label for="priority" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.PRIORITY" | translate }}
+              </label>
+              <select
+                id="priority"
+                class="form-control"
+                [(ngModel)]="selectedPriority"
+              >
+                <option value="" disabled selected>
+                  {{ "TASK_MANAGEMENT.SELECT_PRIORITY" | translate }}
+                </option>
+                @for (priority of priorities; track priority.id) {
+                <option [value]="priority.id">
+                  {{ priority.name | translate }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Date From -->
+            <div class="form-group">
+              <label for="startDate" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.START_DATE" | translate }}
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                class="form-control"
+                [(ngModel)]="startDate"
+              />
+            </div>
+
+            <!-- Date To -->
+            <div class="form-group">
+              <label for="endDate" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.END_DATE" | translate }}
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                class="form-control"
+                [(ngModel)]="endDate"
+              />
+            </div>
+
+            <!-- Time From -->
+            <div class="form-group">
+              <label for="startTime" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.START_TIME" | translate }}
+              </label>
+              <input
+                type="time"
+                id="startTime"
+                class="form-control"
+                [(ngModel)]="startTime"
+              />
+            </div>
+
+            <!-- Time To -->
+            <div class="form-group">
+              <label for="endTime" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.END_TIME" | translate }}
+              </label>
+              <input
+                type="time"
+                id="endTime"
+                class="form-control"
+                [(ngModel)]="endTime"
+              />
+            </div>
+
+            <!-- Provider Dropdown -->
+            <div class="form-group">
+              <label for="provider" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.PROVIDER" | translate }}
+              </label>
+              <select
+                id="provider"
+                class="form-control"
+                [(ngModel)]="selectedProvider"
+              >
+                <option value="" disabled selected>
+                  {{ "TASK_MANAGEMENT.SELECT_PROVIDER" | translate }}
+                </option>
+                @for (provider of providers; track provider.id) {
+                <option [value]="provider.id">
+                  {{ provider.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Level Dropdown -->
+            <div class="form-group">
+              <label for="level" class="shift-form-label">
+                {{ "TASK_MANAGEMENT.SELECT_LOCATION" | translate }}
+              </label>
+              <select
+                [(ngModel)]="selectedLevel"
+                id="level"
+                class="form-select"
+                (change)="onLevelChange()"
+              >
+                <option value="" disabled selected>
+                  {{ "TASK_MANAGEMENT.SELECT_LOCATION" | translate }}
+                </option>
+                @for (level of levels; track level) {
+                <option [value]="level">
+                  {{ level }}
+                </option>
+                }
+              </select>
+            </div>
+
+            @if (levels.includes(selectedLevel)) {
+            <div>
+              <!-- Country Selection -->
+              <div class="form-group">
+                <label for="country" class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.COUNTRY" | translate }}
+                </label>
+                <select
+                  id="country"
+                  class="form-control"
+                  [(ngModel)]="selectedCountry"
+                  (change)="onCountryChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_COUNTRY" | translate }}
+                  </option>
+                  @for (country of countries; track country) {
+                  <option [value]="country.name">
+                    {{ country.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+
+              <!-- Area Selection -->
+              @if (['area', 'city', 'Organization', 'Building', 'Floor',
+              'Section', 'Point'].includes(selectedLevel)) {
+              <div class="form-group">
+                <label for="area" class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.AREA" | translate }}
+                </label>
+                <select
+                  id="area"
+                  class="form-control"
+                  [(ngModel)]="selectedArea"
+                  (change)="onAreaChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_AREA" | translate }}
+                  </option>
+                  @for (area of areas; track area.id) {
+                  <option [value]="area.id">
+                    {{ area.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Second Column (Conditional Display Based on Level Selection) -->
+          @if (selectedLevel) {
+          <div class="col-md-6">
+            <!-- Conditional Country/Area/City/Organization Selection Based on Level -->
+            @if (levels.includes(selectedLevel)) {
+            <div>
+              <!-- City Selection -->
+              @if (['city', 'Organization', 'Building', 'Floor', 'Section',
+              'Point'].includes(selectedLevel)) {
+              <div class="form-group">
+                <label for="city" class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.CITY" | translate }}
+                </label>
+                <select
+                  id="city"
+                  class="form-control"
+                  [(ngModel)]="selectedCity"
+                  (change)="onCityChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_CITY" | translate }}
+                  </option>
+                  @for (city of cities; track city.id) {
+                  <option [value]="city.id">
+                    {{ city.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+
+            <!-- Organization, Building Selection and Conditional Floor, Section, Point -->
+            @if (['Organization', 'Building', 'Floor', 'Section',
+            'Point'].includes(selectedLevel)) {
+            <div>
+              <!-- Organization Selection -->
+              <div class="form-group">
+                <label class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.ORGANIZATION" | translate }}
+                </label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedOrganization"
+                  (change)="onOrganizationChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_ORGANIZATION" | translate }}
+                  </option>
+                  @for (org of organizations; track org.id) {
+                  <option [value]="org.id">
+                    {{ org.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+
+              <!-- Building Selection -->
+              @if (['Building', 'Floor', 'Section',
+              'Point'].includes(selectedLevel)) {
+              <div class="form-group">
+                <label class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.BUILDING" | translate }}
+                </label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedBuilding"
+                  (change)="onBuildingChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_BUILDING" | translate }}
+                  </option>
+                  @for (building of buildings; track building.id) {
+                  <option [value]="building.id">
+                    {{ building.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+
+            <!-- Floor and Point in the Same Row -->
+            @if (['Floor', 'Section', 'Point'].includes(selectedLevel)) {
+            <div>
+              <!-- Floor Selection -->
+              <div class="form-group">
+                <label class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.FLOOR" | translate }}
+                </label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedFloor"
+                  (change)="onFloorChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_FLOOR" | translate }}
+                  </option>
+                  @for (floor of floors; track floor.id) {
+                  <option [value]="floor.id">
+                    {{ floor.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+
+              <!-- Section Selection -->
+              @if (['Section', 'Point'].includes(selectedLevel)) {
+              <div class="form-group">
+                <label class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.SECTION" | translate }}
+                </label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedSection"
+                  (change)="onSectionChange()"
+                >
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_SECTION" | translate }}
+                  </option>
+                  @for (section of sections; track section.id) {
+                  <option [value]="section.id">
+                    {{ section.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+
+              <!-- Point Selection -->
+              @if (selectedLevel === 'Point') {
+              <div class="form-group">
+                <label class="shift-form-label">
+                  {{ "TASK_MANAGEMENT.POINT" | translate }}
+                </label>
+                <select class="form-select" [(ngModel)]="selectedPoint">
+                  <option value="" disabled selected>
+                    {{ "TASK_MANAGEMENT.SELECT_POINT" | translate }}
+                  </option>
+                  @for (point of points; track point.id) {
+                  <option [value]="point.id">
+                    {{ point.name }}
+                  </option>
+                  }
+                </select>
+              </div>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn apply-btn" (click)="applyFilter()">
+          {{ "TASK_MANAGEMENT.APPLY_FILTER" | translate }}
+        </button>
+        <button type="button" class="btn clear-btn" (click)="closeModal()">
+          {{ "TASK_MANAGEMENT.CLOSE" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

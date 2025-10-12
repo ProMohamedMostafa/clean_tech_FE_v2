@@ -1,0 +1,48 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.CATEGORY_MANAGEMENT" />
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="true"
+    [showRecycleButton]="true"
+    [recycleButtonRoute]="'/admin/deleted-categories'"
+    (searchChange)="onSearchChange($event)"
+    (filterClick)="openFilterModal()"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+    (addClick)="openAddModal()"
+  ></reusable-filter-bar>
+
+  <!-- Reusable Table Section -->
+  <app-table-data
+    [data]="categories"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [currentUserRole]="currentUserRole"
+    [showPagination]="true"
+    [trackByField]="'id'"
+    (pageChanged)="onPageChange($event)"
+    (pageSizeChanged)="onPageSizeChange($event)"
+  ></app-table-data>
+
+  <!-- Filter Modal -->
+  <app-category-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-category-filter>
+
+  <app-category-offcanvas
+    [categoryEditData]="selectedCategory"
+    [parentCategories]="parentCategories"
+    (categoryUpdated)="handleCategoryUpdated()"
+  ></app-category-offcanvas>
+</div>

@@ -1,0 +1,218 @@
+.gender-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding-top: 0;
+  margin: 0;
+}
+
+.gender-options {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.01em;
+    color: #2d3748;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f7fafc;
+    }
+  }
+}
+
+/* Custom Radio Buttons */
+input[type="radio"] {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #025d8c;
+  cursor: pointer;
+  
+  /* Custom radio appearance */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cbd5e0;
+    border-radius: 50%;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  &:checked::before {
+    border-color: #025d8c;
+    background-color: #025d8c;
+  }
+  
+  &:checked::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  &:focus {
+    outline: none;
+    
+    &::before {
+      border-color: #025d8c;
+      box-shadow: 0 0 0 3px rgba(2, 93, 140, 0.15);
+    }
+  }
+  
+  &:hover::before {
+    border-color: #a0aec0;
+  }
+}
+
+.gender-section > label {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+  color: #2d3748;
+  margin-bottom: 2px;
+}
+
+.validation-message {
+  color: #e53e3e;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.validation-message::before {
+  content: "⚠";
+  font-size: 14px;
+}
+
+
+
+/* Success state styling */
+.gender-section.ng-valid.ng-touched {
+  .gender-options label {
+    color: #38a169;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .gender-section {
+    gap: 12px;
+  }
+  
+  .gender-options {
+    gap: 16px;
+    
+    label {
+      font-size: 15px;
+      padding: 10px 14px;
+    }
+  }
+  
+  input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    
+    &::before {
+      width: 20px;
+      height: 20px;
+    }
+    
+    &::after {
+      width: 10px;
+      height: 10px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .gender-options {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .gender-options label {
+    padding: 12px 16px;
+    font-size: 16px;
+    gap: 12px;
+  }
+  
+  .gender-section > label {
+    font-size: 15px;
+  }
+}
+
+/* Enhanced focus styles for accessibility */
+input[type="radio"]:focus-visible {
+  outline: 2px solid #025d8c;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  input[type="radio"]::before {
+    border-width: 2px;
+  }
+  
+  .validation-message {
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .gender-options label,
+  input[type="radio"],
+  input[type="radio"]::before,
+  input[type="radio"]::after {
+    transition: none;
+  }
+}
+
+/* Compact version for tight spaces */
+.gender-section.compact {
+  .gender-options {
+    gap: 16px;
+    
+    label {
+      padding: 4px 8px;
+      font-size: 13px;
+    }
+  }
+}

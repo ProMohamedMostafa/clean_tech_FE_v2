@@ -1,0 +1,117 @@
+<div class="container py-4 my-3 details-container">
+  <!-- page title and export button -->
+  <div class="title-container px-3">
+    <div class="title-text d-flex align-items-center gap-3">
+      <div class="title-badge"></div>
+      <div class="title-info">
+        <h1>{{ "SHIFT.DETAILS_TITLE" | translate }}</h1>
+        <p class="subtitle">{{ "SHIFT.DETAILS_SUBTITLE" | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- navbar section -->
+  <div class="nav-section">
+    <div
+      class="nav-item"
+      (click)="selectTab('organization')"
+      [ngClass]="{ active: selectedTab === 'organization' }"
+    >
+      <i class="bi bi-building me-2"></i>{{ "COMMON.ORGANIZATION" | translate }}
+    </div>
+    <div
+      class="nav-item"
+      (click)="selectTab('building')"
+      [ngClass]="{ active: selectedTab === 'building' }"
+    >
+      <i class="bi bi-house-door me-2"></i>{{ "COMMON.BUILDING" | translate }}
+    </div>
+    <div
+      class="nav-item"
+      (click)="selectTab('floor')"
+      [ngClass]="{ active: selectedTab === 'floor' }"
+    >
+      <i class="bi bi-layers me-2"></i>{{ "COMMON.FLOOR" | translate }}
+    </div>
+    <div
+      class="nav-item"
+      (click)="selectTab('section')"
+      [ngClass]="{ active: selectedTab === 'section' }"
+    >
+      <i class="bi bi-grid me-2"></i>{{ "COMMON.SECTION" | translate }}
+    </div>
+  </div>
+
+  <!-- main section -->
+  <div class="main-section">
+    <!-- left side  -->
+    <div class="left-side">
+      <div class="shift-header">
+        <h5>{{ shiftData?.name }}</h5>
+      </div>
+
+      <div class="info-card">
+        <div class="info-group">
+          <div class="info-item">
+            <span class="info-label">{{ "SHIFT.START_DATE" | translate }}</span>
+            <span class="info-value">{{ shiftData?.startDate }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ "SHIFT.END_DATE" | translate }}</span>
+            <span class="info-value">{{ shiftData?.endDate }}</span>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-item">
+            <span class="info-label">{{ "SHIFT.START_TIME" | translate }}</span>
+            <span class="info-value highlight">{{ shiftData?.startTime }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ "SHIFT.END_TIME" | translate }}</span>
+            <span class="info-value highlight">{{ shiftData?.endTime }}</span>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-item">
+            <span class="info-label">{{
+              "SHIFT.TOTAL_DURATION" | translate
+            }}</span>
+            <span class="info-value">8 {{ "SHIFT.HOURS" | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right side -->
+    <div class="right-side">
+      <div class="right-side-header">
+        <h4>
+          {{ selectedTab | titlecase }} {{ "COMMON.INFORMATION" | translate }}
+        </h4>
+      </div>
+
+      <div class="tab-content-container">
+        <ng-container [ngSwitch]="selectedTab">
+          <app-organization-section
+            *ngSwitchCase="'organization'"
+            [organizations]="organizations"
+          ></app-organization-section>
+          <app-section-section
+            *ngSwitchCase="'section'"
+            [sections]="sections"
+          ></app-section-section>
+          <app-building-section
+            *ngSwitchCase="'building'"
+            [buildings]="buildings"
+          ></app-building-section>
+          <app-floor-section
+            *ngSwitchCase="'floor'"
+            [floors]="floors"
+          ></app-floor-section>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

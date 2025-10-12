@@ -1,0 +1,6 @@
+<app-category-filter
+  *ngIf="showFilterModal"
+  (closeModal)="closeFilterModal()"
+  (applyFilter)="onApplyFilter($event)"
+  (resetFilters)="onResetFilters()"
+></app-category-filter>

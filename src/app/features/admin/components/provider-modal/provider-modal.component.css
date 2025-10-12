@@ -1,0 +1,57 @@
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(146, 146, 146, 0.5); /* Semi-transparent black */
+  z-index: 1040; /* Behind the modal */
+}
+
+/* Modal Positioning */
+.modal {
+  position: fixed;
+  top: 80%;
+  left: 55%;
+  transform: translate(-50%, -50%); /* Center the modal */
+  z-index: 1050; /* Modal should appear above the overlay */
+}
+
+/* Modal Dialog */
+.modal-dialog {
+  max-width: 90%; /* Responsive width */
+  margin: 0 auto;
+}
+
+.modal-btn {
+  background-color: #025d8d;
+}
+/* Optional: Make the modal a bit more compact for small screens */
+@media (max-width: 768px) {
+  .modal-lg {
+    max-width: 60%;
+  }
+}
+
+/* Optional: Add some spacing for image circle */
+.image-circle {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-dialog.custom-small {
+  max-width: 400px; /* adjust as needed */
+  width: 100%;
+}

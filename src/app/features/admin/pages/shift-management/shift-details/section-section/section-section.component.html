@@ -1,0 +1,17 @@
+@if (sections && sections.length > 0) {
+<div class="organizations-grid">
+  @for (section of sections; track section) {
+  <div class="org-card" (click)="navigateToAddUser(section.id)">
+    <div class="org-card-content">
+      <i class="bi bi-building"></i>
+      <h3>{{ section.name }}</h3>
+    </div>
+  </div>
+  }
+</div>
+} @else {
+<div class="empty-state">
+  <i class="bi bi-building"></i>
+  <p>No sections available</p>
+</div>
+}

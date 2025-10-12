@@ -1,0 +1,160 @@
+<div
+  class="modal fade show text-start"
+  style="max-width: 100%; display: block"
+  [ngClass]="{ show: true }"
+  tabindex="-1"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-lg"
+    [ngClass]="{ 'modal-sm': isSmallScreen }"
+  >
+    <div class="modal-content">
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1>{{ "TRANSACTIONS.FILTER_TITLE" | translate }}</h1>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body custom-scroll">
+        <div class="row">
+          <!-- First Column -->
+          <div class="col-md-6">
+            <!-- Category Selection -->
+            <div class="mb-3">
+              <label for="category" class="shift-form-label">
+                {{ "TRANSACTIONS.CATEGORY" | translate }}
+              </label>
+              <select
+                id="category"
+                class="form-control"
+                name="category"
+                [(ngModel)]="selectedCategory"
+              >
+                <option value="" disabled selected>
+                  {{ "TRANSACTIONS.SELECT_CATEGORY" | translate }}
+                </option>
+                @for (category of categories; track category) {
+                <option [value]="category.id">
+                  {{ category.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Type Selection -->
+            <div class="mb-3">
+              <label for="type" class="shift-form-label">
+                {{ "TRANSACTIONS.TYPE" | translate }}
+              </label>
+              <select
+                id="type"
+                class="form-control"
+                name="type"
+                [(ngModel)]="selectedType"
+              >
+                <option value="" disabled selected>
+                  {{ "TRANSACTIONS.SELECT_TYPE" | translate }}
+                </option>
+                @for (type of types; track type) {
+                <option [value]="type.id">
+                  {{ type.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Date From -->
+            <div class="mb-3">
+              <label for="dateFrom" class="shift-form-label">
+                {{ "TRANSACTIONS.DATE_FROM" | translate }}
+              </label>
+              <input
+                type="date"
+                id="dateFrom"
+                class="form-control"
+                name="dateFrom"
+                [(ngModel)]="dateFrom"
+              />
+            </div>
+          </div>
+
+          <!-- Second Column -->
+          <div class="col-md-6">
+            <!-- Date To -->
+            <div class="mb-3">
+              <label for="dateTo" class="shift-form-label">
+                {{ "TRANSACTIONS.DATE_TO" | translate }}
+              </label>
+              <input
+                type="date"
+                id="dateTo"
+                class="form-control"
+                name="dateTo"
+                [(ngModel)]="dateTo"
+              />
+            </div>
+
+            <!-- User Selection -->
+            <div class="mb-3">
+              <label for="user" class="shift-form-label">
+                {{ "TRANSACTIONS.USER" | translate }}
+              </label>
+              <select
+                id="user"
+                class="form-control"
+                name="user"
+                [(ngModel)]="selectedUser"
+              >
+                <option value="" disabled selected>
+                  {{ "TRANSACTIONS.SELECT_USER" | translate }}
+                </option>
+                @for (user of users; track user) {
+                <option [value]="user.id">
+                  {{ user.name }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Provider Selection -->
+            <div class="mb-3">
+              <label for="provider" class="shift-form-label">
+                {{ "TRANSACTIONS.PROVIDER" | translate }}
+              </label>
+              <select
+                id="provider"
+                class="form-control"
+                name="provider"
+                [(ngModel)]="selectedProvider"
+              >
+                <option value="" disabled selected>
+                  {{ "TRANSACTIONS.SELECT_PROVIDER" | translate }}
+                </option>
+                @for (provider of providers; track provider) {
+                <option [value]="provider.id">
+                  {{ provider.name }}
+                </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mx-auto d-flex gap-2">
+        <button type="button" class="btn apply-btn" (click)="applyFilter()">
+          {{ "TRANSACTIONS.APPLY_FILTER" | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn clear-btn me-2"
+          (click)="closeFilterModal()"
+        >
+          {{ "TRANSACTIONS.CLOSE" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

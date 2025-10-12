@@ -1,0 +1,100 @@
+<div class="audits-container">
+  <!-- Header Section -->
+  <div class="audits-header">
+    <h3>{{ "AUDIT_HISTORY.TITLE" | translate }}</h3>
+    <button class="btn btn-primary btn-start-audit" (click)="onStartAudit()">
+      {{ "AUDIT_HISTORY.START" | translate }}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{
+        "AUDIT_HISTORY.LOADING" | translate
+      }}</span>
+    </div>
+    <p class="mt-2">{{ "AUDIT_HISTORY.LOADING_HISTORY" | translate }}</p>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!isLoading && auditHistory.length === 0 && !errorMessage"
+    class="text-center py-5 empty-state"
+  >
+    <div class="empty-icon">
+      <i class="bi bi-clipboard-data"></i>
+    </div>
+    <h4>{{ "AUDIT_HISTORY.NO_AUDITS" | translate }}</h4>
+    <p class="text-muted">{{ "AUDIT_HISTORY.GET_STARTED" | translate }}</p>
+    <button class="btn btn-primary btn-lg" (click)="onStartAudit()">
+      <i class="bi bi-plus-circle me-2"></i
+      >{{ "AUDIT_HISTORY.CREATE_FIRST" | translate }}
+    </button>
+  </div>
+
+  <!-- Audit Cards Grid -->
+  <div *ngIf="!isLoading && auditHistory.length > 0" class="audit-grid-wrapper">
+    <div class="audit-grid">
+      <div
+        class="audit-card"
+        *ngFor="let audit of auditHistory"
+        (click)="onViewDetails(audit)"
+      >
+        <div class="audit-time">{{ audit.time }}</div>
+        <div class="audit-date">{{ audit.date | date : "dd/M/yyyy" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    *ngIf="!isLoading && auditHistory.length > 0"
+    class="pagination-container"
+  >
+    <div class="pagination-info">
+      <span
+        >{{ totalCount }} {{ "AUDIT_HISTORY.TOTAL_AUDITS" | translate }}</span
+      >
+    </div>
+    <nav class="pagination-nav">
+      <button
+        class="pagination-btn"
+        [disabled]="!hasPreviousPage"
+        (click)="onPageChange(currentPage - 1)"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <div class="page-numbers">
+        <button
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          class="page-number"
+          [class.active]="currentPage === i + 1"
+          (click)="onPageChange(i + 1)"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <button
+        class="pagination-btn"
+        [disabled]="!hasNextPage"
+        (click)="onPageChange(currentPage + 1)"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Audit Modal Component -->
+  <app-audit-modal
+    [showModal]="showAuditModal"
+    [questions]="questions"
+    [isLoading]="isLoadingQuestions"
+    [isSubmitting]="isSubmitting"
+    (closeModal)="onCloseModal()"
+    (submitAudit)="onSubmitAudit($event)"
+  >
+  </app-audit-modal>
+</div>

@@ -1,0 +1,15 @@
+<!-- task-description.component.html -->
+<div class="description-container">
+  <div
+    class="description-content"
+    [class.collapsed]="isDescriptionCollapsed"
+    #descriptionElement
+  >
+    {{ task?.description }}
+  </div>
+  @if (showReadMore) {
+  <button class="read-more-btn" (click)="toggleDescription()">
+    {{ isDescriptionCollapsed ? "Read More" : "Read Less" }}
+  </button>
+  }
+</div>

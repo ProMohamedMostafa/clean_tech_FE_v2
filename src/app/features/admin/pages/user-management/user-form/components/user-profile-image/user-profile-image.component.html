@@ -1,0 +1,51 @@
+<!-- user-profile-image.component.html -->
+<div class="profile-section">
+  <div class="profile-image-container">
+    <!-- Image preview with fallback -->
+    <div class="profile-image-wrapper" (click)="triggerImageUpload()">
+      <img
+        id="profileImagePreview"
+        [src]="imagePreview || '../assets/header-profile-image.svg'"
+        alt="Profile Image"
+        class="profile-avatar"
+      />
+      <div *ngIf="isEditMode" class="image-overlay">
+        <i class="fas fa-camera"></i>
+      </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input
+      type="file"
+      id="profileImageInput"
+      accept="image/*"
+      (change)="onImageSelect($event)"
+      class="hidden-file-input"
+    />
+
+    <!-- Action buttons -->
+    <div class="profile-actions">
+      <button
+        id="upload-button"
+        (click)="triggerImageUpload()"
+        class="btn btn-primary"
+        type="button"
+      >
+        <i class="fas fa-camera"></i>
+        {{ (isEditMode ? "EditUser.UPLOAD" : "AddUser.UPLOAD") | translate }}
+      </button>
+      <button
+        id="cancel-image-button"
+        (click)="onCancelImage()"
+        class="btn btn-outline"
+        type="button"
+        [title]="
+          (isEditMode ? 'EditUser.REMOVE' : 'AddUser.REMOVE') | translate
+        "
+      >
+        <i class="fas fa-trash-alt"></i>
+        {{ (isEditMode ? "EditUser.REMOVE" : "AddUser.REMOVE") | translate }}
+      </button>
+    </div>
+  </div>
+</div>

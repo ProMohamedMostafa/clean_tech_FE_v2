@@ -1,0 +1,129 @@
+<!-- Modal Overlay -->
+@if (isModalOpen) {
+<div class="modal-overlay"></div>
+}
+
+<!-- Modal -->
+@if (isModalOpen) {
+<div
+  class="modal fade show"
+  id="customModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  style="display: block"
+>
+  <div class="container">
+    <div class="modal-dialog modal-dialog-centered custom-small">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            {{
+              actionType === "add"
+                ? ("PROVIDERS.ADD_PROVIDER" | translate)
+                : actionType === "edit"
+                ? ("PROVIDERS.EDIT_PROVIDER" | translate)
+                : ("PROVIDERS.DELETE_PROVIDER" | translate)
+            }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            [attr.aria-label]="'COMMON.CLOSE' | translate"
+            (click)="closeModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <!-- Add or Edit Provider Form -->
+          @if (actionType === 'add' || actionType === 'edit') {
+          <div>
+            <form [formGroup]="providerForm" (ngSubmit)="performAction()">
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label for="name" class="form-label">{{
+                      "PROVIDERS.PROVIDER_NAME" | translate
+                    }}</label>
+                    <input
+                      type="text"
+                      id="name"
+                      class="form-control"
+                      formControlName="name"
+                      [(ngModel)]="provider.name"
+                    />
+                    @if ( providerForm.get('name')?.invalid &&
+                    providerForm.get('name')?.touched ) {
+                    <div class="text-danger">
+                      @if (providerForm.get('name')?.hasError('required')) {
+                      <small>{{
+                        "VALIDATION.NAME_REQUIRED" | translate
+                      }}</small>
+                      } @if (providerForm.get('name')?.hasError('minlength')) {
+                      <small>{{
+                        "VALIDATION.NAME_MIN_LENGTH" | translate
+                      }}</small>
+                      } @if (providerForm.get('name')?.hasError('maxlength')) {
+                      <small>{{
+                        "VALIDATION.NAME_MAX_LENGTH" | translate
+                      }}</small>
+                      }
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          }
+          <!-- Delete Confirmation Form -->
+          @if (actionType === 'delete') {
+          <div>
+            <div class="row">
+              <div class="col-12">
+                <div class="mb-3">
+                  <label for="name" class="form-label">{{
+                    "PROVIDERS.PROVIDER_NAME" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    id="name"
+                    class="form-control"
+                    [(ngModel)]="provider.name"
+                    [disabled]="true"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <!-- Save/Update Action -->
+          @if (actionType === 'add' || actionType === 'edit') {
+          <button
+            type="button"
+            class="btn btn-secondary modal-btn"
+            (click)="performAction()"
+          >
+            {{
+              actionType === "add"
+                ? ("COMMON.ADD" | translate)
+                : ("COMMON.SAVE" | translate)
+            }}
+          </button>
+          }
+          <!-- Remove Action for Delete -->
+          @if (actionType === 'delete') {
+          <button
+            type="button"
+            class="btn btn-secondary modal-btn"
+            (click)="performAction()"
+          >
+            {{ "COMMON.REMOVE" | translate }}
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

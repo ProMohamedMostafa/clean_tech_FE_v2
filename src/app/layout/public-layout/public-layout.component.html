@@ -1,0 +1,48 @@
+<div class="w-100 h-100 d-flex">
+  <div class="col-12 col-md-6 custom-border left-part">
+    <div class="circle-part d-flex flex-column">
+      <div class="d-flex flex-column justify-content-between h-75">
+        <img
+          src="assets/Clean-Tech.PNG"
+          onerror="this.onerror=null; this.src='./assets/Clean-Tech.png'"
+          alt="{{ 'PRIVATE_MENUS.COMPANY_LOGO_ALT' | translate }}"
+          class="logo small-logo pt-3"
+          role="img"
+          aria-label="Company Logo"
+        />
+      </div>
+    </div>
+    <div class="p-3 d-flex align-content-center justify-content-center">
+      <!-- add form Here -->
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <!-- right part -->
+  <div class="col-6 right d-none d-md-block">
+    <!-- ng-bootstrap Carousel -->
+    <ngb-carousel [interval]="3000" [wrap]="true">
+      <ng-template ngbSlide>
+        <img
+          src="./assets/login-img-1.PNG"
+          class="carousel-image"
+          alt="Slide 1"
+        />
+      </ng-template>
+      <ng-template ngbSlide>
+        <img
+          src="./assets/login-img-2.PNG"
+          class="carousel-image"
+          alt="Slide 2"
+        />
+      </ng-template>
+      <ng-template ngbSlide>
+        <img
+          src="./assets/login-img-3.PNG"
+          class="carousel-image"
+          alt="Slide 3"
+        />
+      </ng-template>
+    </ngb-carousel>
+  </div>
+</div>

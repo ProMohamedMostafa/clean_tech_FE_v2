@@ -1,0 +1,33 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="SENSOR_MANAGEMENT_OVERVIEW.DELETED_TITLE" />
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="false"
+    [showRecycleButton]="false"
+    backButtonRoute="/admin/sensors"
+    (searchChange)="onSearchChange($event)"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+  ></reusable-filter-bar>
+
+  <!-- Reusable Table Section -->
+  <app-table-data
+    [data]="deletedSensors"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [currentUserRole]="currentUserRole"
+    [showPagination]="true"
+    [trackByField]="'id'"
+    (pageChanged)="onPageChange($event)"
+    (pageSizeChanged)="onPageSizeChange($event)"
+  ></app-table-data>
+</div>

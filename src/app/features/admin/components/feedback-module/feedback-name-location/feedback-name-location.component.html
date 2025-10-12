@@ -1,0 +1,30 @@
+<div class="location-name-info">
+  <div class="left-column">
+    <span class="feedback-key">{{
+      "FEEDBACK_NAME_LOCATION.FEEDBACK_NAME" | translate
+    }}</span>
+    <span class="feedback-value">{{ feedbackName }}</span>
+  </div>
+  <div class="right-column">
+    <div class="feedback-header">
+      {{ "FEEDBACK_NAME_LOCATION.FEEDBACK_LOCATION" | translate }}
+    </div>
+    <div class="feedback-location">
+      <div class="location-container">
+        <div class="location-items">
+          <div class="connector-line"></div>
+          <div class="connector-dot"></div>
+
+          <ng-container *ngFor="let location of locationData; let last = last">
+            <div class="location-item">
+              <i [class]="location.icon + ' location-icon'"></i>
+              <div class="location-title">{{ location.title }}</div>
+              <div class="location-value">{{ location.value }}</div>
+              <i *ngIf="!last" class="fas fa-chevron-right location-arrow"></i>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

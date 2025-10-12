@@ -1,0 +1,78 @@
+<!-- user-form.component.html -->
+<div class="add-user-container">
+  <div class="add-user-information">
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!isLoading">
+      <!-- Header Section -->
+      <app-user-form-header [pageTitle]="pageTitle"> </app-user-form-header>
+
+      <!-- Profile Image Section -->
+      <app-user-profile-image
+        [isEditMode]="isEditMode"
+        [imagePreview]="imagePreview"
+        (imageSelected)="onImageSelect($event)"
+        (imageCanceled)="cancelImage()"
+      >
+      </app-user-profile-image>
+
+      <!-- Form Section -->
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <!-- Personal Information Section -->
+        <app-user-personal-info
+          [userForm]="userForm"
+          [isEditMode]="isEditMode"
+          [today]="today"
+          [showPassword]="showPassword"
+          [showConfirmPassword]="showConfirmPassword"
+          (showPasswordToggle)="showPassword = !showPassword"
+          (showConfirmPasswordToggle)="
+            showConfirmPassword = !showConfirmPassword
+          "
+        >
+        </app-user-personal-info>
+
+        <!-- Gender Section -->
+        <app-user-gender-section
+          [userForm]="userForm"
+          [isEditMode]="isEditMode"
+        >
+        </app-user-gender-section>
+
+        <!-- Dropdown Section (Countries, Providers, Roles, etc.) -->
+        <!-- In your user-form.component.html, update the user-dropdown-section call -->
+        <app-user-dropdown-section
+          [userForm]="userForm"
+          [isEditMode]="isEditMode"
+          [countries]="countries"
+          [nationalities]="nationalities"
+          [providers]="providers"
+          [roles]="roles"
+          [managers]="managers"
+          [trackByCountry]="trackByCountry"
+          [trackByNationality]="trackByNationality"
+          [trackByProvider]="trackByProvider"
+          [trackByRole]="trackByRole"
+          [trackByManager]="trackByManager"
+          (roleChanged)="onRoleChange($event)"
+        >
+        </app-user-dropdown-section>
+
+        <!-- Action Buttons Section -->
+        <app-user-action-buttons
+          [isSubmitting]="isSubmitting"
+          [saveButtonText]="saveButtonText"
+          [cancelButtonText]="cancelButtonText"
+          (cancelClicked)="cancel()"
+        >
+        </app-user-action-buttons>
+      </form>
+    </div>
+  </div>
+</div>

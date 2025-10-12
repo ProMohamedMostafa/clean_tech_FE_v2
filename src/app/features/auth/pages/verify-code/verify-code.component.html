@@ -1,0 +1,52 @@
+<div class="verify-code-card">
+  <div class="back-to-login w-25">
+    <a
+      [routerLink]="'/public/login'"
+      class="back-link"
+      aria-label="Back to Login"
+    >
+      <span class="arrow-icon">
+        <!-- SVG arrow icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-arrow-left"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </span>
+      {{ 'auth.BACK_TO_LOGIN' | translate }}
+    </a>
+  </div>
+  
+  <h1 class="title">{{ 'auth.VERIFY_CODE_TITLE' | translate }}</h1>
+  <p class="subtitle">{{ 'auth.VERIFY_CODE_SUBTITLE' | translate }}</p>
+
+  <form class="verify-code-form">
+    <div class="form-group">
+      <input
+        type="text"
+        id="verification-code"
+        required
+        placeholder=" "
+        maxlength="6"
+      />
+      <label for="verification-code">{{ 'auth.VERIFICATION_CODE' | translate }}</label>
+    </div>
+
+    <p class="resend-text">
+      {{ 'auth.DIDNT_RECEIVE_CODE' | translate }}?
+      <a [routerLink]="'/public/verify-code'" class="resend-link">{{ 'auth.RESEND_CODE' | translate }}</a>
+    </p>
+
+    <button type="submit" class="verify-button">{{ 'auth.VERIFY' | translate }}</button>
+  </form>
+</div>

@@ -1,0 +1,43 @@
+.audits-graph {
+  .section-title {
+    margin-bottom: 0.25rem;
+    color: #0d6efd; // Bootstrap primary
+  }
+
+  .chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    z-index: 1; // keep chart below dropdown
+  }
+
+  select.form-select {
+    border-radius: 0.5rem;
+    position: relative;
+    z-index: 10; // dropdown always above
+  }
+
+  .card {
+    border-radius: 1rem;
+    background-color: #ffffff;
+  }
+
+  @media (max-width: 768px) {
+    .chart-container {
+      height: 300px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .chart-container {
+      height: 250px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .col-md-3 {
+      flex: 0 0 auto;
+      width: 50%;
+    }
+  }
+}

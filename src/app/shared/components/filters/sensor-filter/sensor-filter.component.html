@@ -1,0 +1,228 @@
+<!-- sensor-filter.component.html -->
+<div class="modal fade show d-block">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header">
+        <div class="my-profile-title mb-3">
+          <div class="title-container">
+            <div class="title-bage"></div>
+            <div class="title-info">
+              <h1>{{ "SENSOR_FILTER.TITLE" | translate }}</h1>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-dark"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'SENSOR_FILTER.CLOSE' | translate"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="filterForm" (ngSubmit)="applyFilter()">
+          <div class="row g-3">
+            <!-- Status Filter -->
+            <div class="col-md-6">
+              <label for="isActive" class="form-label">{{
+                "SENSOR_FILTER.STATUS" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="isActive"
+                [(ngModel)]="isActive"
+                name="isActive"
+              >
+                <option [ngValue]="undefined">
+                  {{ "SENSOR_FILTER.ANY_STATUS" | translate }}
+                </option>
+                <option [value]="true">
+                  {{ "SENSOR_FILTER.ACTIVE" | translate }}
+                </option>
+                <option [value]="false">
+                  {{ "SENSOR_FILTER.INACTIVE" | translate }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Type Filter -->
+            <div class="col-md-6">
+              <label for="applicationId" class="form-label">{{
+                "SENSOR_FILTER.TYPE" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="applicationId"
+                [(ngModel)]="selectedApplicationId"
+                name="applicationId"
+              >
+                <option value="">
+                  {{ "SENSOR_FILTER.SELECT_TYPE" | translate }}
+                </option>
+                <option *ngFor="let app of applications" [value]="app.id">
+                  {{ app.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Organization -->
+            <div class="col-md-6">
+              <label for="organizationId" class="form-label">{{
+                "SENSOR_FILTER.ORGANIZATION" | translate
+              }}</label>
+              <select
+                [(ngModel)]="selectedOrganization"
+                name="selectedOrganizations"
+                class="form-select"
+                (change)="onOrganizationChange()"
+              >
+                <option value="">
+                  {{ "SENSOR_FILTER.SELECT_ORGANIZATION" | translate }}
+                </option>
+                <option *ngFor="let org of organizations" [value]="org.id">
+                  {{ org.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Building -->
+            <div class="col-md-6">
+              <label for="buildingId" class="form-label">{{
+                "SENSOR_FILTER.BUILDING" | translate
+              }}</label>
+              <select
+                [(ngModel)]="selectedBuilding"
+                name="selectedBuildings"
+                class="form-select"
+                (change)="onBuildingChange()"
+                [disabled]="!selectedOrganization"
+              >
+                <option value="">
+                  {{ "SENSOR_FILTER.SELECT_BUILDING" | translate }}
+                </option>
+                <option
+                  *ngFor="let building of buildings"
+                  [value]="building.id"
+                >
+                  {{ building.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Floor -->
+            <div class="col-md-6">
+              <label for="floorId" class="form-label">{{
+                "SENSOR_FILTER.FLOOR" | translate
+              }}</label>
+              <select
+                [(ngModel)]="selectedFloor"
+                name="selectedFloors"
+                class="form-select"
+                (change)="onFloorChange()"
+                [disabled]="!selectedBuilding"
+              >
+                <option value="">
+                  {{ "SENSOR_FILTER.SELECT_FLOOR" | translate }}
+                </option>
+                <option *ngFor="let floor of floors" [value]="floor.id">
+                  {{ floor.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Section -->
+            <div class="col-md-6">
+              <label for="sectionId" class="form-label">{{
+                "SENSOR_FILTER.SECTION" | translate
+              }}</label>
+              <select
+                [(ngModel)]="selectedsection"
+                name="selectedSections"
+                class="form-select"
+                (change)="onSectionChange()"
+                [disabled]="!selectedFloor"
+              >
+                <option value="">
+                  {{ "SENSOR_FILTER.SELECT_SECTION" | translate }}
+                </option>
+                <option *ngFor="let section of sections" [value]="section.id">
+                  {{ section.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Point -->
+            <div class="col-md-6">
+              <label for="pointId" class="form-label">{{
+                "SENSOR_FILTER.POINT" | translate
+              }}</label>
+              <select
+                [(ngModel)]="selectedPoint"
+                name="selectedPoints"
+                class="form-select"
+                [disabled]="!selectedsection"
+              >
+                <option value="">
+                  {{ "SENSOR_FILTER.SELECT_POINT" | translate }}
+                </option>
+                <option *ngFor="let point of points" [value]="point.id">
+                  {{ point.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Battery Level -->
+            <div class="col-md-6">
+              <label class="form-label">{{
+                "SENSOR_FILTER.BATTERY_LEVEL" | translate
+              }}</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <label
+                    >{{ "SENSOR_FILTER.MIN" | translate }}:
+                    {{ minValue }}%</label
+                  >
+                  <input
+                    type="range"
+                    class="form-range"
+                    [(ngModel)]="minValue"
+                    name="minRange"
+                    min="0"
+                    max="100"
+                    step="5"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label
+                    >{{ "SENSOR_FILTER.MAX" | translate }}:
+                    {{ maxValue }}%</label
+                  >
+                  <input
+                    type="range"
+                    class="form-range"
+                    [(ngModel)]="maxValue"
+                    name="maxRange"
+                    min="0"
+                    max="100"
+                    step="5"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn submit-filter-btn" form="filterForm">
+          {{ "SENSOR_FILTER.APPLY" | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn cancel-btn"
+          (click)="closeFilterModal()"
+        >
+          {{ "SENSOR_FILTER.CANCEL" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

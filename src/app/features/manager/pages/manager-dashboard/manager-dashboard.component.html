@@ -1,0 +1,44 @@
+<div class="parent">
+  <div class="div1">
+    <app-manager-dashboard-cards class="dashboard-cards" />
+  </div>
+
+  <div class="div2">
+    <app-task-completion-rate />
+  </div>
+
+  <!-- New Task Pie Chart under Task Completion -->
+  <div class="div4" *ngIf="currentUserRole != 'Cleaner'">
+    <app-task-pie-chart />
+  </div>
+
+  <div
+    class="div3"
+    [ngClass]="{
+      'span-two-rows': currentUserRole != 'Cleaner',
+      'span-one-row': currentUserRole === 'Cleaner'
+    }"
+  >
+    <app-recent-activity />
+  </div>
+
+  <!-- Show only for Cleaners -->
+  <div class="div5" *ngIf="currentUserRole === 'Cleaner'">
+    <app-task-container
+      [tasks]="tasks"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [totalCount]="totalCount"
+      [pageSize]="pageSize"
+      (pageChanged)="onPageChange($event)"
+      (pageSizeChanged)="onPageSizeChange($event)"
+      [currentRoute]="currentRoute"
+      (viewTask)="onViewTask($event)"
+      (editTask)="editTask($event)"
+      (deleteTask)="deleteTask($event)"
+      (archiveTask)="archiveTask($event)"
+      (unarchiveTask)="unarchiveTask($event)"
+      (statusFilterChange)="onStatusFilterChange($event)"
+    ></app-task-container>
+  </div>
+</div>

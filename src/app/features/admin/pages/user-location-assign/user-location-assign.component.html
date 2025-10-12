@@ -1,0 +1,343 @@
+<div class="assignment-dashboard">
+  <div class="dashboard-grid">
+    <!-- =========================================== -->
+    <!-- CONFIGURATION PANEL SECTION -->
+    <!-- =========================================== -->
+    <div class="configuration-panel">
+      <!-- Panel Header with Progress Indicator -->
+      <div class="panel-header">
+        <mat-icon>settings</mat-icon>
+        <h2>{{ "ASSIGNMENT.CONFIGURATION_TITLE" | translate }}</h2>
+        <div class="progress-indicator">
+          <span class="step-indicator" [class.active]="selectedLevel"></span>
+          <span
+            class="step-indicator"
+            [class.active]="selectedSpecificOption"
+          ></span>
+          <span class="step-indicator" [class.active]="selectedRole"></span>
+          <span
+            class="step-indicator"
+            [class.active]="selectedUsers.length"
+          ></span>
+        </div>
+      </div>
+
+      <!-- Configuration Steps -->
+      <div class="configuration-steps">
+        <!-- =========================================== -->
+        <!-- STEP 1: LEVEL SELECTION -->
+        <!-- =========================================== -->
+        <div class="step-card" [class.active]="selectedLevel">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3>{{ "ASSIGNMENT.STEP1_TITLE" | translate }}</h3>
+              <span class="step-status" *ngIf="selectedLevel">
+                <mat-icon>check_circle</mat-icon>
+                {{ "ASSIGNMENT.SELECTED" | translate }}: {{ selectedLevel }}
+              </span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "ASSIGNMENT.LEVEL_LABEL" | translate }}</mat-label>
+              <mat-select
+                [(value)]="selectedLevel"
+                (selectionChange)="onLevelChange()"
+              >
+                <mat-option>{{
+                  "ASSIGNMENT.SELECT_DEFAULT" | translate
+                }}</mat-option>
+                @for (level of levels; track level) {
+                <mat-option [value]="level">{{ level }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint>{{ "ASSIGNMENT.LEVEL_HINT" | translate }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- =========================================== -->
+        <!-- STEP 2: SPECIFIC SELECTION -->
+        <!-- =========================================== -->
+        <div
+          class="step-card"
+          [class.active]="selectedSpecificOption"
+          [class.disabled]="!selectedLevel"
+        >
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3>
+                {{
+                  "ASSIGNMENT.STEP2_TITLE"
+                    | translate : { level: selectedLevel || "Level" }
+                }}
+              </h3>
+              <span class="step-status" *ngIf="selectedSpecificOption">
+                <mat-icon>check_circle</mat-icon>
+                {{ "ASSIGNMENT.SELECTED" | translate }}:
+                {{ selectedSpecificOption.name }}
+              </span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{
+                "ASSIGNMENT.SPECIFIC_LABEL"
+                  | translate : { level: selectedLevel || "Level" }
+              }}</mat-label>
+              <mat-select
+                [(value)]="selectedSpecificOption"
+                (selectionChange)="onSpecificOptionChange()"
+                [disabled]="!selectedLevel"
+              >
+                <mat-option>{{
+                  "ASSIGNMENT.SELECT_DEFAULT"
+                    | translate : { level: selectedLevel || "Level" }
+                }}</mat-option>
+                @for (option of getSpecificOptions(); track option) {
+                <mat-option [value]="option">{{ option.name }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint *ngIf="!selectedLevel">{{
+                "ASSIGNMENT.LEVEL_FIRST_HINT" | translate
+              }}</mat-hint>
+              <mat-hint *ngIf="selectedLevel">{{
+                "ASSIGNMENT.SPECIFIC_HINT"
+                  | translate : { level: selectedLevel | lowercase }
+              }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- =========================================== -->
+        <!-- STEP 3: ROLE SELECTION -->
+        <!-- =========================================== -->
+        <div
+          class="step-card"
+          [class.active]="selectedRole"
+          [class.disabled]="!selectedSpecificOption"
+        >
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3>{{ "ASSIGNMENT.STEP3_TITLE" | translate }}</h3>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "ASSIGNMENT.ROLE_LABEL" | translate }}</mat-label>
+              <mat-select
+                [(value)]="selectedRole"
+                (selectionChange)="onRoleChange()"
+                [disabled]="!selectedSpecificOption"
+              >
+                <mat-option>{{
+                  "ASSIGNMENT.SELECT_DEFAULT" | translate
+                }}</mat-option>
+                @for (role of roles; track role) {
+                <mat-option [value]="role.value">{{ role.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint *ngIf="!selectedSpecificOption">{{
+                "ASSIGNMENT.SPECIFIC_FIRST_HINT"
+                  | translate : { level: selectedLevel | lowercase }
+              }}</mat-hint>
+              <mat-hint *ngIf="selectedSpecificOption">{{
+                "ASSIGNMENT.ROLE_HINT" | translate
+              }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- =========================================== -->
+        <!-- STEP 4: USER SELECTION -->
+        <!-- =========================================== -->
+        <div
+          class="step-card"
+          [class.active]="selectedUsers && selectedUsers.length"
+          [class.disabled]="!selectedSpecificOption || !selectedRole"
+        >
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3>{{ "ASSIGNMENT.STEP4_TITLE" | translate }}</h3>
+              <span class="step-status" *ngIf="selectedUsers?.length">
+                <mat-icon>check_circle</mat-icon>
+                {{ "ASSIGNMENT.SELECTED" | translate }}:
+                {{ selectedUsers.length }}
+                {{ "ASSIGNMENT.USERS_SELECTED" | translate }}
+              </span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "ASSIGNMENT.USERS_LABEL" | translate }}</mat-label>
+              <mat-select
+                [multiple]="true"
+                [(value)]="selectedUsers"
+                [disabled]="!selectedSpecificOption || !selectedRole"
+              >
+                @for (user of getMultiSelectUsers(); track user) {
+                <mat-option [value]="user">
+                  <div class="user-option">
+                    <div class="user-info">
+                      <span class="user-name">{{ user.name }}</span>
+                    </div>
+                  </div>
+                </mat-option>
+                }
+              </mat-select>
+              <mat-hint *ngIf="!selectedRole">{{
+                "ASSIGNMENT.ROLE_FIRST_HINT" | translate
+              }}</mat-hint>
+              <mat-hint *ngIf="selectedRole">{{
+                "ASSIGNMENT.USERS_HINT" | translate
+              }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================== -->
+      <!-- ACTION BUTTONS -->
+      <!-- =========================================== -->
+      <div class="action-buttons">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="assign()"
+          [disabled]="!selectedUsers || !selectedUsers.length"
+        >
+          <mat-icon>assignment_turned_in</mat-icon>
+          {{ "ASSIGNMENT.CONFIRM_BUTTON" | translate }}
+        </button>
+        <button mat-stroked-button color="warn" (click)="clearSelection()">
+          <mat-icon>clear</mat-icon>
+          {{ "ASSIGNMENT.CLEAR_BUTTON" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- PREVIEW PANEL SECTION -->
+    <!-- =========================================== -->
+    <div class="preview-panel">
+      <div class="panel-header">
+        <mat-icon>preview</mat-icon>
+        <h2>{{ "ASSIGNMENT.PREVIEW_TITLE" | translate }}</h2>
+        <span class="preview-status" *ngIf="selectedUsers?.length">
+          {{ "ASSIGNMENT.READY_STATUS" | translate }}
+        </span>
+      </div>
+
+      <!-- =========================================== -->
+      <!-- PREVIEW CONTENT (WHEN USERS SELECTED) -->
+      <!-- =========================================== -->
+      @if (selectedUsers && selectedUsers.length) {
+      <div class="preview-content">
+        <!-- Users Preview Card -->
+        <div class="preview-card">
+          <div class="preview-header">
+            <mat-icon>group</mat-icon>
+            <h3>
+              {{ selectedUsers.length }}
+              {{ "ASSIGNMENT.USERS_SELECTED_COUNT" | translate }}
+            </h3>
+          </div>
+          <div class="user-chips">
+            @for (user of selectedUsers; track user; let i = $index) {
+            <div class="user-chip" *ngIf="i < 3">
+              <div class="user-avatar small">
+                <mat-icon>person</mat-icon>
+              </div>
+              <span class="user-name">{{ user.name }}</span>
+              <button mat-icon-button class="chip-remove">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            } @if (selectedUsers.length > 3) {
+            <button mat-button class="toggle-users"></button>
+            }
+          </div>
+        </div>
+
+        <!-- Assignment Details Card -->
+        <div class="preview-card">
+          <div class="preview-header">
+            <mat-icon>work_outline</mat-icon>
+            <h3>{{ "ASSIGNMENT.DETAILS_TITLE" | translate }}</h3>
+          </div>
+          <div class="assignment-details">
+            <div class="detail-row">
+              <mat-icon class="detail-icon">badge</mat-icon>
+              <div class="detail-content">
+                <div class="detail-label">
+                  {{ "ASSIGNMENT.ROLE_LABEL" | translate }}
+                </div>
+              </div>
+            </div>
+            <div class="detail-row">
+              <mat-icon class="detail-icon">layers</mat-icon>
+              <div class="detail-content">
+                <div class="detail-label">
+                  {{ "ASSIGNMENT.LEVEL_LABEL" | translate }}
+                </div>
+                <div class="detail-value">{{ selectedLevel | titlecase }}</div>
+              </div>
+            </div>
+            <div class="detail-row">
+              <mat-icon class="detail-icon">category</mat-icon>
+              <div class="detail-content">
+                <div class="detail-label">
+                  {{ "ASSIGNMENT.SPECIFIC_LABEL" | translate }}
+                </div>
+                <div class="detail-value">
+                  {{
+                    selectedSpecificOption?.name ||
+                      ("ASSIGNMENT.NOT_SELECTED" | translate)
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- =========================================== -->
+      <!-- EMPTY PREVIEW (WHEN NO USERS SELECTED) -->
+      <!-- =========================================== -->
+      @else {
+      <div class="empty-preview">
+        <div class="empty-content">
+          <mat-icon>info</mat-icon>
+          <h3>{{ "ASSIGNMENT.INCOMPLETE_TITLE" | translate }}</h3>
+          <p>{{ "ASSIGNMENT.INCOMPLETE_MESSAGE" | translate }}</p>
+          <div class="empty-steps">
+            <div class="empty-step" [class.completed]="selectedLevel">
+              <mat-icon>{{
+                selectedLevel ? "check_circle" : "radio_button_unchecked"
+              }}</mat-icon>
+              {{ "ASSIGNMENT.STEP1_TITLE" | translate }}
+            </div>
+            <div class="empty-step" [class.completed]="selectedSpecificOption">
+              <mat-icon>{{
+                selectedSpecificOption
+                  ? "check_circle"
+                  : "radio_button_unchecked"
+              }}</mat-icon>
+              {{ "ASSIGNMENT.STEP2_SHORT" | translate }}
+            </div>
+            <div class="empty-step" [class.completed]="selectedRole">
+              <mat-icon>{{
+                selectedRole ? "check_circle" : "radio_button_unchecked"
+              }}</mat-icon>
+              {{ "ASSIGNMENT.STEP3_SHORT" | translate }}
+            </div>
+            <div class="empty-step" [class.completed]="selectedUsers.length">
+              <mat-icon>{{
+                selectedUsers.length ? "check_circle" : "radio_button_unchecked"
+              }}</mat-icon>
+              {{ "ASSIGNMENT.STEP4_SHORT" | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

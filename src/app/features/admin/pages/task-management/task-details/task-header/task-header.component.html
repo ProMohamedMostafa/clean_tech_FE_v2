@@ -1,0 +1,24 @@
+<!-- task-header.component.html -->
+<div class="part-1-section">
+  <div class="col-md-8 col-12">
+    <div class="title-info">
+      <h1>{{ task?.title || ("TASKS.DETAILS" | translate) }}</h1>
+      <div class="priority-status">
+        <span class="priority {{ task?.priority?.toLowerCase() }}">
+          {{ ("TASKS." + (task?.priority?.toUpperCase() || 'NA')) | translate }}
+        </span>
+        <span class="status {{ task?.status?.toLowerCase() }}">
+          {{ ("TASKS." + (task?.status?.toUpperCase()?.replace(' ', '_') || 'NA')) | translate }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-12 text-end mt-3 mt-md-0">
+    @if(showEditButton){
+      <button class="btn edit-btn" (click)="edit.emit(task.id)">
+        {{ "TASKS.EDIT" | translate }}
+      </button>
+    }
+  </div>
+</div>

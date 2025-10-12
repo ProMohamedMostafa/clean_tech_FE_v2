@@ -1,0 +1,160 @@
+<div class="cards-container">
+  <!-- Card 1: Total Users -->
+  <div
+    *ngIf="
+      this.userRole !== 'cleaner'
+    "
+    class="card"
+  >
+    <div class="card-title">
+      <img src="assets/Group.svg" alt="group" />
+      Total Users: <span>{{ userData.total !== undefined ? userData.total : "Loading..." }}</span>
+    </div>
+    <div class="card-content-1">
+      <!-- Admins - show only to Admins -->
+      <div
+        class="content-item"
+        *ngIf="userRole === 'admin'"
+        (click)="navigateToUserManagement(1)"
+      >
+        <div class="admins-label">Admins</div>
+        <div class="admin-values">{{ getRoleValue("Admin") }}</div>
+      </div>
+
+      <!-- Managers - show only to Admins -->
+      <div
+        class="content-item"
+        *ngIf="this.userRole === 'admin'"
+        (click)="navigateToUserManagement(2)"
+      >
+        <div class="managers-label">Managers</div>
+        <div class="manager-values">{{ getRoleValue("Manager") }}</div>
+      </div>
+
+      <!-- Supervisors - show to Admins and Managers -->
+      <div
+        class="content-item"
+        *ngIf="userRole === 'admin' || userRole === 'manager'"
+        (click)="navigateToUserManagement(3)"
+      >
+        <div class="supervisors-label">Supervisors</div>
+        <div class="supervisor-values">{{ getRoleValue("Supervisor") }}</div>
+      </div>
+
+      <!-- Cleaners - show to Admins, Managers, and Supervisors -->
+      <div class="content-item" (click)="navigateToUserManagement(4)">
+        <div class="cleaners-label">Cleaners</div>
+        <div class="cleaner-values">{{ getRoleValue("Cleaner") }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Attendance Status -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/attendance-icon.svg" alt="attendance" />
+      Attendance
+      <!-- Month dropdown for filtering data -->
+      <select class="month-dropdown w-25" (change)="onMonthChange($event)">
+        <option value="">Month</option>
+        @for (month of monthNames; track month; let i = $index) {
+        <option
+          [value]="i + 1"
+          [selected]="i + 1 === attendanceData.selectedMonth"
+        >
+          {{ month }}
+        </option>
+        }
+      </select>
+    </div>
+    <div class="card-content-1">
+      <div class="content-item">
+        <div class="cleaners-label">Present</div>
+        <div class="cleaner-values">{{ attendanceData.presentCount }}</div>
+      </div>
+
+      <div class="content-item">
+        <div class="supervisors-label">Absent</div>
+        <div class="supervisor-values">{{ attendanceData.absentCount }}</div>
+      </div>
+
+      <div class="content-item">
+        <div class="managers-label">Leaves</div>
+        <div class="manager-values">{{ attendanceData.leavesCount }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Tasks status -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/tasks-icon.svg" alt="tasks" />
+      Tasks
+
+      <!-- Priority filter dropdown -->
+      <select class="month-dropdown w-25" (change)="onPriorityChange($event)">
+        <option value="0" [selected]="selectedPriority === 0">Low</option>
+        <option value="1" [selected]="selectedPriority === 1">Medium</option>
+        <option value="2" [selected]="selectedPriority === 2">High</option>
+      </select>
+    </div>
+
+    <div class="card-content-1">
+      <div class="content-item">
+        <div class="admins-label">Pending</div>
+        <div class="admin-values">{{ taskStatusData.pending }}</div>
+      </div>
+
+      <div class="content-item">
+        <div class="cleaners-label">In Progress</div>
+        <div class="cleaner-values">{{ taskStatusData.inProgress }}</div>
+      </div>
+
+      <div class="content-item">
+        <div class="managers-label">Complete</div>
+        <div class="manager-values">{{ taskStatusData.complete }}</div>
+      </div>
+
+      <div class="content-item">
+        <div class="supervisors-label">Not Resolved</div>
+        <div class="supervisor-values">{{ taskStatusData.notResolved }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Shifts Information -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/clock-circle_svgrepo.com.svg" alt="clock" />
+      Total Shifts
+    </div>
+    <div class="content-item">
+      <h4>{{ shiftsData.totalCount }}</h4>
+      <!-- Shift status indicators -->
+      <div class="d-flex flex-column gap-2">
+        <!-- Inactive shifts indicator -->
+        <div class="status-indicator unActive">
+          <div class="square"></div>
+          <span class="status-text">UnActive</span>
+          <span class="status-number">{{ shiftsData.inactiveCount }}</span>
+          <div class="arrow">
+            <img src="assets/Stroke-1.svg" alt="" class="svg-icon" />
+          </div>
+        </div>
+        <!-- Active shifts indicator -->
+        <div class="status-indicator active">
+          <div class="square"></div>
+          <span class="status-text">Is Active</span>
+          <span class="status-number">{{ shiftsData.activeCount }}</span>
+          <div class="arrow">
+            <img src="assets/Stroke-2.svg" alt="" class="svg-icon" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Active percentage -->
+    <div class="stock-range">
+      {{ shiftsData.activePercentage | number : "1.1-2" }}%
+    </div>
+  </div>
+</div>

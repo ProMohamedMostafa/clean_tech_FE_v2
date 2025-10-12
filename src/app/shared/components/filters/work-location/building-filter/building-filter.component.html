@@ -1,0 +1,82 @@
+<!-- Modal -->
+<div class="modal fade show">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <app-page-title translationKey="FILTER_SECTION.MODAL.TITLE"></app-page-title>
+      </div>
+      <div class="modal-body">
+        <!-- City Selection -->
+        <div class="form-group">
+          <label for="city" class="step-label">
+            {{ "FILTER_SECTION.MODAL.CITY_LABEL" | translate }}
+          </label>
+          <select
+            id="city"
+            class="form-control"
+            [(ngModel)]="selectedCity"
+            (change)="onCityChange($event)"
+            [disabled]="isLoadingCities"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_CITIES" | translate }}
+            </option>
+            <option *ngFor="let city of cities" [value]="city.id">
+              {{ city.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingCities" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+
+        <!-- Organization Selection -->
+        <div class="form-group mt-3">
+          <label for="organization" class="step-label">
+            {{ "FILTER_SECTION.MODAL.ORGANIZATION_LABEL" | translate }}
+          </label>
+          <select
+            id="organization"
+            class="form-control"
+            [(ngModel)]="selectedOrganization"
+            (change)="onOrganizationChange($event)"
+            [disabled]="!selectedCity || isLoadingOrganizations"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_ORGANIZATIONS" | translate }}
+            </option>
+            <option *ngFor="let org of organizations" [value]="org.id">
+              {{ org.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingOrganizations" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-between align-items-center">
+        <div class="mx-auto d-flex gap-2">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="btn clear-btn"
+            (click)="closeFilterModal()"
+          >
+            {{ "FILTER_SECTION.MODAL.CLOSE_BUTTON" | translate }}
+          </button>
+
+          <!-- Apply Filter Button -->
+          <button
+            type="button"
+            class="btn add-btn"
+            (click)="applyFilter()"
+            [disabled]="!selectedCity"
+          >
+            {{ "FILTER_SECTION.MODAL.APPLY_BUTTON" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+<div class="stock-barline">
+  <div class="chart-header">
+    <h3>{{ "dashboard.TOTAL_STOCK_QUANTITY" | translate }}</h3>
+    <div class="chart-filters">
+      <div class="filter-group">
+        <label for="yearFilter">{{ "dashboard.YEAR" | translate }}:</label>
+        <select
+          id="yearFilter"
+          [(ngModel)]="selectedYear"
+          (change)="onFilterChange()"
+        >
+          <option [value]="null">
+            {{ "dashboard.ALL_YEARS" | translate }}
+          </option>
+          @for (year of years; track year) {
+          <option [value]="year">
+            {{ year }}
+          </option>
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="providerFilter"
+          >{{ "dashboard.PROVIDER" | translate }}:</label
+        >
+        <select
+          id="providerFilter"
+          [(ngModel)]="selectedProviderId"
+          (change)="onFilterChange()"
+        >
+          <option [value]="null">
+            {{ "dashboard.ALL_PROVIDERS" | translate }}
+          </option>
+          @for (provider of providers; track provider) {
+          <option [value]="provider.id">
+            {{ provider.name }}
+          </option>
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="chartTypeFilter"
+          >{{ "dashboard.CHART_TYPE" | translate }}:</label
+        >
+        <select
+          id="chartTypeFilter"
+          [(ngModel)]="selectedChartType"
+          (change)="onChartTypeChange()"
+        >
+          <option value="line">
+            {{ "dashboard.LINE_CHART" | translate }}
+          </option>
+          <option value="bar">{{ "dashboard.BAR_CHART" | translate }}</option>
+          <option value="radar">
+            {{ "dashboard.RADAR_CHART" | translate }}
+          </option>
+          <option value="polarArea">
+            {{ "dashboard.POLAR_AREA_CHART" | translate }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="chart-container">
+    <canvas
+      baseChart
+      [type]="selectedChartType"
+      [data]="lineChartData"
+      [options]="lineChartOptions"
+    ></canvas>
+  </div>
+</div>

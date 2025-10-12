@@ -1,0 +1,44 @@
+:host {
+  max-height: 6.25rem; /* 100px */
+  overflow-y: auto;
+  display: block;
+}
+
+/* Main container */
+.description-container {
+  margin-top: 1rem; /* 16px */
+}
+
+/* Description text */
+.description-content {
+  font-size: 1.125rem; /* 18px */
+  line-height: 2rem; /* 32px */
+  color: #8a8f9b;
+  padding-bottom: 1.875rem; /* 30px */
+  word-wrap: break-word;
+  max-width: 100%;
+  overflow-y: auto;
+  transition: max-height 0.3s ease;
+}
+
+/* Collapsed state for Read More logic */
+.description-content.collapsed {
+  max-height: 6.25rem; /* 100px */
+  overflow: hidden;
+}
+
+/* Read more/less button */
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #025d8d;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0; /* 8px vertical */
+  transition: color 0.2s ease;
+}
+
+.read-more-btn:hover {
+  color: #01496e;
+}

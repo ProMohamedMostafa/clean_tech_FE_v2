@@ -1,0 +1,78 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.MATERIAL_MANAGEMENT_OVERVIEW" />
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="isAdminOrManager()"
+    [showRecycleButton]="isAdmin()"
+    [recycleButtonRoute]="'/admin/deleted-material'"
+    (searchChange)="onSearchChange($event)"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+    (addClick)="openAddModal()"
+    (filterClick)="openFilterModal()"
+  ></reusable-filter-bar>
+
+  <!-- Material Container with Cards -->
+  <app-material-container
+    [materials]="materials"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    (pageChanged)="onPageChange($event)"
+    (pageSizeChanged)="onPageSizeChange($event)"
+    (viewMaterial)="onViewMaterial($event)"
+    (editMaterial)="editMaterial($event)"
+    (deleteMaterial)="deleteMaterial($event)"
+    (addQuantity)="addQuantity($event)"
+    (reduceQuantity)="reduceQuantity($event)"
+  ></app-material-container>
+
+  <!-- Material Filter Modal -->
+  <app-material-filter
+    *ngIf="showFilterModal"
+    [categories]="categories"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-material-filter>
+
+  <!-- Material Offcanvas -->
+  <app-material-offcanvas
+    [materialEditData]="selectedMaterial"
+    [categories]="categories"
+    (materialUpdated)="handleMaterialUpdated()"
+  ></app-material-offcanvas>
+
+  <!-- Increase Quality Modal -->
+  <app-increase-quality
+    *ngIf="showIncreaseModal && currentOperationMaterial"
+    [addnewMaterial]="{
+      MaterialId: currentOperationMaterial?.id,
+      ProviderId: 0,
+      Quantity: 0,
+      Price: 0,
+      File: null
+    }"
+    [providers]="currentProviders"
+    (addStockIn)="handleStockInSuccess($event)"
+    (close)="onIncreaseModalClose()"
+  ></app-increase-quality>
+
+  <!-- Decrease Quality Modal -->
+  <app-decrease-quality
+    *ngIf="showDecreaseModal && currentOperationMaterial"
+    [removenewMaterial]="{
+      MaterialId: currentOperationMaterial?.id,
+      ProviderId: 0,
+      Quantity: 0
+    }"
+    [providers]="currentProviders"
+    (addStockOut)="handleStockOutSuccess($event)"
+    (close)="onDecreaseModalClose()"
+  ></app-decrease-quality>
+</div>

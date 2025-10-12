@@ -1,0 +1,46 @@
+.my-profile-title {
+  width: 95%;
+  background: #ffffff;
+  border-radius: 11px;
+  padding: 0px 5px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  padding: 0px;
+  gap: 10px;
+  height: 50px;
+}
+
+.title-bage {
+  width: 8px;
+  height: 24px;
+  background: #025d8d;
+  border-radius: 2px;
+}
+
+.title-info {
+  height: 32px;
+}
+
+.title-info h1 {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 32px;
+  color: #1a1d1f;
+  order: 1;
+  flex-grow: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Responsive font size for section title */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.6rem;
+  }
+}

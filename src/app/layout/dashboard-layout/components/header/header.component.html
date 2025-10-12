@@ -1,0 +1,152 @@
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+  <div class="container-fluid flex-nowrap">
+    <!-- Left Section: Sidebar Toggle & Clock In/Out -->
+    <div class="d-flex align-items-center flex-grow-1">
+      <!-- Sidebar Toggle Button -->
+      <button
+        id="sidebarCollapse"
+        (click)="toggleSidebar.emit()"
+        class="btn d-lg-none me-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      </button>
+
+      <!-- Attendance Status - Simplified for mobile -->
+      @if (userRole != 'Admin' && userRole != 'Auditor') {
+      <div class="d-flex align-items-center mobile-clock-container">
+        @if (attendanceStatus !== 'completed') {
+        <button class="btn mx-1 clock-in-btn" (click)="clockInOut.emit()">
+          <i
+            class="fas"
+            [ngClass]="{
+              'fa-clock': attendanceStatus === 'not-started',
+              'fa-sign-in-alt': attendanceStatus === 'clock-in',
+              'fa-sign-out-alt': attendanceStatus === 'working'
+            }"
+          ></i>
+          <span class="clock-text">
+            {{
+              attendanceStatus === "not-started"
+                ? ("dashboardHeader.CLOCK_IN" | translate)
+                : attendanceStatus === "clock-in"
+                ? ("dashboardHeader.CLOCK_OUT" | translate)
+                : ("dashboardHeader.CLOCK_OUT" | translate)
+            }}
+          </span>
+        </button>
+        }
+        <div class="timer ms-2">
+          <div class="timer-display">
+            @if (attendanceStatus === 'clock-in') {
+            <span>{{ getLocalTime(clockInTime) }}</span>
+            } @if (attendanceStatus === 'working') {
+            <span>{{ getLocalTime(clockInTime) }}</span>
+            } @if (attendanceStatus === 'completed') {
+            <span>{{ duration }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Right Section: Icons and Profile - Reorganized for mobile -->
+    <div class="d-flex align-items-center gap-4">
+      <!-- Enhanced Language Selector -->
+      <div class="language-selector-container position-relative">
+        <button
+          class="language-toggle-btn"
+          (click)="toggleLanguageMenu()"
+          aria-label="Language selector"
+        >
+          <i class="fas fa-globe"></i>
+          <span class="current-language">{{
+            currentLanguage | uppercase
+          }}</span>
+          <i class="fas fa-chevron-down language-chevron"></i>
+        </button>
+        @if (isLanguageMenuOpen) {
+        <div class="language-dropdown-menu">
+          <div class="dropdown-arrow"></div>
+          <ul class="language-options-list">
+            <li
+              class="language-option"
+              (click)="selectLanguage('ar')"
+              [class.active]="currentLanguage === 'ar'"
+            >
+              <span class="language-text">{{ "العربيه" }}</span>
+              <span class="language-code">AR</span>
+            </li>
+            <li
+              class="language-option"
+              (click)="selectLanguage('en')"
+              [class.active]="currentLanguage === 'en'"
+            >
+              <span class="language-text">{{ "ENGLISH" }}</span>
+              <span class="language-code">EN</span>
+            </li>
+            <li
+              class="language-option"
+              (click)="selectLanguage('ur')"
+              [class.active]="currentLanguage === 'ur'"
+            >
+              <span class="language-text">{{ "URDU" }}</span>
+              <span class="language-code">UR</span>
+            </li>
+          </ul>
+        </div>
+        }
+      </div>
+
+      <app-notification></app-notification>
+
+      <!-- Profile Section - Simplified for mobile -->
+      <div class="d-flex align-items-center profile-section">
+        <!-- Profile Dropdown -->
+        <div class="profile-container position-relative ms-3">
+          <button
+            type="button"
+            class="profile-button"
+            [attr.aria-expanded]="isProfileMenuOpen"
+            aria-haspopup="true"
+            (click)="toggleProfileMenu()"
+          >
+            <img
+              [src]="userImage"
+              alt="User Profile Picture"
+              class="profile-image rounded-circle"
+            />
+          </button>
+
+          @if (isProfileMenuOpen) {
+          <ul class="profile-menu">
+            <li class="menu-item" (click)="openProfile()">
+              {{ "dashboardHeader.PROFILE" | translate }}
+            </li>
+            <li class="menu-item" (click)="logOut()">
+              {{ "dashboardHeader.LOG_OUT" | translate }}
+            </li>
+          </ul>
+          }
+        </div>
+
+        <!-- Greeting - Hidden on small screens -->
+        <h5 class="mb-0 d-none d-sm-block ms-3">
+          {{ "dashboardHeader.HELLO_USER" | translate }} {{ userName }}
+        </h5>
+      </div>
+    </div>
+  </div>
+</nav>

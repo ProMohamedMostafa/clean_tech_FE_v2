@@ -1,0 +1,57 @@
+<div class="filter-container">
+  <!-- search and filter section -->
+  <div class="search-filter-section">
+    @if (showSearchBar) {
+    <div class="search-input-container">
+      <!-- Search Bar Section -->
+      <input
+        type="text"
+        class="search-bar"
+        [placeholder]="searchPlaceholder | translate"
+        aria-label="Search"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      />
+    </div>
+    }
+    @if (showFilterButton) {
+    <!-- Filter Button -->
+    <div class="filter-button-container">
+      <button class="filter-btn" (click)="onFilterClick()">
+        <i class="fas fa-filter"></i> {{ "filterbar.FILTER" | translate }}
+      </button>
+    </div>
+  }
+  </div>
+
+  <!-- Add and action buttons section -->
+  <div class="add-deleted-btn">
+    <!-- Add Button -->
+    @if (showAddButton) {
+    <button class="btn add-btn" (click)="onAddClick()">
+      <i class="fas fa-plus"></i> {{ "filterbar.ADD" | translate }}
+    </button>
+    }
+
+    <!-- Export Button (SweetAlert) -->
+    @if (showExportButtons) {
+    <button class="btn add-btn" (click)="showExportSweetAlert()">
+      <i class="fas fa-file-export"></i> {{ "filterbar.EXPORT" | translate }}
+    </button>
+    }
+
+    <!-- Print Button -->
+    @if (showPrintButton) {
+    <button class="btn add-btn" (click)="onPrint()">
+      <i class="fas fa-print"></i> {{ "filterbar.PRINT" | translate }}
+    </button>
+    }
+
+    <!-- Recycle Button -->
+    @if (showRecycleButton) {
+    <button class="btn deleted-btn" (click)="onRecycleClick()">
+      <i class="fas fa-trash-alt"></i> {{ "filterbar.RECYCLE" | translate }}
+    </button>
+    }
+  </div>
+</div>

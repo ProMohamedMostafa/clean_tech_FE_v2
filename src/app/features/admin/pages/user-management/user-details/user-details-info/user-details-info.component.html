@@ -1,0 +1,141 @@
+<!-- user-details-info.component.html -->
+<div class="user-img">
+  <img [src]="user?.image || 'assets/Group.svg'" alt="user image" />
+</div>
+<div class="user-info">
+  <!-- Left Side (User Details) -->
+  <div class="left-side">
+    <div class="profile-info-card">
+      <div class="info-section">
+        <h3 class="info-section-title">
+          {{ "DETAILS.USER_INFO.PERSONAL_INFO" | translate }}
+        </h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.USERNAME" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.userName || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.FIRST_NAME" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.firstName || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.LAST_NAME" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.lastName || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.EMAIL" | translate
+            }}</span>
+            <span class="info-value email">{{
+              user?.email || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.PHONE" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.phoneNumber || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3 class="info-section-title">
+          {{ "DETAILS.USER_INFO.DEMOGRAPHICS" | translate }}
+        </h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.COUNTRY" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.countryName || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.GENDER" | translate
+            }}</span>
+            <span class="info-value">{{
+              getGenderText(user?.genderId) || "DETAILS.USER_INFO.NOT_AVAILABLE"
+                | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.NATIONALITY" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.nationalityName || "DETAILS.USER_INFO.NOT_AVAILABLE"
+                | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.BIRTH_DATE" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.birthdate || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3 class="info-section-title">
+          {{ "DETAILS.USER_INFO.EMPLOYMENT" | translate }}
+        </h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.ID_NUMBER" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.idNumber || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.PROVIDER" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.providerName || "DETAILS.USER_INFO.NOT_AVAILABLE"
+                | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.ROLE" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.role || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{
+              "DETAILS.USER_INFO.MANAGER" | translate
+            }}</span>
+            <span class="info-value">{{
+              user?.managerName || "DETAILS.USER_INFO.NOT_AVAILABLE" | translate
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

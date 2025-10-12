@@ -1,0 +1,711 @@
+<div class="container">
+  <!-- Page Header -->
+  <app-page-title translationKey="{{ pageTitle | translate }}" />
+
+  <!-- Loading Indicator -->
+  @if (isLoading) {
+  <div class="text-center py-5">
+    <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
+    <p class="mt-3">
+      {{ "work-location.LOCATION_FORM.LOADING_TEXT" | translate }}
+    </p>
+  </div>
+  } @else {
+  <!-- Stepper Container -->
+  <div class="stepper-container">
+    <!-- Stepper Progress -->
+    <div class="steps-container mb-4">
+      @for (step of [1, 2, 3, 4, 5, 6, 7, 8]; track step) {
+      <div
+        class="step"
+        [class.active]="currentStep === step"
+        [class.completed]="currentStep > step"
+      >
+        <div class="step-number">{{ step }}</div>
+        <div class="step-label">
+          @switch (step) { @case (1) {
+          {{ "work-location.LOCATION_FORM.STEPS.COUNTRY" | translate }} } @case
+          (2) { {{ "work-location.LOCATION_FORM.STEPS.AREA" | translate }} }
+          @case (3) {
+          {{ "work-location.LOCATION_FORM.STEPS.CITY" | translate }} } @case (4)
+          { {{ "work-location.LOCATION_FORM.STEPS.ORGANIZATION" | translate }} }
+          @case (5) {
+          {{ "work-location.LOCATION_FORM.STEPS.BUILDING" | translate }} } @case
+          (6) { {{ "work-location.LOCATION_FORM.STEPS.FLOOR" | translate }} }
+          @case (7) {
+          {{ "work-location.LOCATION_FORM.STEPS.DETAILS" | translate }} } @case
+          (8) { {{ "work-location.LOCATION_FORM.STEPS.CONFIRM" | translate }} }
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Stepper Content -->
+    <div class="stepper-content">
+      <!-- Step 1: Select Country -->
+      @if (currentStep === 1) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.COUNTRY_STEP.TITLE" | translate }}
+        </h3>
+        <div class="form-group">
+          <label for="country" class="form-label">{{
+            "work-location.LOCATION_FORM.COUNTRY_STEP.LABEL" | translate
+          }}</label>
+          <select
+            id="country"
+            class="form-select"
+            [(ngModel)]="selectedCountry"
+            (ngModelChange)="onCountrySelect()"
+          >
+            <option value="" disabled>
+              {{
+                "work-location.LOCATION_FORM.COUNTRY_STEP.PLACEHOLDER"
+                  | translate
+              }}
+            </option>
+            @for (country of countries; track country.name) {
+            <option [value]="country.name">{{ country.name }}</option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{ "work-location.LOCATION_FORM.COUNTRY_STEP.HINT" | translate }}
+          </small>
+        </div>
+        <div class="step-actions">
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!selectedCountry"
+          >
+            {{
+              "work-location.LOCATION_FORM.COUNTRY_STEP.NEXT_BUTTON" | translate
+            }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 2: Select Area -->
+      @if (currentStep === 2) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.AREA_STEP.TITLE" | translate }}
+        </h3>
+        <div class="form-group">
+          <label for="area" class="form-label">{{
+            "work-location.LOCATION_FORM.AREA_STEP.LABEL" | translate
+          }}</label>
+          <select
+            id="area"
+            class="form-select"
+            [(ngModel)]="selectedArea"
+            (ngModelChange)="onAreaSelect()"
+          >
+            <option value="" disabled>
+              {{
+                "work-location.LOCATION_FORM.AREA_STEP.PLACEHOLDER" | translate
+              }}
+            </option>
+            @for (area of areas; track area.id) {
+            <option [ngValue]="area">{{ area.name }}</option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{
+              "work-location.LOCATION_FORM.AREA_STEP.HINT"
+                | translate : { country: selectedCountry }
+            }}
+          </small>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{
+              "work-location.LOCATION_FORM.AREA_STEP.BACK_BUTTON" | translate
+            }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!selectedArea"
+          >
+            {{
+              "work-location.LOCATION_FORM.AREA_STEP.NEXT_BUTTON" | translate
+            }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 3: Select City -->
+      @if (currentStep === 3) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.CITY_STEP.TITLE" | translate }}
+        </h3>
+        <div class="form-group">
+          <label for="city" class="form-label">{{
+            "work-location.LOCATION_FORM.CITY_STEP.LABEL" | translate
+          }}</label>
+          <select
+            id="city"
+            class="form-select"
+            [(ngModel)]="selectedCity"
+            (ngModelChange)="onCitySelect()"
+          >
+            <option value="" disabled>
+              {{
+                "work-location.LOCATION_FORM.CITY_STEP.PLACEHOLDER" | translate
+              }}
+            </option>
+            @for (city of cities; track city.id) {
+            <option [ngValue]="city">{{ city.name }}</option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{
+              "work-location.LOCATION_FORM.CITY_STEP.HINT"
+                | translate : { area: selectedArea?.name }
+            }}
+          </small>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{
+              "work-location.LOCATION_FORM.CITY_STEP.BACK_BUTTON" | translate
+            }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!selectedCity"
+          >
+            {{
+              "work-location.LOCATION_FORM.CITY_STEP.NEXT_BUTTON" | translate
+            }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 4: Select Organization -->
+      @if (currentStep === 4) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{
+            "work-location.LOCATION_FORM.ORGANIZATION_STEP.TITLE" | translate
+          }}
+        </h3>
+        <div class="form-group">
+          <label for="organization" class="form-label">{{
+            "work-location.LOCATION_FORM.ORGANIZATION_STEP.LABEL" | translate
+          }}</label>
+          <select
+            id="organization"
+            class="form-select"
+            [(ngModel)]="selectedOrganization"
+            (ngModelChange)="onOrganizationSelect()"
+          >
+            <option value="" disabled>
+              {{
+                "work-location.LOCATION_FORM.ORGANIZATION_STEP.PLACEHOLDER"
+                  | translate
+              }}
+            </option>
+            @for (org of organizations; track org.id) {
+            <option [ngValue]="org">{{ org.name }}</option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{
+              "work-location.LOCATION_FORM.ORGANIZATION_STEP.HINT"
+                | translate : { city: selectedCity?.name }
+            }}
+          </small>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{
+              "work-location.LOCATION_FORM.ORGANIZATION_STEP.BACK_BUTTON"
+                | translate
+            }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!selectedOrganization"
+          >
+            {{
+              "work-location.LOCATION_FORM.ORGANIZATION_STEP.NEXT_BUTTON"
+                | translate
+            }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 5: Select Building -->
+      @if (currentStep === 5) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.BUILDING_STEP.TITLE" | translate }}
+        </h3>
+        <div class="form-group">
+          <label for="building" class="form-label">{{
+            "work-location.LOCATION_FORM.BUILDING_STEP.LABEL" | translate
+          }}</label>
+          <select
+            id="building"
+            class="form-select"
+            [(ngModel)]="selectedBuilding"
+            (ngModelChange)="onBuildingSelect()"
+          >
+            <option value="" disabled>
+              {{
+                "work-location.LOCATION_FORM.BUILDING_STEP.PLACEHOLDER"
+                  | translate
+              }}
+            </option>
+            @for (building of buildings; track building.id) {
+            <option [ngValue]="building">{{ building.name }}</option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{
+              "work-location.LOCATION_FORM.BUILDING_STEP.HINT"
+                | translate : { organization: selectedOrganization?.name }
+            }}
+          </small>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{
+              "work-location.LOCATION_FORM.BUILDING_STEP.BACK_BUTTON"
+                | translate
+            }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!selectedBuilding"
+          >
+            {{
+              "work-location.LOCATION_FORM.BUILDING_STEP.NEXT_BUTTON"
+                | translate
+            }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 6: Select Floor -->
+      @if (currentStep === 6) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.FLOOR_STEP.TITLE" | translate }}
+        </h3>
+        <div class="form-group">
+          <label for="floor" class="form-label">{{
+            "work-location.LOCATION_FORM.FLOOR_STEP.LABEL" | translate
+          }}</label>
+          <select id="floor" class="form-select" [(ngModel)]="selectedFloor">
+            <option value="" disabled>
+              {{
+                "work-location.LOCATION_FORM.FLOOR_STEP.PLACEHOLDER" | translate
+              }}
+            </option>
+            @for (floor of floors; track floor.id) {
+            <option [ngValue]="floor">{{ floor.name }}</option>
+            }
+          </select>
+          <small class="form-text text-muted">
+            {{
+              "work-location.LOCATION_FORM.FLOOR_STEP.HINT"
+                | translate : { building: selectedBuilding?.name }
+            }}
+          </small>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{
+              "work-location.LOCATION_FORM.FLOOR_STEP.BACK_BUTTON" | translate
+            }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!selectedFloor"
+          >
+            {{
+              "work-location.LOCATION_FORM.FLOOR_STEP.NEXT_BUTTON" | translate
+            }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 7: Section Details -->
+      @if (currentStep === 7) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.DETAILS.NAME" | translate }}
+        </h3>
+
+        <!-- Section Name -->
+        <div class="form-group mb-4">
+          <label for="sectionName" class="form-label">{{
+            "work-location.LOCATION_FORM.DETAILS.NAME" | translate
+          }}</label>
+          <input
+            type="text"
+            id="sectionName"
+            class="form-control"
+            [(ngModel)]="sectionName"
+            [placeholder]="
+              'work-location.LOCATION_FORM.DETAILS.NAME_PLACEHOLDER' | translate
+            "
+            required
+            minlength="3"
+            maxlength="255"
+            #sectionNameInput="ngModel"
+          />
+          @if (sectionNameInput.invalid && (sectionNameInput.dirty ||
+          sectionNameInput.touched)) {
+          <div class="invalid-feedback d-block">
+            @if (sectionNameInput.errors?.['required']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.NAME_REQUIRED" | translate
+              }}
+            </div>
+            } @if (sectionNameInput.errors?.['minlength']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.NAME_MINLENGTH" | translate
+              }}
+            </div>
+            } @if (sectionNameInput.errors?.['maxlength']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.NAME_MAXLENGTH" | translate
+              }}
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Section Number -->
+        <div class="form-group mb-4">
+          <label for="sectionNumber" class="form-label">{{
+            "work-location.LOCATION_FORM.DETAILS.CODE" | translate
+          }}</label>
+          <input
+            type="text"
+            id="sectionNumber"
+            class="form-control"
+            [(ngModel)]="sectionNumber"
+            [placeholder]="
+              'work-location.LOCATION_FORM.DETAILS.CODE_PLACEHOLDER' | translate
+            "
+            required
+            minlength="3"
+            maxlength="255"
+            #sectionNumberInput="ngModel"
+          />
+          @if (sectionNumberInput.invalid && (sectionNumberInput.dirty ||
+          sectionNumberInput.touched)) {
+          <div class="invalid-feedback d-block">
+            @if (sectionNumberInput.errors?.['required']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.CODE_REQUIRED" | translate
+              }}
+            </div>
+            } @if (sectionNumberInput.errors?.['minlength']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.CODE_MINLENGTH" | translate
+              }}
+            </div>
+            } @if (sectionNumberInput.errors?.['maxlength']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.CODE_MAXLENGTH" | translate
+              }}
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Section Description -->
+        <div class="form-group mb-4">
+          <label for="sectionDescription" class="form-label">{{
+            "work-location.LOCATION_FORM.DETAILS.DESCRIPTION" | translate
+          }}</label>
+          <textarea
+            id="sectionDescription"
+            class="form-control"
+            rows="3"
+            [(ngModel)]="sectionDescription"
+            [placeholder]="
+              'work-location.LOCATION_FORM.DETAILS.DESCRIPTION_PLACEHOLDER'
+                | translate
+            "
+            required
+            minlength="3"
+            #sectionDescriptionInput="ngModel"
+          ></textarea>
+          @if (sectionDescriptionInput.invalid && (sectionDescriptionInput.dirty
+          || sectionDescriptionInput.touched)) {
+          <div class="invalid-feedback d-block">
+            @if (sectionDescriptionInput.errors?.['required']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.DESCRIPTION_REQUIRED"
+                  | translate
+              }}
+            </div>
+            } @if (sectionDescriptionInput.errors?.['minlength']) {
+            <div>
+              {{
+                "work-location.LOCATION_FORM.DETAILS.DESCRIPTION_MINLENGTH"
+                  | translate
+              }}
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- User Assignments -->
+        <div class="row g-3">
+          <!-- Managers -->
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{
+                "work-location.LOCATION_FORM.DETAILS.MANAGERS" | translate
+              }}</mat-label>
+              <mat-select [(ngModel)]="selectedManagers" multiple>
+                @for (manager of managers; track manager.id) {
+                <mat-option [value]="manager.id">
+                  {{ manager.firstName }} {{ manager.lastName }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Supervisors -->
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{
+                "work-location.LOCATION_FORM.DETAILS.SUPERVISORS" | translate
+              }}</mat-label>
+              <mat-select [(ngModel)]="selectedSupervisors" multiple>
+                @for (supervisor of supervisors; track supervisor.id) {
+                <mat-option [value]="supervisor.id">
+                  {{ supervisor.firstName }} {{ supervisor.lastName }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Cleaners -->
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{
+                "work-location.LOCATION_FORM.DETAILS.CLEANERS" | translate
+              }}</mat-label>
+              <mat-select [(ngModel)]="selectedCleaners" multiple>
+                @for (cleaner of cleaners; track cleaner.id) {
+                <mat-option [value]="cleaner.id">
+                  {{ cleaner.firstName }} {{ cleaner.lastName }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Shifts -->
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{
+                "work-location.LOCATION_FORM.CONFIRMATION.SHIFTS" | translate
+              }}</mat-label>
+              <mat-select [(ngModel)]="selectedShifts" multiple>
+                @for (shift of shifts; track shift.id) {
+                <mat-option [value]="shift.id">{{ shift.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="step-actions mt-4">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{ "work-location.LOCATION_FORM.DETAILS.BACK_BUTTON" | translate }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!sectionName || sectionName.length < 3"
+          >
+            {{ "work-location.LOCATION_FORM.DETAILS.NEXT_BUTTON" | translate }}
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 8: Confirmation -->
+      @if (currentStep === 8) {
+      <div class="step-content">
+        <h3 class="step-title">
+          {{ "work-location.LOCATION_FORM.CONFIRMATION.TITLE" | translate }}
+        </h3>
+
+        <div class="confirmation-card">
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.COUNTRY" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ selectedCountry }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.AREA" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ selectedArea?.name }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.CITY" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ selectedCity?.name }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.ORGANIZATION"
+                  | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{
+              selectedOrganization?.name
+            }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.BUILDING" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ selectedBuilding?.name }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.FLOOR" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ selectedFloor?.name }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.NAME" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ sectionName }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.CODE" | translate
+              }}:</span
+            >
+            <span class="confirmation-value">{{ sectionNumber }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label"
+              >{{
+                "work-location.LOCATION_FORM.CONFIRMATION.ASSIGNEES"
+                  | translate
+              }}:</span
+            >
+            <span class="confirmation-value">
+              @if (selectedManagers.length > 0 || selectedSupervisors.length > 0
+              || selectedCleaners.length > 0) {
+              {{
+                selectedManagers.length +
+                  selectedSupervisors.length +
+                  selectedCleaners.length
+              }}
+              {{
+                "work-location.LOCATION_FORM.CONFIRMATION.ASSIGNEES" | translate
+              }}
+              } @else {
+              {{ "work-location.LOCATION_FORM.CONFIRMATION.NONE" | translate }}
+              }
+            </span>
+          </div>
+        </div>
+
+        <div class="alert alert-info mt-4">
+          <i class="fas fa-info-circle me-2"></i>
+          {{
+            "work-location.LOCATION_FORM.CONFIRMATION.REVIEW_INFO" | translate
+          }}
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="fas fa-arrow-left me-2"></i>
+            {{
+              "work-location.LOCATION_FORM.CONFIRMATION.BACK_BUTTON" | translate
+            }}
+          </button>
+          <button
+            class="btn btn-success"
+            (click)="complete()"
+            [disabled]="!isFormValid || isSubmitting"
+          >
+            @if (isSubmitting) {
+            <span
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            {{ submitButtonText | translate }} } @else {
+            <i class="fas fa-check me-2"></i>
+            {{ submitButtonText | translate }} }
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

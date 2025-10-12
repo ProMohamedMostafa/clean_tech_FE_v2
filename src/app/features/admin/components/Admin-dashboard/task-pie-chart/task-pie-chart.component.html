@@ -1,0 +1,91 @@
+<div class="task-pie-container">
+  <h2 class="section-header">
+    {{ "dashboard.TASKS_TOTAL_TASKS" | translate }}
+  </h2>
+  <div class="filters">
+    <div class="filter-group">
+      <label for="yearFilter">{{ "dashboard.YEAR" | translate }}:</label>
+      <select
+        id="yearFilter"
+        class="year-selector"
+        (change)="
+          onYearChange(
+            $any($event).target.value ? +$any($event).target.value : undefined
+          )
+        "
+        [disabled]="isLoading"
+      >
+        <option value="">{{ "dashboard.ALL_YEARS" | translate }}</option>
+        <option [value]="currentYear">{{ currentYear }}</option>
+        <option [value]="currentYear - 1">{{ currentYear - 1 }}</option>
+        <option [value]="currentYear - 2">{{ currentYear - 2 }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="userFilter">{{ "dashboard.USERS" | translate }}:</label>
+      <select
+        id="userFilter"
+        class="user-selector"
+        (change)="
+          onUserChange(
+            $any($event).target.value ? +$any($event).target.value : undefined
+          )
+        "
+        [disabled]="isLoading"
+      >
+        <option value="">{{ "dashboard.ALL_USERS" | translate }}</option>
+        @for (user of users; track user) {
+        <option [value]="user.id">
+          {{ user.userName }}
+        </option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group w-100">
+      <label for="chartTypeFilter"
+        >{{ "dashboard.CHART_TYPE" | translate }}:</label
+      >
+      <select
+        id="chartTypeFilter"
+        class="user-selector"
+        [(ngModel)]="selectedChartType"
+        (change)="chartType = selectedChartType"
+      >
+        @for (type of availableChartTypes; track type) {
+        <option [value]="type.key">
+          {{ type.label | translate }} {{ "dashboard.CHART" | translate }}
+        </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <!-- Loading State -->
+    @if (isLoading) {
+    <div class="chart-loading">
+      <div class="spinner"></div>
+      <p>{{ "dashboard.LOADING_TASK_DATA" | translate }}</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (errorMessage && !isLoading) {
+    <div class="chart-error">
+      <p>{{ errorMessage }}</p>
+    </div>
+    }
+
+    <!-- Chart Display -->
+    @if (!isLoading && !errorMessage) {
+    <canvas
+      baseChart
+      [data]="chartData"
+      [type]="chartType"
+      [options]="chartOptions"
+    ></canvas>
+    }
+  </div>
+</div>

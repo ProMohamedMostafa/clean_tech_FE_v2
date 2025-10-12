@@ -1,0 +1,188 @@
+.parent {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto; // Changed from fixed rows to auto
+  gap: 18px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+/* Big screen (default) */
+.div1 {
+  grid-column: 1 / -1; /* span full width */
+  grid-row: 1;
+}
+
+.div2 {
+  grid-column: 1 / span 3;
+  grid-row: 2;
+  min-height: 300px; // Add min-height for consistency
+}
+
+.div3 {
+  grid-column: 4 / span 2;
+  grid-row: 2;
+  min-height: 300px; // Add min-height for consistency
+}
+
+.div4 {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-height: 400px; // Add min-height for consistency
+
+  /* 🎨 Figma styles */
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden; // Prevent content overflow
+}
+
+/* Large screens (1200px and above) */
+@media (min-width: 1200px) {
+  .parent {
+    grid-template-rows: auto auto auto; // Only 3 rows needed
+  }
+
+  .div2,
+  .div3 {
+    min-height: 350px;
+  }
+
+  .div4 {
+    min-height: 450px;
+  }
+}
+
+/* Medium screen (tablets ~ max-width: 1199px) */
+@media (max-width: 1199px) {
+  .parent {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto; // 4 rows for stacked layout
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .div1 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .div2 {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 280px;
+  }
+
+  .div3 {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 280px;
+  }
+
+  .div4 {
+    grid-column: 1;
+    grid-row: 4;
+    min-height: 380px;
+  }
+}
+
+/* Small screen (mobiles ~ max-width: 768px) */
+@media (max-width: 768px) {
+  .parent {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .div1,
+  .div2,
+  .div3,
+  .div4 {
+    grid-column: 1;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .div2,
+  .div3 {
+    min-height: 250px;
+  }
+
+  .div4 {
+    min-height: 350px;
+    padding: 12px;
+  }
+}
+
+/* Extra small screen (mobiles ~ max-width: 480px) */
+@media (max-width: 480px) {
+  .parent {
+    gap: 10px;
+    padding: 10px 8px;
+  }
+
+  .div2,
+  .div3 {
+    min-height: 220px;
+  }
+
+  .div4 {
+    min-height: 320px;
+    padding: 10px;
+
+    // Ensure table doesn't overflow on small screens
+    overflow-x: auto;
+
+    ::ng-deep table {
+      min-width: 100%;
+      width: auto;
+    }
+  }
+}
+
+/* Fix for very small screens */
+@media (max-width: 360px) {
+  .parent {
+    padding: 8px 6px;
+    gap: 8px;
+  }
+
+  .div4 {
+    padding: 8px;
+    border-radius: 6px;
+  }
+}
+
+/* Ensure all child components don't overflow */
+.parent > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scrolling on body */
+body {
+  overflow-x: hidden;
+}
+
+/* Specific component overflow prevention */
+::ng-deep {
+  app-feedback-cards,
+  app-feedback-chart,
+  app-overview-chart,
+  app-statistics-table {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    height: 100%;
+
+    > * {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+}

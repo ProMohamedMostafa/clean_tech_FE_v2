@@ -1,0 +1,236 @@
+<div class="parent">
+  <div class="div1">
+    <ul class="nav-list w-100">
+      <!-- Location Tab - Always visible -->
+
+      <!-- Other tabs - Only show if user is not auditor -->
+      <ng-container *ngIf="myRole !== 'auditor'">
+        <li
+          class="nav-item"
+          (click)="selectTab('location')"
+          [ngClass]="{ active: selectedTab === 'location' }"
+        >
+          <i class="fas fa-map-marker-alt nav-icon"></i>
+          <span class="nav-text">{{ "DETAILS.NAV.LOCATION" | translate }}</span>
+        </li>
+        <li
+          class="nav-item"
+          (click)="selectTab('users')"
+          [ngClass]="{ active: selectedTab === 'users' }"
+        >
+          <i class="fas fa-users nav-icon"></i>
+          <span class="nav-text">{{ "DETAILS.NAV.USERS" | translate }}</span>
+        </li>
+
+        <li
+          class="nav-item"
+          (click)="selectTab('tasks')"
+          [ngClass]="{ active: selectedTab === 'tasks' }"
+        >
+          <i class="fas fa-tasks nav-icon"></i>
+          <span class="nav-text">{{ "DETAILS.NAV.TASKS" | translate }}</span>
+        </li>
+
+        <li
+          class="nav-item"
+          (click)="selectTab('shifts')"
+          [ngClass]="{ active: selectedTab === 'shifts' }"
+        >
+          <i class="fas fa-clock nav-icon"></i>
+          <span class="nav-text">{{ "DETAILS.NAV.SHIFTS" | translate }}</span>
+        </li>
+
+        <li
+          class="nav-item"
+          (click)="selectTab('attendance')"
+          [ngClass]="{ active: selectedTab === 'attendance' }"
+        >
+          <i class="fas fa-calendar-check nav-icon"></i>
+          <span class="nav-text">{{
+            "DETAILS.NAV.ATTENDANCE" | translate
+          }}</span>
+        </li>
+
+        <li
+          class="nav-item"
+          (click)="selectTab('leaves')"
+          [ngClass]="{ active: selectedTab === 'leaves' }"
+        >
+          <i class="fas fa-umbrella-beach nav-icon"></i>
+          <span class="nav-text">{{ "DETAILS.NAV.LEAVES" | translate }}</span>
+        </li>
+        <li
+        *ngIf="myRole === 'admin'"
+          class="nav-item"
+          (click)="selectTab('questions')"
+          [ngClass]="{ active: selectedTab === 'questions' }"
+        >
+          <i class="fas fa-question-circle nav-icon"></i>
+          <span class="nav-text">{{
+            "DETAILS.NAV.QUESTIONS" | translate
+          }}</span>
+        </li>
+      </ng-container>
+      <li
+        *ngIf="myRole === 'auditor'"
+        class="nav-item"
+        (click)="selectTab('audits')"
+        [ngClass]="{ active: selectedTab === 'audits' }"
+      >
+        <i class="fas fa-clipboard-check nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.AUDITS" | translate }}</span>
+      </li>
+    </ul>
+  </div>
+  <div class="div3">
+    <app-section-details-info
+      [sectionData]="sectionData"
+    ></app-section-details-info>
+  </div>
+  <div class="div4">
+    <ng-container *ngIf="myRole !== 'auditor'">
+      <ng-container *ngIf="selectedTab === 'location'">
+        <app-section-tree [sectionId]="sectionId"></app-section-tree>
+      </ng-container>
+      <ng-container *ngIf="selectedTab === 'users'">
+        <app-table-data
+          [data]="users"
+          [columns]="tableColumns"
+          [actions]="tableActions"
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [totalCount]="totalCount"
+          [pageSize]="pageSize"
+          [currentUserRole]="currentUserRole"
+          [showPagination]="true"
+          [trackByField]="'id'"
+          (pageChanged)="onPageChanged($event)"
+          (pageSizeChanged)="onPageSizeChanged($event)"
+        ></app-table-data>
+      </ng-container>
+      <ng-container *ngIf="selectedTab === 'tasks'">
+        <div class="tasks-container">
+          <app-task-container
+            [tasks]="tasks"
+            [currentPage]="taskCurrentPage"
+            [totalPages]="taskTotalPages"
+            [totalCount]="taskTotalCount"
+            [pageSize]="taskPageSize"
+            (pageChanged)="onTaskPageChanged($event)"
+            (pageSizeChanged)="onTaskPageSizeChanged($event)"
+            (viewTask)="onViewTask($event)"
+            (editTask)="onEditTask($event)"
+            (deleteTask)="onDeleteTask($event)"
+            (statusFilterChange)="onStatusFilterChange($event)"
+          ></app-task-container>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="selectedTab === 'shifts'">
+        <div class="shifts-container">
+          <app-table-data
+            [data]="shifts"
+            [columns]="shiftTableColumns"
+            [actions]="shiftTableActions"
+            [currentPage]="shiftCurrentPage"
+            [totalPages]="shiftTotalPages"
+            [totalCount]="shiftTotalCount"
+            [pageSize]="shiftPageSize"
+            [currentUserRole]="currentUserRole"
+            [showPagination]="true"
+            [trackByField]="'id'"
+            (pageChanged)="onShiftPageChanged($event)"
+            (pageSizeChanged)="onShiftPageSizeChanged($event)"
+          ></app-table-data>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="selectedTab === 'attendance'">
+        <div class="attendance-container">
+          <app-table-data
+            [data]="attendanceHistory"
+            [columns]="attendanceTableColumns"
+            [actions]="attendanceTableActions"
+            [currentPage]="attendanceCurrentPage"
+            [totalPages]="attendanceTotalPages"
+            [totalCount]="attendanceTotalCount"
+            [pageSize]="attendancePageSize"
+            [currentUserRole]="currentUserRole"
+            [showPagination]="true"
+            [trackByField]="'id'"
+            (pageChanged)="onAttendancePageChanged($event)"
+            (pageSizeChanged)="onAttendancePageSizeChanged($event)"
+          ></app-table-data>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="selectedTab === 'leaves'">
+        <div class="leaves-container">
+          <app-table-data
+            [data]="leaveHistory"
+            [columns]="leaveTableColumns"
+            [actions]="leaveTableActions"
+            [currentPage]="leaveCurrentPage"
+            [totalPages]="leaveTotalPages"
+            [totalCount]="leaveTotalCount"
+            [pageSize]="leavePageSize"
+            [currentUserRole]="currentUserRole"
+            [showPagination]="true"
+            [trackByField]="'id'"
+            (pageChanged)="onLeavePageChanged($event)"
+            (pageSizeChanged)="onLeavePageSizeChanged($event)"
+          ></app-table-data>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="selectedTab === 'questions'">
+        <!-- Updated template section for questions tab -->
+        <div class="w-100 pt-4" *ngIf="selectedTab === 'questions'">
+          <app-section-questions [sectionData]="sectionData">
+          </app-section-questions>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- Audits Tab Content - Visible for all roles -->
+    <ng-container *ngIf="selectedTab === 'audits'">
+      <div class="audits-container">
+        <app-audits-section
+          [auditId]="sectionData?.auditId"
+          [sectionId]="sectionData?.id"
+        ></app-audits-section>
+      </div>
+    </ng-container>
+  </div>
+  <div class="div5">
+    <div class="action-buttons">
+      <!-- New Export Button - Only show for non-auditor roles -->
+      <ng-container *ngIf="myRole !== 'auditor'">
+        <button class="btn export-btn" (click)="openExportModal()">
+          <i class="fas fa-file-export"></i>
+          Export
+        </button>
+      </ng-container>
+
+      @if(myRole == 'admin'){
+      <button class="btn edit-btn" (click)="onEditFloor()">
+        <i class="fas fa-edit"></i>
+        {{ "DETAILS.ACTIONS.EDIT" | translate }}
+      </button>
+      } @if(myRole == 'admin'){
+      <button class="btn delete-btn" (click)="onDeleteFloor()">
+        <i class="fas fa-trash-alt"></i>
+        {{ "DETAILS.ACTIONS.DELETE" | translate }}
+      </button>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal - Only show for non-auditor roles -->
+<ng-container *ngIf="myRole !== 'auditor'">
+  <div
+    class="modal-backdrop"
+    *ngIf="showExportModal"
+    (click)="closeExportModal()"
+  ></div>
+  <div class="export-modal" *ngIf="showExportModal" @fadeIn>
+    <!-- ... rest of the export modal content ... -->
+  </div>
+</ng-container>

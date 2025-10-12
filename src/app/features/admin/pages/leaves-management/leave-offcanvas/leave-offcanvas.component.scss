@@ -1,0 +1,231 @@
+/* offcanvas styles */
+.offcanvas-wide {
+  width: 600px; /* or whatever width you prefer */
+  max-width: 80%; /* ensures it doesn't get too wide on small screens */
+}
+
+.offcanvas {
+  .offcanvas-header {
+    .my-profile-title {
+      width: 95%;
+      background: #ffffff;
+      border-radius: 11px;
+      padding: 0px 5px;
+      margin-right: auto;
+      margin-left: auto;
+
+      .title-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: start;
+        padding: 0px;
+        gap: 10px;
+        height: 50px;
+
+        .title-bage {
+          width: 8px;
+          height: 24px;
+          background: #025d8d;
+          border-radius: 2px;
+        }
+
+        .title-info {
+          height: 32px;
+
+          h1 {
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 32px;
+            color: #1a1d1f;
+            order: 1;
+            flex-grow: 0;
+            letter-spacing: -0.02em;
+          }
+        }
+      }
+    }
+  }
+
+  .offcanvas-body {
+    .add-btn {
+      background: #025d8d;
+      border-radius: 4px;
+      padding: 12px 20px;
+      font-family: sans-serif "Inter";
+      font-style: normal;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 24px;
+      letter-spacing: -0.01em;
+      color: #fcfcfc;
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .cancel-btn {
+      /* Frame 5151 */
+
+      /* Auto layout */
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 20px;
+      gap: 10px;
+
+      /* Neutral/03 */
+      background: #efefef;
+      border-radius: 4px;
+    }
+  }
+}
+
+/* Modal styles (if needed for offcanvas) */
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* File Upload Container */
+.file-upload-container {
+  margin-bottom: 1.5rem;
+}
+
+/* Drag & Drop Area */
+.drag-drop-area {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f9fafb;
+  margin-bottom: 1rem;
+
+  &--hovering {
+    border-color: #025d8d;
+    background-color: rgba(2, 93, 141, 0.05);
+  }
+}
+
+.drag-drop-content {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.drag-drop-icon {
+  font-size: 2.5rem;
+  color: #025d8d;
+  margin-bottom: 0.5rem;
+}
+
+.drag-drop-text {
+  color: #64748b;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* File Preview */
+.file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.file-icon {
+  font-size: 1.5rem;
+  color: #025d8d;
+}
+
+.file-name {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #1e293b;
+}
+
+.file-size {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+/* Button styles */
+.btn-outline-primary {
+  border-color: #025d8d;
+  color: #025d8d;
+
+  &:hover {
+    background-color: #025d8d;
+    color: white;
+  }
+}
+
+.btn-icon {
+  color: #64748b;
+  padding: 0.25rem;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: #f1f5f9;
+    color: #dc2626;
+  }
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  gap: 1rem; // Add gap between items
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1; // Allow it to take available space
+  min-width: 0; // Allow text truncation
+}
+
+.file-name {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; // Add ellipsis for long file names
+}
+
+.btn-icon {
+  color: #64748b;
+  padding: 0.25rem;
+  border-radius: 50%;
+  flex-shrink: 0; // Prevent button from shrinking
+
+  &:hover {
+    background-color: #f1f5f9;
+    color: #dc2626;
+  }
+}
+
+

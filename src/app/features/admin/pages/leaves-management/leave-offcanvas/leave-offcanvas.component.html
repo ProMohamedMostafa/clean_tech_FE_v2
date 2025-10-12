@@ -1,0 +1,203 @@
+<!-- offcanvas with RTL support -->
+<div
+  class="offcanvas p-2 offcanvas-wide"
+  [ngClass]="{
+    'offcanvas-end': !isRTL(),
+    'offcanvas-start': isRTL()
+  }"
+  tabindex="-1"
+  id="leaveOffcanvas"
+  aria-labelledby="leaveOffcanvasLabel"
+  (hidden.bs.offcanvas)="onOffcanvasHidden()"
+>
+  <div class="offcanvas-header">
+    <div class="my-profile-title mb-3 pt-5">
+      <div class="title-container">
+        <div class="title-bage"></div>
+        <div class="title-info">
+          <h1>
+            {{
+              leaveEditData != null
+                ? ("leave.editTitle" | translate)
+                : ("leave.createTitle" | translate)
+            }}
+          </h1>
+        </div>
+      </div>
+    </div>
+    <button
+      type="button"
+      class="btn-close text-reset"
+      data-bs-dismiss="offcanvas"
+      [attr.aria-label]="'common.close' | translate"
+    ></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form #createLeaveForm="ngForm" (ngSubmit)="updateLeave()">
+      <!-- User Select Dropdown -->
+      @if (shouldShowUserDropdown()) {
+      <div class="mb-3">
+        <label for="user" class="form-label">{{
+          "leave.form.user" | translate
+        }}</label>
+        <select
+          id="user"
+          class="form-select"
+          [(ngModel)]="leaveData.userId"
+          name="userId"
+          required
+        >
+          @for (user of users; track user) {
+          <option [value]="user.id">
+            {{ user.userName }}
+          </option>
+          }
+        </select>
+      </div>
+      } @else {
+      <!-- Hidden input to store the user ID for leave requests -->
+      <input type="hidden" [(ngModel)]="leaveData.userId" name="userId" />
+      }
+
+      <!-- Leave Type Dropdown -->
+      <div class="mb-3">
+        <label for="leaveType" class="form-label">{{
+          "leave.form.leaveType" | translate
+        }}</label>
+        <select
+          id="leaveType"
+          class="form-select"
+          [(ngModel)]="leaveData.type"
+          name="type"
+          required
+        >
+          <option value="0">{{ "leave.types.sick" | translate }}</option>
+          <option value="1">{{ "leave.types.annual" | translate }}</option>
+          <option value="2">{{ "leave.types.ordinary" | translate }}</option>
+        </select>
+      </div>
+
+      <!-- Start Date Input -->
+      <div class="mb-3">
+        <label for="startDate" class="form-label">{{
+          "leave.form.startDate" | translate
+        }}</label>
+        <input
+          type="date"
+          id="startDate"
+          class="form-control"
+          [(ngModel)]="leaveData.startDate"
+          name="startDate"
+          required
+        />
+      </div>
+
+      <!-- End Date Input -->
+      <div class="mb-3">
+        <label for="endDate" class="form-label">{{
+          "leave.form.endDate" | translate
+        }}</label>
+        <input
+          type="date"
+          id="endDate"
+          class="form-control"
+          [(ngModel)]="leaveData.endDate"
+          name="endDate"
+          required
+        />
+      </div>
+
+      <!-- Reason Textarea -->
+      <div class="mb-3">
+        <label for="reason" class="form-label">{{
+          "leave.form.reason" | translate
+        }}</label>
+        <textarea
+          id="reason"
+          class="form-control"
+          rows="2"
+          [(ngModel)]="leaveData.reason"
+          name="reason"
+          required
+        ></textarea>
+      </div>
+
+      <!-- Enhanced Drag and Drop Area -->
+      <div class="file-upload-container">
+        <div
+          class="drag-drop-area"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+          [ngClass]="{ 'drag-drop-area--hovering': isHovering }"
+        >
+          <div class="drag-drop-content">
+            <i class="bi bi-cloud-upload drag-drop-icon"></i>
+            <p class="drag-drop-text">
+              {{ "leave.form.dragDropText1" | translate }}<br />
+              {{ "leave.form.dragDropText2" | translate }}
+            </p>
+            <input
+              type="file"
+              id="fileUpload"
+              class="d-none"
+              (change)="onFileChange($event)"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="triggerFileInput()"
+            >
+              {{ "leave.form.chooseFile" | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- File Preview -->
+        @if (leaveData.file) {
+        <div class="file-preview">
+          <div class="file-info">
+            <i class="bi bi-file-earmark-text file-icon"></i>
+            <div>
+              <p class="file-name">{{ leaveData.file.name }}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-icon"
+            (click)="removeFile()"
+            aria-label="Remove file"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-footer">
+        <button
+          type="submit"
+          data-bs-dismiss="offcanvas"
+          [attr.aria-label]="'common.close' | translate"
+          class="btn add-btn"
+        >
+          {{
+            leaveEditData
+              ? ("leave.form.updateButton" | translate)
+              : ("leave.form.createButton" | translate)
+          }}
+        </button>
+        <button
+          type="button"
+          class="btn cancel-btn"
+          data-bs-dismiss="offcanvas"
+          [attr.aria-label]="'common.close' | translate"
+        >
+          {{ "leave.form.cancelButton" | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

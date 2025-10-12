@@ -1,0 +1,172 @@
+<!-- Sensor Header -->
+<div class="sensor-header mb-4">
+  <div class="w-100 d-flex align-items-center justify-content-between">
+    <div class="left-section">
+      <h2>{{ device.name || "Loading..." }}</h2>
+      <p *ngIf="device">
+        {{ "SENSOR_DETAIL.LAST_READ" | translate }}
+        <span class="text-danger">{{ getLocalTime(device.lastSeenAt) }}</span>
+        {{ "SENSOR_DETAIL.HOURS_AGO" | translate }}
+      </p>
+    </div>
+    <div class="right-section">
+      <button
+        class="btn edit-btn"
+        (click)="showAssignModal.emit()"
+        [attr.aria-label]="'COMMON.EDIT' | translate"
+      >
+        <i class="fa-regular fa-pen-to-square"></i>
+      </button>
+      <button
+        class="btn delete-btn"
+        (click)="deleteDevice(device.id)"
+        [attr.aria-label]="'COMMON.DELETE' | translate"
+      >
+        <i class="fa-regular fa-trash-can"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <p class="description">
+    {{ device.description }}
+  </p>
+</div>
+
+<!-- sensor address -->
+<div class="sensor-address mb-4">
+  <div class="sensor-cell no-top-border no-left-border">
+    <span class="key active">{{ "SENSOR_DETAIL.STATUS" | translate }}</span>
+    <span class="value circle" *ngIf="device.active"></span>
+  </div>
+  <div class="sensor-cell no-top-border">
+    <span class="key" [class.text-danger]="device.battery < 30">
+      {{ "SENSOR_DETAIL.BATTERY" | translate }}
+    </span>
+    <span class="value" [class.text-danger]="device.battery < 30">
+      {{ device.battery }}%
+    </span>
+  </div>
+  <div class="sensor-cell no-top-border">
+    <span class="key">{{ "SENSOR_DETAIL.TYPE" | translate }}</span>
+    <span class="value">{{ device.applicationName }}</span>
+  </div>
+  <div class="sensor-cell no-top-border no-right-border">
+    <span class="key">{{ "SENSOR_DETAIL.ORGANIZATION" | translate }}</span>
+    <span
+      class="value value-location"
+      style="cursor: pointer"
+      (click)="navigateToOrganization(device.organizationId)"
+    >
+      {{ device.organizationName }}
+    </span>
+  </div>
+  <div class="sensor-cell no-left-border">
+    <span class="key">{{ "SENSOR_DETAIL.BUILDING" | translate }}</span>
+    <span
+      class="value value-location"
+      style="cursor: pointer"
+      (click)="navigateToBuilding(device.buildingId)"
+    >
+      {{ device.buildingName }}
+    </span>
+  </div>
+  <div class="sensor-cell">
+    <span class="key">{{ "SENSOR_DETAIL.FLOOR" | translate }}</span>
+    <span
+      class="value value-location"
+      style="cursor: pointer"
+      (click)="navigateToFloor(device.floorId)"
+    >
+      {{ device.floorName }}
+    </span>
+  </div>
+  <div class="sensor-cell">
+    <span class="key">{{ "SENSOR_DETAIL.SECTION" | translate }}</span>
+    <span
+      class="value value-location"
+      style="cursor: pointer"
+      (click)="navigateToSection(device.sectionId)"
+    >
+      {{ device.sectionName }}
+    </span>
+  </div>
+  <div class="sensor-cell no-right-border">
+    <span class="key">{{ "SENSOR_DETAIL.POINT" | translate }}</span>
+    <span
+      class="value value-location"
+      style="cursor: pointer"
+      (click)="navigateToPoint(device.pointId)"
+    >
+      {{ device.pointName }}
+    </span>
+  </div>
+</div>
+
+<!-- sensor values -->
+<div class="sensor-values">
+  <!-- Options List -->
+  <div class="select-value">
+    <label
+      class="option"
+      *ngFor="let item of device.data; let i = index"
+      [for]="'option' + (i + 1)"
+    >
+      <input
+        type="radio"
+        [id]="'option' + (i + 1)"
+        name="options"
+        (change)="onSelectOption(item)"
+      />
+      <span class="key">{{ item.key }}</span>
+      <span class="value">{{ item.value }}</span>
+    </label>
+  </div>
+
+  <!-- Limit Box -->
+  <div class="assign-value" *ngIf="selectedLimit">
+    <div class="assign-header">
+      <h6 class="title">{{ selectedLimit.key | titlecase }}</h6>
+      <h6 class="current-value text-success">
+        {{ getValueByKey(selectedLimit.key) }}
+      </h6>
+    </div>
+
+    <div class="temp-range">
+      <div class="temp-item">
+        <span class="label">{{ "SENSOR_DETAIL.MIN" | translate }}</span>
+        <div class="value-box min">
+          <input
+            type="number"
+            [(ngModel)]="selectedLimit.min"
+            (ngModelChange)="onMinChange($event)"
+            class="inline-edit-input"
+          />
+        </div>
+      </div>
+
+      <div class="temp-item">
+        <span class="label">{{ "SENSOR_DETAIL.MAX" | translate }}</span>
+        <div class="value-box max">
+          <input
+            type="number"
+            [(ngModel)]="selectedLimit.max"
+            (ngModelChange)="onMaxChange($event)"
+            class="inline-edit-input"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="button-wrapper">
+      <button class="btn edit-btn" (click)="onSaveLimit()">
+        <i class="fa-regular fa-pen-to-square"></i>
+        {{ "COMMON.EDIT" | translate }}
+      </button>
+      <button class="btn delete-btn" (click)="deleteLimit()">
+        <i class="fa-regular fa-trash-can"></i>
+        {{ "COMMON.DELETE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

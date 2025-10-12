@@ -1,0 +1,324 @@
+<!-- assign-shift.component.html -->
+<div class="shift-assignment-container">
+  <!-- New Header Section -->
+  <div class="assignment-header">
+    <div class="header-content">
+      <h1>{{ "assignShift.title" | translate }}</h1>
+      <p class="header-description">
+        {{ "assignShift.description" | translate }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Stepper with navigation -->
+  <div class="assignment-flow">
+    <div class="stepper-container">
+      <div class="stepper">
+        @for (step of [1, 2, 3, 4]; track step) {
+        <div
+          class="step"
+          [class.active]="currentStep === step"
+          [class.completed]="isStepCompleted(step)"
+          (click)="goToStep(step)"
+        >
+          <div class="step-number">{{ step }}</div>
+          <div class="step-label">
+            @switch (step) { @case (1) {
+            {{ "assignShift.steps.assignmentType" | translate }} } @case (2) {
+            {{ "assignShift.steps.details" | translate }} } @case (3) {
+            {{ "assignShift.steps.selectShifts" | translate }} } @case (4) {
+            {{ "assignShift.steps.review" | translate }} } }
+          </div>
+          @if (step < 4) {
+          <div
+            class="step-connector"
+            [class.active]="currentStep > step || isStepCompleted(step + 1)"
+          ></div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="content-container">
+      <!-- Step 1: Assignment Type -->
+      @if (currentStep === 1) {
+      <div class="step-content">
+        <h2>{{ "assignShift.step1.title" | translate }}</h2>
+        <p class="step-description">
+          {{ "assignShift.step1.description" | translate }}
+        </p>
+        <div class="assignment-type-cards">
+          <!-- Assign to User -->
+          <div class="type-card" (click)="onAssignmentTypeChange('user')">
+            <div class="card-icon-container">
+              <mat-icon class="card-icon">person</mat-icon>
+            </div>
+            <h3>{{ "assignShift.step1.userAssignment.title" | translate }}</h3>
+            <p>
+              {{ "assignShift.step1.userAssignment.description" | translate }}
+            </p>
+            <div class="select-indicator">
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </div>
+
+          <!-- Assign by Level -->
+          <div class="type-card" (click)="onAssignmentTypeChange('level')">
+            <div class="card-icon-container">
+              <mat-icon class="card-icon">layers</mat-icon>
+            </div>
+            <h3>{{ "assignShift.step1.levelAssignment.title" | translate }}</h3>
+            <p>
+              {{ "assignShift.step1.levelAssignment.description" | translate }}
+            </p>
+            <div class="select-indicator">
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="goToStep(2)"
+            [disabled]="!selectedAssignmentType"
+          >
+            {{ "common.next" | translate }}
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 2: Details -->
+      @if (currentStep === 2) {
+      <div class="step-content">
+        <h2>{{ "assignShift.step2.title" | translate }}</h2>
+        <!-- User Assignment -->
+        @if (selectedAssignmentType === 'user') {
+        <p class="step-description">
+          {{ "assignShift.step2.userDescription" | translate }}
+        </p>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{
+              "assignShift.step2.selectRole" | translate
+            }}</mat-label>
+            <mat-select
+              [(value)]="selectedRole"
+              (selectionChange)="onRoleChange()"
+            >
+              @for (role of roles; track role) {
+              <mat-option [value]="role.value">{{
+                role.label | translate
+              }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{
+              "assignShift.step2.selectUser" | translate
+            }}</mat-label>
+            <mat-select
+              [(value)]="selectedUser"
+              (selectionChange)="onUserSelect($event.value)"
+            >
+              @for (user of individuals; track user) {
+              <mat-option [value]="user">{{ user.name }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+          </mat-form-field>
+        </div>
+        }
+
+        <!-- Level Assignment -->
+        @if (selectedAssignmentType === 'level') {
+        <p class="step-description">
+          {{ "assignShift.step2.levelDescription" | translate }}
+        </p>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{
+              "assignShift.step2.selectLevel" | translate
+            }}</mat-label>
+            <mat-select
+              [(value)]="selectedLevel"
+              (selectionChange)="onLevelChange()"
+            >
+              @for (level of levels; track level) {
+              <mat-option [value]="level">{{ level | translate }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>
+              {{
+                "assignShift.step2.selectSpecific"
+                  | translate : { level: selectedLevel || "Level" }
+              }}
+            </mat-label>
+            <mat-select
+              [(value)]="selectedSpecificOption"
+              (selectionChange)="onSpecificOptionChange()"
+            >
+              @for (option of getSpecificOptions(); track option) {
+              <mat-option [value]="option">{{ option.name }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+          </mat-form-field>
+        </div>
+        }
+
+        <div class="action-buttons">
+          <button mat-stroked-button (click)="goToStep(1)">
+            {{ "common.back" | translate }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="goToStep(3)"
+            [disabled]="
+              !(
+                (selectedAssignmentType === 'user' && selectedUser) ||
+                (selectedAssignmentType === 'level' && selectedSpecificOption)
+              )
+            "
+          >
+            {{ "common.next" | translate }}
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 3: Select Shifts -->
+      @if (currentStep === 3) {
+      <div class="step-content">
+        <h2>{{ "assignShift.step3.title" | translate }}</h2>
+        <p class="step-description">
+          {{ "assignShift.step3.description" | translate }}
+        </p>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{
+              "assignShift.step3.availableShifts" | translate
+            }}</mat-label>
+            <mat-select
+              [(value)]="selectedShifts"
+              multiple
+              [disabled]="!shifts.length"
+            >
+              @for (shift of shifts; track shift) {
+              <mat-option [value]="shift.id">
+                {{ shift.name }}
+                @if (isShiftAssigned(shift.id)) {
+                <span class="assigned-badge"
+                  >({{ "assignShift.step3.alreadyAssigned" | translate }})</span
+                >
+                }
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        @if (selectedShifts.length > 0) {
+        <div class="selected-shifts">
+          <h4>
+            {{ "assignShift.step3.selectedShifts" | translate }} ({{
+              selectedShifts.length
+            }})
+          </h4>
+          <div class="shift-chips">
+            @for (shiftId of selectedShifts; track shiftId) {
+            <mat-chip class="shift-chip">
+              {{ getShiftName(shiftId) }}
+              <button matChipRemove (click)="removeShift(shiftId)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-chip>
+            }
+          </div>
+        </div>
+        }
+
+        <div class="action-buttons">
+          <button mat-stroked-button (click)="goToStep(2)">
+            {{ "common.back" | translate }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="goToStep(4)"
+            [disabled]="selectedShifts.length === 0"
+          >
+            {{ "common.next" | translate }}
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Step 4: Review & Assign -->
+      @if (currentStep === 4) {
+      <div class="step-content">
+        <h2>{{ "assignShift.step4.title" | translate }}</h2>
+        <p class="step-description">
+          {{ "assignShift.step4.description" | translate }}
+        </p>
+        <div class="review-card">
+          <div class="review-section">
+            <h4>{{ "assignShift.step4.assignmentTarget" | translate }}</h4>
+            @if (selectedAssignmentType === 'user') {
+            <p>
+              <mat-icon>person</mat-icon> {{ selectedUser?.name }} ({{
+                getRoleName(selectedRole) | translate
+              }})
+            </p>
+            } @if (selectedAssignmentType === 'level') {
+            <p>
+              <mat-icon>layers</mat-icon> {{ selectedSpecificOption?.name }} ({{
+                selectedLevel ? (selectedLevel | translate) : ""
+              }}
+              )
+            </p>
+            }
+          </div>
+          <div class="review-section">
+            <h4>{{ "assignShift.step4.selectedShifts" | translate }}</h4>
+            <ul class="shift-list">
+              @for (shiftId of selectedShifts; track shiftId) {
+              <li><mat-icon>schedule</mat-icon> {{ getShiftName(shiftId) }}</li>
+              }
+            </ul>
+          </div>
+          <div class="action-buttons">
+            <button mat-stroked-button (click)="goToStep(3)">
+              {{ "common.back" | translate }}
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="assign()"
+              [disabled]="
+                (selectedAssignmentType === 'user' &&
+                  (!selectedRole || !selectedUsers.length)) ||
+                (selectedAssignmentType === 'level' &&
+                  (!selectedLevel || !selectedSpecificOption))
+              "
+            >
+              {{ "assignShift.step4.confirmAssignment" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.LEAVE_MANAGEMENT" />
+
+  <!-- Chart Section -->
+  <div class="leave-charts mb-3 w-100">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [dataLabels]="chartOptions.dataLabels"
+      [title]="chartOptions.title"
+      [yaxis]="chartOptions.yaxis"
+    ></apx-chart>
+  </div>
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="isAdmin()"
+    [showRecycleButton]="isAdmin()"
+    [showExportButtons]="true"
+    [showPrintButton]="true"
+    addButtonText="LEAVE.ADD_LEAVE"
+    (addClick)="openAddLeaveOffcanvas()"
+    (searchChange)="onSearchChange($event)"
+    (filterClick)="openFilterModal()"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+  ></reusable-filter-bar>
+
+  <!-- Reusable Table Section -->
+  <app-table-data
+    [data]="leaveHistory"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [currentUserRole]="currentUserRole"
+    [showPagination]="true"
+    [trackByField]="'id'"
+    (pageChanged)="onPageChange($event)"
+    (pageSizeChanged)="onPageSizeChange($event)"
+  ></app-table-data>
+
+  <!-- Filter Modal -->
+  <app-leaves-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-leaves-filter>
+
+  <!-- Leave Offcanvas -->
+  <app-leave-offcanvas
+    [leaveEditData]="selectedLeave"
+    [users]="users"
+    (leaveUpdated)="handleLeaveUpdated()"
+  ></app-leave-offcanvas>
+</div>

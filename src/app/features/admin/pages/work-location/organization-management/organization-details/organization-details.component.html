@@ -1,0 +1,404 @@
+<div class="parent">
+  <div class="div1">
+    <ul class="nav-list w-100">
+      <li
+        class="nav-item"
+        (click)="selectTab('location')"
+        [ngClass]="{ active: selectedTab === 'location' }"
+      >
+        <i class="fas fa-map-marker-alt nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.LOCATION" | translate }}</span>
+      </li>
+
+      <li
+        class="nav-item"
+        (click)="selectTab('users')"
+        [ngClass]="{ active: selectedTab === 'users' }"
+      >
+        <i class="fas fa-users nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.USERS" | translate }}</span>
+      </li>
+
+      <li
+        class="nav-item"
+        (click)="selectTab('tasks')"
+        [ngClass]="{ active: selectedTab === 'tasks' }"
+      >
+        <i class="fas fa-tasks nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.TASKS" | translate }}</span>
+      </li>
+
+      <li
+        class="nav-item"
+        (click)="selectTab('shifts')"
+        [ngClass]="{ active: selectedTab === 'shifts' }"
+      >
+        <i class="fas fa-clock nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.SHIFTS" | translate }}</span>
+      </li>
+
+      <li
+        class="nav-item"
+        (click)="selectTab('attendance')"
+        [ngClass]="{ active: selectedTab === 'attendance' }"
+      >
+        <i class="fas fa-calendar-check nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.ATTENDANCE" | translate }}</span>
+      </li>
+
+      <li
+        class="nav-item"
+        (click)="selectTab('leaves')"
+        [ngClass]="{ active: selectedTab === 'leaves' }"
+      >
+        <i class="fas fa-umbrella-beach nav-icon"></i>
+        <span class="nav-text">{{ "DETAILS.NAV.LEAVES" | translate }}</span>
+      </li>
+    </ul>
+  </div>
+  <div class="div3">
+    <app-organization-details-info
+      [organizationData]="organizationData"
+    ></app-organization-details-info>
+  </div>
+  <div class="div4">
+    <ng-container *ngIf="selectedTab === 'location'">
+      <app-organization-tree
+        [organizationId]="organizationId"
+      ></app-organization-tree>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 'users'">
+      <app-table-data
+        [data]="users"
+        [columns]="tableColumns"
+        [actions]="tableActions"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [totalCount]="totalCount"
+        [pageSize]="pageSize"
+        [currentUserRole]="currentUserRole"
+        [showPagination]="true"
+        [trackByField]="'id'"
+        (pageChanged)="onPageChanged($event)"
+        (pageSizeChanged)="onPageSizeChanged($event)"
+      ></app-table-data>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 'tasks'">
+      <div class="tasks-container">
+        <app-task-container
+          [tasks]="tasks"
+          [currentPage]="taskCurrentPage"
+          [totalPages]="taskTotalPages"
+          [totalCount]="taskTotalCount"
+          [pageSize]="taskPageSize"
+          (pageChanged)="onTaskPageChanged($event)"
+          (pageSizeChanged)="onTaskPageSizeChanged($event)"
+          (viewTask)="onViewTask($event)"
+          (editTask)="onEditTask($event)"
+          (deleteTask)="onDeleteTask($event)"
+          (statusFilterChange)="onStatusFilterChange($event)"
+        ></app-task-container>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 'shifts'">
+      <div class="shifts-container">
+        <app-table-data
+          [data]="shifts"
+          [columns]="shiftTableColumns"
+          [actions]="shiftTableActions"
+          [currentPage]="shiftCurrentPage"
+          [totalPages]="shiftTotalPages"
+          [totalCount]="shiftTotalCount"
+          [pageSize]="shiftPageSize"
+          [currentUserRole]="currentUserRole"
+          [showPagination]="true"
+          [trackByField]="'id'"
+          (pageChanged)="onShiftPageChanged($event)"
+          (pageSizeChanged)="onShiftPageSizeChanged($event)"
+        ></app-table-data>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 'attendance'">
+      <div class="attendance-container">
+        <app-table-data
+          [data]="attendanceHistory"
+          [columns]="attendanceTableColumns"
+          [actions]="attendanceTableActions"
+          [currentPage]="attendanceCurrentPage"
+          [totalPages]="attendanceTotalPages"
+          [totalCount]="attendanceTotalCount"
+          [pageSize]="attendancePageSize"
+          [currentUserRole]="currentUserRole"
+          [showPagination]="true"
+          [trackByField]="'id'"
+          (pageChanged)="onAttendancePageChanged($event)"
+          (pageSizeChanged)="onAttendancePageSizeChanged($event)"
+        ></app-table-data>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 'leaves'">
+      <div class="leaves-container">
+        <app-table-data
+          [data]="leaveHistory"
+          [columns]="leaveTableColumns"
+          [actions]="leaveTableActions"
+          [currentPage]="leaveCurrentPage"
+          [totalPages]="leaveTotalPages"
+          [totalCount]="leaveTotalCount"
+          [pageSize]="leavePageSize"
+          [currentUserRole]="currentUserRole"
+          [showPagination]="true"
+          [trackByField]="'id'"
+          (pageChanged)="onLeavePageChanged($event)"
+          (pageSizeChanged)="onLeavePageSizeChanged($event)"
+        ></app-table-data>
+      </div>
+    </ng-container>
+  </div>
+  <div class="div5">
+    <div class="action-buttons">
+      <!-- New Export Button -->
+      <button class="btn export-btn" (click)="openExportModal()">
+        <i class="fas fa-file-export"></i>
+        Export
+      </button>
+      @if( myRole == 'admin'){
+
+      <button class="btn edit-btn" (click)="onEditOrganization()">
+        <i class="fas fa-edit"></i>
+        {{ "DETAILS.ACTIONS.EDIT" | translate }}
+      </button>
+      }@if( myRole == 'admin'){
+
+      <button class="btn delete-btn" (click)="onDeleteOrganization()">
+        <i class="fas fa-trash-alt"></i>
+        {{ "DETAILS.ACTIONS.DELETE" | translate }}
+      </button>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div
+  class="modal-backdrop"
+  *ngIf="showExportModal"
+  (click)="closeExportModal()"
+></div>
+<div class="export-modal" *ngIf="showExportModal" @fadeIn>
+  <div class="modal-header">
+    <div class="modal-title">
+      <svg class="export-icon" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"
+        />
+      </svg>
+      <h3>Export Data</h3>
+    </div>
+    <button
+      class="close-btn"
+      (click)="closeExportModal()"
+      aria-label="Close export modal"
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <path
+          fill="currentColor"
+          d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="export-section">
+      <h4 class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+          />
+        </svg>
+        Select Data to Export
+      </h4>
+
+      <div class="options-grid">
+        <div class="option-card" *ngIf="selectedTab === 'users' || exportAll">
+          <label class="option-label">
+            <input type="checkbox" [(ngModel)]="exportOptions.users" />
+            <span class="custom-checkbox"></span>
+            <span class="option-text">
+              <svg class="option-icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z"
+                />
+              </svg>
+              Users
+            </span>
+          </label>
+        </div>
+
+        <div class="option-card" *ngIf="selectedTab === 'tasks' || exportAll">
+          <label class="option-label">
+            <input type="checkbox" [(ngModel)]="exportOptions.tasks" />
+            <span class="custom-checkbox"></span>
+            <span class="option-text">
+              <svg class="option-icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M10.94,18L7.4,14.46L8.81,13.05L10.94,15.18L15.19,10.93L16.6,12.34L10.94,18Z"
+                />
+              </svg>
+              Tasks
+            </span>
+          </label>
+        </div>
+
+        <div class="option-card" *ngIf="selectedTab === 'shifts' || exportAll">
+          <label class="option-label">
+            <input type="checkbox" [(ngModel)]="exportOptions.shifts" />
+            <span class="custom-checkbox"></span>
+            <span class="option-text">
+              <svg class="option-icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7Z"
+                />
+              </svg>
+              Shifts
+            </span>
+          </label>
+        </div>
+
+        <div
+          class="option-card"
+          *ngIf="selectedTab === 'attendance' || exportAll"
+        >
+          <label class="option-label">
+            <input type="checkbox" [(ngModel)]="exportOptions.attendance" />
+            <span class="custom-checkbox"></span>
+            <span class="option-text">
+              <svg class="option-icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M12,3A4,4 0 0,0 8,7V9H6V11H8V13H6V15H8V17A2,2 0 0,0 10,19H15V21H17V19H18A2,2 0 0,0 20,17V7A4,4 0 0,0 16,3H12M12,5A2,2 0 0,1 14,7V17A2,2 0 0,1 12,19H10A2,2 0 0,1 8,17V7A2,2 0 0,1 10,5H12M18,9V11H16V9H18M18,13V15H16V13H18Z"
+                />
+              </svg>
+              Attendance
+            </span>
+          </label>
+        </div>
+
+        <div class="option-card" *ngIf="selectedTab === 'leaves' || exportAll">
+          <label class="option-label">
+            <input type="checkbox" [(ngModel)]="exportOptions.leaves" />
+            <span class="custom-checkbox"></span>
+            <span class="option-text">
+              <svg class="option-icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M17,13H7V11H17M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+                />
+              </svg>
+              Leaves
+            </span>
+          </label>
+        </div>
+
+        <div class="option-card all-data-option">
+          <label class="option-label">
+            <input
+              type="checkbox"
+              [(ngModel)]="exportAll"
+              (change)="toggleExportAll()"
+            />
+            <span class="custom-checkbox"></span>
+            <span class="option-text">
+              <svg class="option-icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z"
+                />
+              </svg>
+              Export All Data
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="export-section">
+      <h4 class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M6,2H18V8H18V8L14,12L18,16V16H18V22H6V16H6V16L10,12L6,8V8H6V2M16,16.5L12,12.5L8,16.5V20H16V16.5M12,11.5L16,7.5V4H8V7.5L12,11.5M10,6H14V6.75L12,8.75L10,6.75V6Z"
+          />
+        </svg>
+        Select Export Format
+      </h4>
+
+      <div class="format-options">
+        <label class="format-option">
+          <input
+            type="radio"
+            name="exportFormat"
+            [(ngModel)]="exportFormat"
+            value="excel"
+          />
+          <span class="custom-radio"></span>
+          <span class="format-content">
+            <svg class="format-icon" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M20 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4M16.3 15H14.9C14.7 14.4 14.4 13.8 14 13.2L15.5 11H13.8C13.4 10.4 13 9.9 12.6 9.5C12.2 9.1 11.7 8.7 11.2 8.3H13L11.5 6C11.96 6 12.46 6.1 13 6.2C13.54 6.3 14 6.5 14.4 6.7C14.8 6.9 15.2 7.2 15.5 7.5C15.8 7.8 16 8.2 16.2 8.6V15M8.8 15V8.6C8.7 8.3 8.6 8.1 8.4 7.9C8.2 7.7 7.9 7.5 7.6 7.4C7.3 7.3 7 7.2 6.7 7.1C6.4 7 6.2 7 6 7V8.3H7.2C7.6 8.3 7.9 8.5 8.1 8.7C8.3 8.9 8.4 9.2 8.5 9.5C8.6 9.8 8.7 10 8.7 10.3C8.7 10.6 8.7 10.9 8.7 11.2C8.7 11.5 8.6 11.7 8.5 12C8.4 12.3 8.2 12.5 8 12.7C7.8 12.9 7.5 13 7.2 13H6V15H8.8M6 17H18V19H6V17Z"
+              />
+            </svg>
+            Excel (XLSX)
+          </span>
+        </label>
+
+        <label class="format-option">
+          <input
+            type="radio"
+            name="exportFormat"
+            [(ngModel)]="exportFormat"
+            value="pdf"
+          />
+          <span class="custom-radio"></span>
+          <span class="format-content">
+            <svg class="format-icon" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M5.5 1C4.12 1 3 2.12 3 3.5V20.5C3 21.88 4.12 23 5.5 23H19V21H5.5C5.22 21 5 20.78 5 20.5V3.5C5 3.22 5.22 3 5.5 3H19V1H5.5M6 5V15H18V5H6M8 7H16V9H8V7M8 11H13V13H8V11M20 17H22V23H20V17M20 9H22V15H20V9Z"
+              />
+            </svg>
+            PDF
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn secondary-btn" (click)="closeExportModal()">
+      <svg class="btn-icon" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+        />
+      </svg>
+      Cancel
+    </button>
+    <button class="btn primary-btn" (click)="exportData()">
+      <svg class="btn-icon" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"
+        />
+      </svg>
+      Export Data
+    </button>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="history-container">
+  <!-- Loader -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading history...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage && !loading" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Data Table -->
+  <div
+    *ngIf="auditHistory?.data?.data?.length > 0 && !loading"
+    class="table-wrapper"
+  >
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0 text-center">
+        <thead class="table-primary sticky-header text-center">
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Total Questions</th>
+            <th>Completed</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let record of auditHistory.data.data"
+            (click)="openAuditModal(record)"
+          >
+            <td>{{ record.date }}</td>
+            <td>{{ record.time }}</td>
+            <td>{{ record.totalQuestionCount }}</td>
+            <td>{{ record.completedQuestionCount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- No Data -->
+  <div
+    *ngIf="auditHistory?.data?.data?.length === 0 && !loading"
+    class="text-center py-5"
+  >
+    <p class="text-muted">No audit history available.</p>
+  </div>
+
+  <!-- Audit Details Modal Component -->
+  <app-audit-details-modal
+    [showModal]="showModal"
+    [modalLoading]="modalLoading"
+    [selectedRecordInfo]="selectedRecordInfo"
+    [selectedAuditQuestions]="selectedAuditQuestions"
+    (closeModal)="onCloseModal()"
+  ></app-audit-details-modal>
+</div>

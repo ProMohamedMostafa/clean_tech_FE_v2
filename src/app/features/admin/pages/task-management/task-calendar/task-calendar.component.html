@@ -1,0 +1,35 @@
+<!-- 🌟 Calendar Header -->
+<div class="calendar-header-upgraded">
+  <button class="calendar-nav-btn" (click)="previousWeek()">
+    ← {{ "CALENDAR.PREVIOUS" | translate }}
+  </button>
+
+  <h2 class="calendar-month-title">{{ getWeekRange() }}</h2>
+
+  <button class="calendar-nav-btn today-btn" (click)="goToToday()">
+    {{ "CALENDAR.TODAY" | translate }}
+  </button>
+
+  <button class="calendar-nav-btn" (click)="nextWeek()">
+    {{ "CALENDAR.NEXT" | translate }} →
+  </button>
+</div>
+
+<!-- 📅 Calendar Container -->
+<div class="calendar-container-upgraded">
+  <!-- Loading overlay -->
+  <div *ngIf="isLoading" class="calendar-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <mwl-calendar-week-view
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    [locale]="'en'"
+    (eventClicked)="onEventClicked($event.event)"
+  >
+  </mwl-calendar-week-view>
+</div>

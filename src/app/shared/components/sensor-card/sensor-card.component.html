@@ -1,0 +1,205 @@
+<!-- sensor-card.component.html -->
+<div class="sensor-card" (click)="navigateToDetails(device.id)">
+  <div class="content-container">
+    <!-- Header -->
+    <div class="sensor-card-header">
+      <div class="d-flex align-items-center gap-1">
+        <img
+          src="./assets/sensor-icon.svg"
+          [alt]="'SENSOR.ICON_ALT' | translate"
+        />
+        <div class="d-flex flex-column align-items-start">
+          <p class="sensor-name">{{ device?.name | truncate : 10 }}</p>
+          <p class="sensor-last-read">
+            {{ "SENSOR.LAST_READ" | translate }}:
+            <span class="text-primary">{{
+              getLocalLastSeen(device.lastSeenAt)
+            }}</span>
+          </p>
+        </div>
+      </div>
+      <div>
+        <img
+          (click)="$event.stopPropagation(); onReload(device.id)"
+          src="./assets/sensor-reload-read.svg"
+          [alt]="'SENSOR.RELOAD_ALT' | translate"
+        />
+        <img
+          (click)="$event.stopPropagation(); onToggleStatus(device.id)"
+          src="./assets/sensor-on-off.svg"
+          [alt]="'SENSOR.STATUS_ALT' | translate"
+          [style.opacity]="device.active ? 1 : 0.5"
+        />
+      </div>
+    </div>
+
+    <!-- Status card -->
+    <div class="status-card">
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.TYPE" | translate }}</span>
+        <span class="value" style="color: #0092df">{{
+          device?.applicationName | truncate : 15
+        }}</span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.ORGANIZATION" | translate }}</span>
+        <span class="value">{{
+          device.organizationName || "--" | truncate : 15
+        }}</span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.BUILDING" | translate }}</span>
+        <span class="value">{{
+          device.buildingName || "--" | truncate : 15
+        }}</span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.FLOOR" | translate }}</span>
+        <span class="value">{{
+          device.floorName || "--" | truncate : 15
+        }}</span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.SECTION" | translate }}</span>
+        <span class="value">{{
+          device.sectionName || "--" | truncate : 15
+        }}</span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.POINT" | translate }}</span>
+        <span class="value">{{
+          device.pointName || "--" | truncate : 15
+        }}</span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "SENSOR.BATTERY" | translate }}</span>
+        <span
+          class="value battery"
+          [style.color]="getBatteryColor(device.battery)"
+        >
+          <svg
+            class="battery-icon"
+            viewBox="0 0 24 12"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              x="1"
+              y="2"
+              width="18"
+              height="8"
+              rx="1"
+              fill="currentColor"
+              opacity="0.3"
+            />
+            <rect
+              x="19"
+              y="4"
+              width="2"
+              height="4"
+              rx="1"
+              fill="currentColor"
+              opacity="0.6"
+            />
+            <rect
+              x="2"
+              y="3"
+              width="16"
+              height="6"
+              rx="0.5"
+              fill="currentColor"
+            />
+          </svg>
+          {{ device.battery }}%
+        </span>
+      </div>
+
+      <div class="status-row">
+        <span
+          class="label"
+          [class.active]="device.active"
+          [class.inactive]="!device.active"
+        >
+          {{
+            device.active
+              ? ("SENSOR.ACTIVE" | translate)
+              : ("SENSOR.INACTIVE" | translate)
+          }}
+        </span>
+        <span
+          class="status-indicator"
+          [class.active]="device.active"
+          [class.inactive]="!device.active"
+        ></span>
+      </div>
+
+      <!-- Assign or edit location -->
+      <div *ngIf="device.pointName; else assignLocation">
+        <div class="status-row">
+          <span class="edit-location-label">{{
+            "SENSOR.EDIT_SENSOR" | translate | truncate : 15
+          }}</span>
+          <img
+            src="./assets/sensor-edit-assign-point.svg"
+            [alt]="'SENSOR.EDIT_ALT' | translate"
+            (click)="
+              $event.stopPropagation();
+              openAssignModal(
+                device.id,
+                device.name,
+                device.description,
+                device.organizationId,
+                device.buildingId,
+                device.floorId,
+                device.sectionId,
+                device.pointId
+              )
+            "
+          />
+        </div>
+      </div>
+
+      <ng-template #assignLocation>
+        <div class="status-row">
+          <span class="assign-label">{{
+            "SENSOR.ASSIGN_LOCATION" | translate | truncate : 15
+          }}</span>
+          <img
+            src="./assets/sensor-assign-point.svg"
+            [alt]="'SENSOR.ASSIGN_ALT' | translate"
+            (click)="
+              $event.stopPropagation();
+              openAssignModal(
+                device.id,
+                device.name,
+                device.description,
+                device.organizationId,
+                device.buildingId,
+                device.floorId,
+                device.sectionId,
+                device.pointId
+              )
+            "
+          />
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Sensor data values -->
+    <div class="w-100" *ngIf="device.data && device.data.length > 0">
+      <div class="w-100 d-flex align-items-center justify-center gap-3">
+        <div class="values-info">
+          <div *ngFor="let item of getDisplayedData(device)" class="value-item">
+            <div class="key">{{ item.key | truncate : 10 }}</div>
+            <div class="value">{{ item.value || "0" | truncate : 12 }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

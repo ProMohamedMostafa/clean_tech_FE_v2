@@ -1,0 +1,179 @@
+<div
+  class="modal fade show d-block"
+  tabindex="-1"
+  role="dialog"
+  aria-modal="true"
+  style="background-color: rgba(0, 0, 0, 0.5)"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="my-profile-title">
+        <div class="title-container">
+          <div class="title-bage"></div>
+          <div class="title-info">
+            <h1 class="mb-0">
+              {{
+                isEditMode
+                  ? ("FEEDBACK.EDIT_QUESTION" | translate)
+                  : ("FEEDBACK.CREATE_QUESTION" | translate)
+              }}
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group mb-3">
+          <label class="shift-form-label">{{
+            "FEEDBACK.QUESTION_NAME" | translate
+          }}</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="questionText"
+            [placeholder]="'FEEDBACK.QUESTION_PLACEHOLDER' | translate"
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="shift-form-label">{{
+            "FEEDBACK.SELECT_TYPE" | translate
+          }}</label>
+          <div class="tabs-container">
+            <ul class="nav nav-tabs">
+              <li class="nav-item" *ngFor="let type of questionTypes">
+                <a
+                  class="nav-link"
+                  [class.active]="selectedType === type.value"
+                  (click)="selectedType = type.value; onTypeChange()"
+                >
+                  {{ type.label | translate }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Rating Type Selector - Only show when Rating is selected -->
+        <div class="form-group mb-3" *ngIf="showRatingTypeSelector()">
+          <label class="shift-form-label">{{
+            "FEEDBACK.RATING_TYPE" | translate
+          }}</label>
+          <div class="rating-type-selector">
+            <div
+              *ngFor="let ratingType of ratingTypes"
+              class="rating-type-option"
+              [class.active]="selectedRatingType === ratingType.value"
+              (click)="
+                selectedRatingType = ratingType.value; onRatingTypeChange()
+              "
+            >
+              <span class="rating-type-icon">{{ ratingType.icon }}</span>
+              <span class="rating-type-label">{{
+                ratingType.label | translate
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options Section -->
+        <div class="form-group mb-3" *ngIf="showOptions()">
+          <label class="shift-form-label">{{
+            "FEEDBACK.OPTIONS" | translate
+          }}</label>
+          <div
+            class="options-container"
+            cdkDropList
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div
+              *ngFor="let option of options; let i = index"
+              class="option-item"
+              cdkDrag
+              [cdkDragDisabled]="isRatingType()"
+            >
+              <div class="drag-handle" cdkDragHandle *ngIf="!isRatingType()">
+                <i class="fas fa-grip-vertical"></i>
+              </div>
+
+              <button
+                class="image-upload-btn"
+                (click)="triggerImageUpload(i)"
+                type="button"
+                *ngIf="!isRatingType()"
+              >
+                <i class="fas fa-cloud-upload-alt"></i>
+              </button>
+              <input
+                type="file"
+                #fileInput
+                [attr.data-index]="i"
+                style="display: none"
+                (change)="handleImageUpload($event, i)"
+                accept="image/png, image/jpeg, image/gif, image/svg+xml"
+                *ngIf="!isRatingType()"
+              />
+
+              <input
+                *ngIf="!isRatingType()"
+                type="text"
+                class="form-control option-input"
+                [(ngModel)]="option.text"
+                [placeholder]="'FEEDBACK.OPTION_PLACEHOLDER' | translate"
+              />
+
+              <div *ngIf="isRatingType()" class="rating-label-display">
+                {{ getRatingLabel(i) }}
+              </div>
+
+              <button
+                class="remove-option-btn"
+                (click)="removeOption(i)"
+                *ngIf="!isRatingType()"
+                [title]="'FEEDBACK.REMOVE_OPTION' | translate"
+              >
+                ×
+              </button>
+
+              <img
+                *ngIf="option.image?.preview && !isRatingType()"
+                [src]="option.image?.preview"
+                class="option-image-preview"
+                [alt]="'FEEDBACK.OPTION_IMAGE_ALT' | translate"
+              />
+
+              <div *ngIf="isRatingType()" class="rating-icon-display">
+                {{ getRatingIcon(i) }}
+              </div>
+            </div>
+
+            <button
+              class="add-option-btn"
+              (click)="addOption()"
+              *ngIf="!isRatingType()"
+              [disabled]="!canAddMoreOptions()"
+              [title]="!canAddMoreOptions() ? ('FEEDBACK.MAX_OPTIONS_REACHED' | translate) : ('FEEDBACK.ADD_OPTION' | translate)"
+            >
+              <i class="fas fa-plus"></i>
+              {{ "FEEDBACK.ADD_OPTION" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn apply-btn" (click)="onSave()">
+          {{
+            isEditMode
+              ? ("FEEDBACK.UPDATE" | translate)
+              : ("FEEDBACK.CREATE" | translate)
+          }}
+        </button>
+        <button type="button" class="btn clear-btn" (click)="onClose()">
+          {{ "FEEDBACK.CANCEL" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show"></div>

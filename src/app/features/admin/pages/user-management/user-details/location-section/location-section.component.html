@@ -1,0 +1,334 @@
+<!-- Loading & Error Messages -->
+@if (loading) {
+<div class="loading-container" aria-live="polite" aria-busy="true">
+  <i class="fas fa-spinner fa-spin loading-icon"></i>
+  <p>{{ "DETAILS.USER_LOCATION.MESSAGES.LOADING_DATA" | translate }}</p>
+</div>
+} @if (error) {
+<div class="error-container" aria-live="polite">
+  <i class="fas fa-exclamation-circle error-icon"></i>
+  <p>{{ error | translate }}</p>
+  <button class="retry-btn" (click)="retryLoading()">
+    {{ "DETAILS.USER_LOCATION.MESSAGES.RETRY" | translate }}
+  </button>
+</div>
+} @if (userLevelData) {
+<div class="data-container scrollable-data-section">
+  @if (!loading && !error) {
+  <div>
+    @if (userLevelData) {
+    <div class="data-container">
+      <!-- Table for Areas -->
+      <div class="section-spacing">
+        <h4>{{ "DETAILS.USER_LOCATION.TABLES.AREAS" | translate }}</h4>
+        @if (userLevelData.areas && userLevelData.areas.length) {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.AREA_NAME" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.COUNTRY" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (area of userLevelData.areas; track area) {
+              <tr>
+                <td>
+                  <a
+                    (click)="navigateToArea(area.id)"
+                    class="area-link"
+                    aria-label="View area details"
+                  >
+                    {{ area.name | translate }}
+                  </a>
+                </td>
+                <td>{{ area.countryName | translate }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        } @if (!userLevelData.areas?.length) {
+        <div class="no-data-container">
+          <i class="fas fa-map-marked-alt no-data-icon"></i>
+          <p>
+            {{ "DETAILS.USER_LOCATION.TABLES.NO_AREAS_AVAILABLE" | translate }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- Table for Cities -->
+      <div class="section-spacing">
+        <h4>{{ "DETAILS.USER_LOCATION.TABLES.CITIES" | translate }}</h4>
+        @if (userLevelData.cities && userLevelData.cities.length) {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.CITY_NAME" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.AREA_NAME" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.COUNTRY" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (city of userLevelData.cities; track city) {
+              <tr>
+                <td>
+                  <a
+                    (click)="navigateToCity(city.id)"
+                    class="area-link"
+                    aria-label="View city details"
+                  >
+                    {{ city.name | translate }}
+                  </a>
+                </td>
+                <td>{{ city.areaName | translate }}</td>
+                <td>{{ city.countryName | translate }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        } @if (!userLevelData.cities?.length) {
+        <div class="no-data-container">
+          <i class="fas fa-city no-data-icon"></i>
+          <p>
+            {{ "DETAILS.USER_LOCATION.TABLES.NO_CITIES_AVAILABLE" | translate }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- Table for Buildings -->
+      <div class="section-spacing">
+        <h4>{{ "DETAILS.USER_LOCATION.TABLES.BUILDINGS" | translate }}</h4>
+        @if (userLevelData.buildings && userLevelData.buildings.length) {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.BUILDING_NAME" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.CITY" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.AREA" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.COUNTRY" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (building of userLevelData.buildings; track building) {
+              <tr>
+                <td>
+                  <a
+                    (click)="navigateToBuilding(building.id)"
+                    class="area-link"
+                    aria-label="View building details"
+                  >
+                    {{ building.name | translate }}
+                  </a>
+                </td>
+                <td>{{ building.cityName | translate }}</td>
+                <td>{{ building.areaName | translate }}</td>
+                <td>{{ building.countryName | translate }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        } @if (!userLevelData.buildings?.length) {
+        <div class="no-data-container">
+          <i class="fas fa-building no-data-icon"></i>
+          <p>
+            {{
+              "DETAILS.USER_LOCATION.TABLES.NO_BUILDINGS_AVAILABLE" | translate
+            }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- Table for Floors -->
+      <div class="section-spacing">
+        <h4>{{ "DETAILS.USER_LOCATION.TABLES.FLOORS" | translate }}</h4>
+        @if (userLevelData.floors && userLevelData.floors.length) {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.FLOOR_NAME" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.BUILDING" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.CITY" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.COUNTRY" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (floor of userLevelData.floors; track floor) {
+              <tr>
+                <td>
+                  <a
+                    (click)="navigateToFloor(floor.id)"
+                    class="area-link"
+                    aria-label="View floor details"
+                  >
+                    {{ floor.name | translate }}
+                  </a>
+                </td>
+                <td>{{ floor.buildingName | translate }}</td>
+                <td>{{ floor.cityName | translate }}</td>
+                <td>{{ floor.countryName | translate }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        } @if (!userLevelData.floors?.length) {
+        <div class="no-data-container">
+          <i class="fas fa-layer-group no-data-icon"></i>
+          <p>
+            {{ "DETAILS.USER_LOCATION.TABLES.NO_FLOORS_AVAILABLE" | translate }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- Table for Sections -->
+      <div class="section-spacing">
+        <h4>{{ "DETAILS.USER_LOCATION.TABLES.SECTIONS" | translate }}</h4>
+        @if (userLevelData.sections && userLevelData.sections.length) {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.SECTION_NAME" | translate }}
+                </th>
+
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.FLOOR" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.BUILDING" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.CITY" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (section of userLevelData.sections; track section) {
+              <tr>
+                <td>
+                  <a
+                    (click)="navigateToSection(section.id)"
+                    class="area-link"
+                    aria-label="View section details"
+                  >
+                    {{ section.name | translate }}
+                  </a>
+                </td>
+                <td>{{ section.floorName | translate }}</td>
+                <td>{{ section.buildingName | translate }}</td>
+                <td>{{ section.cityName | translate }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        } @if (!userLevelData.sections?.length) {
+        <div class="no-data-container">
+          <i class="fas fa-object-group no-data-icon"></i>
+          <p>
+            {{
+              "DETAILS.USER_LOCATION.TABLES.NO_SECTIONS_AVAILABLE" | translate
+            }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- Table for Points -->
+      <div class="section-spacing">
+        <h4>{{ "DETAILS.USER_LOCATION.TABLES.POINTS" | translate }}</h4>
+        @if (userLevelData.points && userLevelData.points.length) {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.POINT_NAME" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.SECTION" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.FLOOR" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.BUILDING" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "DETAILS.USER_LOCATION.TABLES.CITY" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (point of userLevelData.points; track point) {
+              <tr>
+                <td>
+                  <a
+                    (click)="navigateToPoint(point.id)"
+                    class="area-link"
+                    aria-label="View point details"
+                  >
+                    {{ point.name | translate }}
+                  </a>
+                </td>
+                <td>{{ point.sectionName | translate }}</td>
+                <td>{{ point.floorName | translate }}</td>
+                <td>{{ point.buildingName | translate }}</td>
+                <td>{{ point.cityName | translate }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        } @if (!userLevelData.points?.length) {
+        <div class="no-data-container">
+          <i class="fas fa-map-marker-alt no-data-icon"></i>
+          <p>
+            {{ "DETAILS.USER_LOCATION.TABLES.NO_POINTS_AVAILABLE" | translate }}
+          </p>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
+}

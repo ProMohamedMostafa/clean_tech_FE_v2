@@ -1,0 +1,56 @@
+<!-- feedback-module.component.html -->
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Page Title -->
+  <app-page-title translationKey="titles.FEEDBACK_MODULE" />
+
+  <!-- Filter Bar -->
+  <app-feedback-filter-bar
+    [showCreateButton]="isAdmin()"
+    [showAssignButton]="false"
+    [showDeleteButton]="false"
+    [showExportButtons]="true"
+    [showPrintButton]="true"
+    [searchPlaceholder]="''"
+    [filterModalTitle]="'FEEDBACK_MODULE.FILTER_TITLE'"
+    (searchChange)="onSearchChange($event)"
+    (createClick)="onCreateFeedback()"
+    (deleteClick)="onBulkDelete()"
+    (filterClick)="openFilterModal()"
+  ></app-feedback-filter-bar>
+
+  <!-- Create/Edit Feedback Modal -->
+  <!-- Replace this section: -->
+  <app-create-feedback-modal
+    *ngIf="showCreateModal"
+    [mode]="modalMode"
+    [editData]="editingFeedback"
+    (feedbackCreated)="handleCreate($event)"
+    (feedbackUpdated)="handleEdit($event)"
+    (modalClosed)="closeCreateModal()"
+  ></app-create-feedback-modal>
+
+  <app-feedback-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterChange($event)"
+    (close)="showFilterModal = false"
+  ></app-feedback-filter>
+
+  <!-- Feedback Container -->
+  <div class="feedback-container">
+    <app-feedback-container
+      [feedbacks]="feedbacks"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [totalCount]="totalCount"
+      [pageSize]="pageSize"
+      (contentTypeChanged)="onContentTypeChange($event)"
+      (pageChanged)="onPageChange($event)"
+      (pageSizeChanged)="onPageSizeChange($event)"
+      (viewFeedback)="onViewFeedback($event)"
+      (editFeedback)="onEditFeedback($event)"
+      (deleteFeedback)="onDeleteFeedback($event)"
+    ></app-feedback-container>
+  </div>
+</div>

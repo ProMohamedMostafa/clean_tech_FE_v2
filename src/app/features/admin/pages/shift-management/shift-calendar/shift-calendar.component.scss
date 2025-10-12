@@ -1,0 +1,180 @@
+/* == Main Container == */
+.calendar-container-upgraded {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: auto;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.05);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+/* == Header == */
+.calendar-header-upgraded {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f4f9ff;
+  padding: 16px 28px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid #d6eaff;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.calendar-month-title {
+  font-size: 24px;
+  color: #033e8c;
+  font-weight: 700;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.calendar-nav-btn {
+  font-size: 15px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #0077b6;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.calendar-nav-btn:hover {
+  background-color: #005b91;
+}
+
+/* == Day Cell Style == */
+.mwl-calendar-month-view .cal-day-cell {
+  padding: 6px;
+  border-radius: 10px;
+  transition: 0.2s ease;
+}
+.mwl-calendar-month-view .cal-day-cell:hover {
+  background-color: #eef9ff;
+  box-shadow: 0 0 0 2px #cdeaff inset;
+  transform: scale(1.015);
+}
+
+/* == Day Number == */
+.day-number {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #0b3c5d;
+}
+
+/* == Event Card == */
+.event-card {
+  background: #e6f4ff;
+  border-left: 4px solid #0096c7;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  transition: 0.3s ease;
+}
+.event-card:hover {
+  background: #d4efff;
+  transform: translateY(-2px);
+}
+
+/* == Event Details == */
+.event-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #023e8a;
+}
+.event-time {
+  font-size: 12px;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* == Override Calendar Dots == */
+.mwl-calendar-month-view .cal-event {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* == Today Badge == */
+.today-badge {
+  background-color: #ffecb3;
+  color: #b28704;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+/* == Responsive Design == */
+@media (max-width: 1024px) {
+  .calendar-header-upgraded {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 20px;
+  }
+
+  .calendar-month-title {
+    font-size: 20px;
+  }
+
+  .calendar-nav-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-container-upgraded {
+    padding: 16px;
+  }
+
+  .calendar-header-upgraded {
+    gap: 12px;
+  }
+
+  .calendar-month-title {
+    font-size: 18px;
+  }
+
+  .day-number {
+    font-size: 14px;
+  }
+
+  .event-title {
+    font-size: 13px;
+  }
+
+  .event-time {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-header-upgraded {
+    padding: 12px;
+  }
+
+  .calendar-month-title {
+    font-size: 16px;
+  }
+
+  .calendar-nav-btn {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .event-card {
+    padding: 5px 8px;
+  }
+
+  .today-badge {
+    font-size: 10px;
+    padding: 1px 5px;
+  }
+}

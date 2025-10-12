@@ -1,0 +1,140 @@
+<!-- feedback-details.component.html -->
+<div class="page-container">
+  <!-- ========================================== -->
+  <!-- HEADER SECTION - Title and Action Buttons -->
+  <!-- ========================================== -->
+  <div class="my-profile-title">
+    <div class="title-container">
+      <!-- Title badge (colored left border indicator) -->
+      <div class="title-bage"></div>
+
+      <!-- Main page title -->
+      <div class="title-info">
+        <h1 class="mb-0">{{ "FEEDBACK_DETAILS.TITLE" | translate }}</h1>
+      </div>
+
+      <!-- Action buttons container (right aligned) -->
+      <div class="action-buttons">
+        <!-- Edit feedback device button -->
+        <button
+          class="btn btn-edit"
+          (click)="showCreateModal = true; editingQuestion = null"
+        >
+          <i class="fas fa-edit"></i>
+          <span class="btn-text">{{
+            "FEEDBACK_DETAILS.EDIT" | translate
+          }}</span>
+        </button>
+
+        <!-- Delete feedback device button -->
+        <button
+          class="btn btn-delete"
+          (click)="onDeleteFeedback(deviceDetails!)"
+        >
+          <i class="fas fa-trash-alt"></i>
+          <span class="btn-text">{{
+            "FEEDBACK_DETAILS.DELETE" | translate
+          }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================= -->
+  <!-- MAIN CONTENT AREA                      -->
+  <!-- ======================================= -->
+  <div class="page-content">
+    <!-- ===== FEEDBACK DEVICE INFO SECTION ===== -->
+    <!-- Component displaying feedback name and hierarchical location -->
+    <app-feedback-name-location
+      [feedbackName]="feedbackName"
+      [locationData]="locationData"
+    >
+    </app-feedback-name-location>
+
+    <!-- ===== QUESTIONS MANAGEMENT SECTION ===== -->
+    <div class="feedback-container">
+      <!-- Filter and Action Bar -->
+      <!-- Controls for searching, filtering, and bulk operations on questions -->
+      <app-feedback-filter-bar
+        [showCreateButton]="false"
+        [showAssignButton]="isAdmin()"
+        [showDeleteButton]="false"
+        [showExportButtons]="true"
+        [showPrintButton]="true"
+        [searchPlaceholder]="'QUESTION_MANAGEMENT.SEARCH_PLACEHOLDER'"
+        [filterModalTitle]="'QUESTION_MANAGEMENT.FILTER_TITLE'"
+        (searchChange)="onSearchChange($event)"
+        (createClick)="onCreateQuestion()"
+        (assignClick)="onAssignQuestion()"
+        (deleteClick)="onBulkDelete()"
+        (filterClick)="openFilterModal()"
+      >
+      </app-feedback-filter-bar>
+
+      <!-- Questions List Container -->
+      <!-- Displays paginated list of questions with CRUD operations -->
+      <app-question-container
+        [feedbacks]="questions"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [totalCount]="totalCount"
+        [pageSize]="pageSize"
+        [showButtons]="false"
+        [showCheck]="false"
+        (pageChanged)="onPageChange($event)"
+        (pageSizeChanged)="onPageSizeChange($event)"
+        (editFeedback)="onEditQuestion($event)"
+        (deleteFeedback)="onDeleteQuestion($event)"
+        (selectAllChanged)="onSelectAllChanged($event)"
+        (questionSelectionChanged)="
+          onQuestionSelectionChanged($event.questionId, $event.isSelected)
+        "
+      >
+      </app-question-container>
+    </div>
+  </div>
+
+  <!-- ======================================= -->
+  <!-- MODAL DIALOGS SECTION                  -->
+  <!-- ======================================= -->
+
+  <!-- Add Question to Feedback Modal -->
+  <!-- Modal for assigning existing questions to this feedback device -->
+  <app-add-feedback-question-modal
+    *ngIf="showAddQuestionModal"
+    [sectionId]="deviceDetails?.sectionId!"
+    [sectionUsageId]="feedbackId ? +feedbackId : 0"
+    (close)="closeAddQuestionModal()"
+    (saved)="loadQuestions()"
+  >
+  </app-add-feedback-question-modal>
+
+  <!-- Question Filter Modal -->
+  <!-- Advanced filtering options for questions list -->
+  <app-question-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  >
+  </app-question-filter>
+
+  <app-create-feedback-modal
+    *ngIf="showCreateModal"
+    [mode]="editingQuestion ? 'edit' : 'edit'"
+    [editData]="editingQuestion || deviceDetails"
+    (feedbackCreated)="handleCreate($event)"
+    (feedbackUpdated)="handleEdit($event)"
+    (modalClosed)="closeCreateModal()"
+  ></app-create-feedback-modal>
+
+  <!-- ======================================= -->
+  <!-- LOADING OVERLAY                        -->
+  <!-- ======================================= -->
+  <!-- Global loading indicator for async operations -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>

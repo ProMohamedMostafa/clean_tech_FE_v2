@@ -1,0 +1,208 @@
+<!-- session-details-modal.component.html -->
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">{{ 'SESSION_DETAILS.TITLE' | translate }}</h2>
+      <button class="close-button" (click)="onClose()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Session Info -->
+    <div class="session-info" *ngIf="sessionData">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">{{ 'SESSION_DETAILS.BUILDING' | translate }}:</span>
+          <span class="info-value">{{ sessionData.buildingName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'SESSION_DETAILS.FLOOR' | translate }}:</span>
+          <span class="info-value">{{ sessionData.floorName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'SESSION_DETAILS.SECTION' | translate }}:</span>
+          <span class="info-value">{{ sessionData.sectionName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'SESSION_DETAILS.DATE' | translate }}:</span>
+          <span class="info-value">{{ formatDate(sessionData.date) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'SESSION_DETAILS.TIME' | translate }}:</span>
+          <span class="info-value">{{ sessionData.time }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="questions-container" *ngIf="sessionData?.questions?.length">
+      <div class="questions-list">
+        <div
+          *ngFor="let question of sessionData.questions; let i = index"
+          class="question-card"
+          [class.answered]="hasAnswer(question)"
+          [class.unanswered]="!hasAnswer(question)"
+        >
+          <!-- Question Header -->
+          <div class="question-header">
+            <span class="question-number">{{ 'COMMON.QUESTION' | translate }}{{ i + 1 }}</span>
+            <span
+              class="question-type-badge"
+              [class]="'type-' + question.type.toLowerCase()"
+            >
+              {{ getQuestionTypeTranslation(question.type) }}
+            </span>
+            <span class="answer-status" [class.answered]="hasAnswer(question)">
+              {{ hasAnswer(question) ? ('SESSION_DETAILS.ANSWERED' | translate) : ('SESSION_DETAILS.UNANSWERED' | translate) }}
+            </span>
+          </div>
+
+          <!-- Question Text -->
+          <h3 class="question-text">{{ question.questionText }}</h3>
+
+          <!-- Answers -->
+          <div class="answer-section" *ngIf="hasAnswer(question)">
+            <!-- Radio Answer -->
+            <div
+              *ngIf="question.type === 'Radio' && question.choiceIdAnswer"
+              class="answer-content"
+            >
+              <!-- <div class="selected-choice">
+                <div class="choice-content">
+                  <div
+                    *ngIf="getSelectedChoice(question)?.image"
+                    class="choice-image-container"
+                  >
+                    <img
+                      [src]="getSelectedChoice(question)?.image"
+                      [alt]="
+                        getSelectedChoice(question)?.text || ('COMMON.SELECTED_CHOICE' | translate)
+                      "
+                      class="choice-image"
+                      (error)="handleImageError($event)"
+                    />
+                  </div>
+                  <div
+                    *ngIf="getSelectedChoice(question)?.icon"
+                    class="choice-icon"
+                  >
+                    {{ getSelectedChoice(question)?.icon }}
+                  </div>
+                  <span
+                    class="choice-text"
+                    *ngIf="getSelectedChoice(question)?.text"
+                  >
+                    {{ getSelectedChoice(question)?.text }}
+                  </span>
+                </div>
+              </div> -->
+            </div>
+
+            <!-- Rating Answer -->
+            <div
+              *ngIf="question.type === 'Rating' && question.rateAnswer !== null"
+              class="answer-content"
+            >
+              <div class="rating-answer">
+                <span class="rating-value">{{ question.rateAnswer }}</span>
+                <span class="rating-label">
+                  {{ 'SESSION_DETAILS.OUT_OF' | translate }} {{ getRatingScale(question) }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Boolean Answer -->
+            <div
+              *ngIf="question.type === 'Bool' && question.boolAnswer !== null"
+              class="answer-content"
+            >
+              <div
+                class="bool-answer"
+                [class.true]="question.boolAnswer"
+                [class.false]="!question.boolAnswer"
+              >
+                {{ question.boolAnswer ? ('COMMON.TRUE' | translate) : ('COMMON.FALSE' | translate) }}
+              </div>
+            </div>
+
+            <!-- Text Answer -->
+            <div
+              *ngIf="question.type === 'Text' && question.textAnswer"
+              class="answer-content"
+            >
+              <div class="text-answer">
+                {{ question.textAnswer }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Unanswered State -->
+          <div *ngIf="!hasAnswer(question)" class="unanswered-state">
+            <span class="unanswered-text">{{ 'SESSION_DETAILS.NO_ANSWER' | translate }}</span>
+          </div>
+
+          <!-- Rating Scale Display (for rating questions with icon choices) -->
+          <div
+            *ngIf="question.type === 'Rating' && shouldShowChoices(question)"
+            class="rating-scale"
+          >
+            <div class="scale-label">{{ 'SESSION_DETAILS.RATING_SCALE' | translate }}:</div>
+            <div class="scale-icons">
+              <span *ngFor="let choice of question.choices" class="scale-icon">
+                {{ choice.icon }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Choices List (for other question types) -->
+          <div
+            *ngIf="shouldShowChoices(question) && question.type !== 'Rating'"
+            class="choices-list"
+          >
+            <div
+              *ngFor="let choice of question.choices"
+              class="choice-item"
+              [class.selected]="isChoiceSelected(question, choice.id)"
+            >
+              <div class="choice-content">
+                <div *ngIf="choice.image" class="choice-thumb-container">
+                  <img
+                    [src]="choice.image"
+                    [alt]="choice.text || ('COMMON.CHOICE_OPTION' | translate)"
+                    class="choice-thumb"
+                    (error)="handleImageError($event)"
+                  />
+                </div>
+                <div *ngIf="choice.icon" class="choice-icon thumb">
+                  {{ choice.icon }}
+                </div>
+                <span class="choice-text" *ngIf="choice.text">{{
+                  choice.text
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="close-modal-btn" (click)="onClose()">{{ 'COMMON.CLOSE' | translate }}</button>
+    </div>
+  </div>
+</div>

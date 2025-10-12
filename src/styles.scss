@@ -1,0 +1,60 @@
+@use "bootstrap/scss/bootstrap";
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", "Roboto", "Helvetica Neue", sans-serif;
+  font-size: 16px; // default font size
+  line-height: 1.6;
+}
+
+// RTL styles automatically based on html[dir="rtl"]
+html[dir="rtl"],
+body[dir="rtl"] {
+  font-family: "Cairo", "Tajawal", "Amiri", sans-serif;
+  direction: rtl;
+  text-align: right;
+  font-size: 18px; // increased font size for Arabic
+
+  // Optional: headings, buttons, common elements
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  a,
+  button {
+    font-family: "Cairo", "Tajawal", "Amiri", sans-serif;
+    font-size: inherit; // inherit larger size from body
+  }
+
+  // Optional: reverse Bootstrap margins/paddings if needed
+  .ms-auto {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+  }
+  .me-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+  }
+}

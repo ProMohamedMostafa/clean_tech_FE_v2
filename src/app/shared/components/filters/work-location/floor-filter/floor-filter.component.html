@@ -1,0 +1,86 @@
+<!-- Modal -->
+<div class="modal fade show">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <app-page-title
+          translationKey="FILTER_SECTION.MODAL.TITLE"
+        ></app-page-title>
+      </div>
+      <div class="modal-body">
+        <!-- Organization Selection -->
+        <div class="form-group">
+          <label for="organization" class="step-label">
+            {{ "FILTER_SECTION.MODAL.ORGANIZATION_LABEL" | translate }}
+          </label>
+          <select
+            id="organization"
+            class="form-control"
+            [(ngModel)]="selectedOrganization"
+            (change)="onOrganizationChange($event)"
+            [disabled]="isLoadingOrganizations"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_ORGANIZATIONS" | translate }}
+            </option>
+            <option *ngFor="let org of organizations" [value]="org.id">
+              {{ org.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingOrganizations" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+
+        <!-- Building Selection -->
+        <div class="form-group mt-3">
+          <label for="building" class="step-label">
+            {{ "FILTER_SECTION.MODAL.BUILDING_LABEL" | translate }}
+          </label>
+          <select
+            id="building"
+            class="form-control"
+            [(ngModel)]="selectedBuilding"
+            (change)="onBuildingChange($event)"
+            [disabled]="!selectedOrganization || isLoadingBuildings"
+          >
+            <option value="">
+              {{ "FILTER_SECTION.MODAL.ALL_BUILDINGS" | translate }}
+            </option>
+            <option *ngFor="let building of buildings" [value]="building.id">
+              {{ building.name }}
+            </option>
+          </select>
+          <small *ngIf="isLoadingBuildings" class="form-text text-muted">
+            {{ "COMMON.LOADING" | translate }}...
+          </small>
+        </div>
+      </div>
+
+      <div
+        class="modal-footer d-flex justify-content-between align-items-center"
+      >
+        <div class="mx-auto d-flex gap-2">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="btn clear-btn"
+            (click)="closeFilterModal()"
+          >
+            {{ "FILTER_SECTION.MODAL.CLOSE_BUTTON" | translate }}
+          </button>
+
+          <!-- Apply Filter Button -->
+          <button
+            type="button"
+            class="btn add-btn"
+            (click)="applyFilter()"
+            [disabled]="!selectedOrganization"
+          >
+            {{ "FILTER_SECTION.MODAL.APPLY_BUTTON" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

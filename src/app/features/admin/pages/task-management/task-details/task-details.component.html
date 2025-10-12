@@ -1,0 +1,49 @@
+<div class="container">
+  <div class="parent">
+    <div class="div1">
+      <task-header
+        [task]="task"
+        [showEditButton]="shouldShowEditButton()"
+        (edit)="navigateToEdit(task?.id)"
+      ></task-header>
+    </div>
+
+    <div class="div8">
+      <div class="inner-parent">
+        <div class="div10">
+          <task-description [task]="task"></task-description>
+        </div>
+        <div class="div11">
+          <task-files [files]="task?.files || []"></task-files>
+        </div>
+        <div class="div12">
+          <task-details-table [task]="task"></task-details-table>
+        </div>
+        <div class="div13">
+          <task-comments
+            class="w-100"
+            [comments]="task?.comments || []"
+            [userImage]="userImage"
+            [taskId]="taskId"
+            (commentAdded)="onCommentAdded($event)"
+          >
+          </task-comments>
+        </div>
+        <div class="div14">
+          <task-team [users]="task?.users || []"></task-team>
+        </div>
+      </div>
+    </div>
+
+    <div class="div9">
+      <ng-container *ngIf="!isFromTeamTasks()">
+        <task-actions
+          [task]="task"
+          [statusId]="taskStatusId"
+          (action)="onTaskAction($event)"
+          [fromReceivedTasks]="isFromReceivedTasks()"
+        ></task-actions>
+      </ng-container>
+    </div>
+  </div>
+</div>

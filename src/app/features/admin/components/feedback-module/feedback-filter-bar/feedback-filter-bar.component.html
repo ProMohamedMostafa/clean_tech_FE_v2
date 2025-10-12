@@ -1,0 +1,47 @@
+<div class="filter-container">
+  <!-- search and filter section -->
+  <div class="search-filter-section">
+    <div class="search-input-container">
+      <!-- Search Bar Section -->
+      <input
+        type="text"
+        class="search-bar"
+        [placeholder]="searchPlaceholder | translate"
+        aria-label="Search"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      />
+    </div>
+
+    <!-- Filter Button -->
+    <div class="filter-button-container">
+      <button class="filter-btn" (click)="onFilterClick()">
+        <i class="fas fa-filter"></i> {{ "user.FILTER" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Action buttons section -->
+  <div class="action-buttons">
+    <!-- Delete Button -->
+    @if (showDeleteButton) {
+    <button class="btn delete-btn" (click)="onDeleteClick()">
+      <i class="fa-solid fa-trash-can"></i> {{ "user.DELETE" | translate }}
+    </button>
+    }
+
+    <!-- Assign Button -->
+    @if (showAssignButton) {
+    <button class="btn assign-btn" (click)="onAssignClick()">
+      <i class="fas fa-user-plus"></i> {{ "user.ASSIGN" | translate }}
+    </button>
+    }
+
+    <!-- Create Button -->
+    @if (showCreateButton) {
+    <button class="btn create-btn" (click)="onCreateClick()">
+      <i class="fas fa-plus"></i> {{ "user.CREATE" | translate }}
+    </button>
+    }
+  </div>
+</div>

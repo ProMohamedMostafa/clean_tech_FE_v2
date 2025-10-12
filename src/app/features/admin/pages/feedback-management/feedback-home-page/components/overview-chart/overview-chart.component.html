@@ -1,0 +1,73 @@
+<!-- overview-chart.component.html -->
+<div class="overview-chart-container">
+  <!-- Header -->
+  <div class="chart-header">
+    <div class="header-content">
+      <h3 class="chart-title">{{ "dashboard.SYSTEM_OVERVIEW" | translate }}</h3>
+      <div class="title-underline"></div>
+    </div>
+
+    <!-- Filters Button -->
+    <button class="filter-box" (click)="openFilterModal()">
+      <div class="filter-content">
+        <span class="filter-text">{{ "dashboard.FILTERS" | translate }}</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Chart Content -->
+  <div class="chart-content">
+    <div class="chart-wrapper" *ngIf="!isLoading; else loadingTemplate">
+      <div class="polar-chart-container">
+        <canvas
+          baseChart
+          [data]="polarAreaChartData"
+          [options]="polarAreaChartOptions"
+          [type]="'polarArea'"
+        ></canvas>
+
+        <!-- Data Labels on Chart -->
+        <div class="chart-data-labels">
+          <div class="data-label feedbacks-label">
+            <span class="data-value">{{ totalFeedbacks }}</span>
+          </div>
+          <div class="data-label audits-label">
+            <span class="data-value">{{ totalAudits }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loadingTemplate>
+      <div class="loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">{{
+            "dashboard.LOADING" | translate
+          }}</span>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Legend -->
+    <div class="chart-legend">
+      <div class="legend-item">
+        <div class="legend-color feedback-color"></div>
+        <span class="legend-text">{{ "dashboard.FEEDBACKS" | translate }}</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color audit-color"></div>
+        <span class="legend-text">{{ "dashboard.AUDITS" | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Filter Modal -->
+  <div *ngIf="showFilterModal" (click)="closeFilterModal()">
+    <div (click)="$event.stopPropagation()">
+      <app-location-filter
+        (close)="closeFilterModal()"
+        (filterChange)="onFilterChange($event)"
+      ></app-location-filter>
+    </div>
+  </div>
+</div>

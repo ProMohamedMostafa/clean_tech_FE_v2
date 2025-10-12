@@ -1,0 +1,84 @@
+<div class="container-fluid  w-100">
+  <!-- Start Header Section -->
+  <header class="profile-header">
+    <div class="header-content">
+      <div class="title-container">
+        <div class="title-badge"></div>
+        <div class="title-info">
+          <h1>{{ "SENSOR_DETAIL.HEADER.TITLE" | translate }}</h1>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn reload-btn">
+          <i class="fa-solid fa-rotate"></i>
+          <span>{{ "SENSOR_DETAIL.HEADER.UPDATE" | translate }}</span>
+        </button>
+        <button class="btn turn-off-btn" id="powerToggleBtn">
+          <i class="fa-solid fa-power-off"></i>
+          <span>{{ "SENSOR_DETAIL.HEADER.TURN_OFF" | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- End Header Section -->
+
+  <!-- Start Main Part -->
+  <div class="details-main">
+    <!-- top part -->
+    <div class="details-section info-part">
+      <app-sensor-details-info
+        [device]="device"
+        [selectedLimit]="selectedLimit"
+        [assignModal]="assignModalData"
+        [getHoursSinceLastSeen]="getHoursSinceLastSeen"
+        [getValueByKey]="getValueByKey"
+        [selectedLimit]="selectedLimit"
+        (optionSelected)="onSelectOption($event)"
+        [onSaveLimit]="onSaveLimit.bind(this)"
+        [deleteLimit]="deleteLimit.bind(this)"
+        [deleteDevice]="deleteDevice.bind(this)"
+        (showAssignModal)="showAssignModal()"
+        [handleAssignSuccess]="handleAssignSuccess"
+        [handleModalClose]="handleModalClose"
+        [navigateToOrganization]="navigateToOrganization"
+        [navigateToBuilding]="navigateToBuilding"
+        [navigateToFloor]="navigateToFloor"
+        [navigateToSection]="navigateToSection"
+        [navigateToPoint]="navigateToPoint"
+      />
+    </div>
+    <!-- bottom part -->
+    <div class="details-section tasks-part">
+      <!-- Bottom Content -->
+      <app-task-container
+        [tasks]="tasks"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [totalCount]="totalCount"
+        [pageSize]="pageSize"
+        (pageChanged)="onPageChange($event)"
+        (pageSizeChanged)="onPageSizeChange($event)"
+        (viewTask)="navigateToView($event.id)"
+        (editTask)="navigateToEdit($event.id)"
+        (deleteTask)="deleteTask($event.id)"
+        (statusFilterChange)="onStatusFilterChange($event)"
+      />
+    </div>
+    <!-- End Main Part -->
+  </div>
+</div>
+
+<!-- Assign Location Modal -->
+<app-assign-modal
+  *ngIf="assignModalData.show"
+  [sensorId]="assignModalData.sensorId"
+  [sensorName]="assignModalData.sensorName"
+  [sensorDescription]="assignModalData.sensorDescription"
+  [pointId]="assignModalData.pointId"
+  [organizationId]="assignModalData.organizationId"
+  [buildingId]="assignModalData.buildingId"
+  [floorId]="assignModalData.floorId"
+  [sectionId]="assignModalData.sectionId"
+  (saveSuccess)="handleAssignSuccess()"
+  (closeModal)="closeAssignModal()"
+></app-assign-modal>

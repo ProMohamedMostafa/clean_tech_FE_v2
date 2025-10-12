@@ -1,0 +1,136 @@
+<div class="table-section-container">
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          @for (column of columns; track column.key) {
+          <th>{{ column.label | translate }}</th>
+          } @if (actions.length > 0) {
+          <th class="actions-header">
+            {{ "pagination.TABLE_ACTIONS" | translate }}
+          </th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (data && data.length > 0) { @for (item of data; track
+        trackByFn($index, item)) {
+        <tr>
+          @for (column of columns; track column.key) {
+          <td [class.text-left]="column.type !== 'image'">
+            @switch (column.type) { @case ('image') {
+            <div class="cell-image">
+              <img
+                [src]="
+                  getColumnValue(item, column)
+                    ? (column.imageBasePath || '') +
+                      getColumnValue(item, column)
+                    : column.defaultImage || 'assets/user-avater.png'
+                "
+                alt="Image"
+                class="avatar"
+              />
+              @if (item.firstName || item.name) {
+              <span class="name-col">{{ item.firstName || item.name }}</span>
+              }
+            </div>
+            } @case ('date') {
+            <span>{{ getColumnValue(item, column) | date : "short" }}</span>
+            } @default {
+            <span>{{ getColumnValue(item, column) }}</span>
+            } }
+          </td>
+          }
+
+          <!-- Actions Dropdown -->
+          @if (actions.length > 0) {
+          <td class="actions">
+            <div class="dropdown">
+              <button
+                class="dropdown-toggle"
+                type="button"
+                (click)="toggleDropdown($event, item)"
+                [attr.aria-expanded]="isDropdownOpen(item)"
+              >
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <ul class="dropdown-menu" [class.show]="isDropdownOpen(item)">
+                @for (action of actions; track $index) { @if
+                (shouldShowAction(action, item)) {
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="javascript:void(0)"
+                    (click)="executeAction(action, item)"
+                  >
+                    <i [class]="action.icon"></i>
+                    {{ action.label || "" | translate }}
+                  </a>
+                </li>
+                } }
+              </ul>
+            </div>
+          </td>
+          }
+        </tr>
+        } } @else {
+        <tr>
+          <td
+            [colSpan]="columns.length + (actions.length > 0 ? 1 : 0)"
+            class="no-data"
+          >
+            {{ "pagination.TABLE_NO_DATA" | translate }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  @if (showPagination && data && data.length > 0) {
+  <div class="pagination-container">
+    <!-- Previous -->
+    <button
+      class="pagination-btn"
+      (click)="previousPage()"
+      [disabled]="currentPage <= 1"
+    >
+      <i class="bi bi-arrow-left"></i>
+      {{ "pagination.PREVIOUS" | translate }}
+    </button>
+
+    <!-- Page Info -->
+    <span class="page-number">
+      {{ "pagination.PAGINATION_PAGE" | translate }} {{ currentPage }}
+      {{ "pagination.PAGINATION_OF" | translate }} {{ totalPages }}
+    </span>
+
+    <!-- Rows per page -->
+    <div class="rows-select">
+      <label>{{ "pagination.PAGINATION_ROWS" | translate }}:</label>
+      <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="undefined">
+          {{ "pagination.PAGINATION_ALL" | translate }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Next -->
+    <button
+      class="pagination-btn"
+      (click)="nextPage()"
+      [disabled]="currentPage >= totalPages"
+    >
+      {{ "pagination.NEXT" | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+  }
+</div>

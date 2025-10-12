@@ -1,0 +1,54 @@
+<div class="task-actions-container" [dir]="currentDir">
+  <!-- Action buttons -->
+  <div class="action-buttons">
+    <button
+      *ngFor="let action of availableActions"
+      (click)="handleAction(action)"
+      [class]="getButtonClass(action)"
+      [class.destructive]="isDestructiveAction(action)"
+    >
+      <i [class]="getButtonIcon(action)"></i>
+      <span class="button-text">
+        {{ "TASK.ACTIONS." + (action | uppercase) | translate }}
+      </span>
+    </button>
+  </div>
+
+  <!-- Notes Modal (for actions that require notes) -->
+  <div class="modal-overlay" *ngIf="showNotesModal" (click)="cancelNotes()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          {{ "TASK.ACTIONS." + (currentActionType | uppercase) | translate }}
+          {{ "TASK.MODAL.TASK" | translate }}
+        </h3>
+        <button class="close-btn" (click)="cancelNotes()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>{{ "TASK.MODAL.NOTES_REQUIRED" | translate }}</p>
+        <textarea
+          [(ngModel)]="completionNotes"
+          [placeholder]="'TASK.MODAL.ENTER_NOTES' | translate"
+          class="notes-textarea"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cancelNotes()">
+          {{ "TASK.MODAL.CANCEL" | translate }}
+        </button>
+        <button
+          class="btn-submit"
+          (click)="submitWithNotes()"
+          [class]="getButtonClass(currentActionType)"
+        >
+          {{ "TASK.MODAL.SUBMIT" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

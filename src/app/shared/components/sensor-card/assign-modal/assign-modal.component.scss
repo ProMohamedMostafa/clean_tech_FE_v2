@@ -1,0 +1,272 @@
+/* Modal Styles */
+.modal {
+  margin-top: 20px;
+  max-height: 100vh;
+}
+
+.modal-header {
+  border-bottom: 0px;
+}
+
+.modal-footer {
+  border-top: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.my-profile-title {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-bage {
+  width: 8px;
+  height: 24px;
+  background: #025d8d;
+  border-radius: 2px;
+}
+
+.title-info h1 {
+  font-weight: 600;
+  font-size: 24px;
+  color: #31484c;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Edit Sections */
+.edit-section {
+  padding: 16px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  margin-bottom: 20px;
+}
+
+.edit-section .section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #025d8d;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.edit-section .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: #025d8d;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+/* Stepper Styles */
+.location-stepper .stepper-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.stepper-step.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.stepper-step .step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.stepper-step .step-label {
+  font-size: 12px;
+  color: #6c757d;
+  text-align: center;
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stepper-step.active .step-number {
+  background: #025d8d;
+  color: white;
+}
+
+.stepper-step.active .step-label {
+  color: #025d8d;
+  font-weight: 500;
+}
+
+.stepper-connector {
+  flex: 1;
+  height: 2px;
+  background: #e9ecef;
+  margin: 0 8px;
+  position: relative;
+  top: -16px;
+}
+
+.stepper-connector.active {
+  background: #025d8d;
+}
+
+.stepper-content .step-pane {
+  animation: fadeIn 0.3s ease;
+}
+
+.stepper-content .step-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+/* Form Elements */
+.form-label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  display: flex;
+  align-items: flex-end;
+  color: #2c2e3a;
+  margin-bottom: 8px;
+}
+
+.form-select,
+.form-control {
+  background: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-select:focus,
+.form-control:focus {
+  border-color: #025d8d;
+  box-shadow: 0 0 0 0.25rem rgba(2, 93, 141, 0.25);
+}
+
+.form-select option {
+  font-family: sans-serif, "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #373b3f;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.5;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.save-btn {
+  background: #025d8d;
+  color: #ffffff;
+}
+
+.save-btn:hover {
+  background: #014a70;
+}
+
+.cancel-btn {
+  background: #f8f9fa;
+  color: #025d8d;
+  border: 1px solid #dee2e6;
+}
+
+.cancel-btn:hover {
+  background: #e9ecef;
+}
+
+.next-btn,
+.done-btn {
+  background: #025d8d;
+  color: #ffffff;
+}
+
+.next-btn:hover,
+.done-btn:hover {
+  background: #014a70;
+}
+
+.prev-btn {
+  background: #f8f9fa;
+  color: #025d8d;
+  border: 1px solid #dee2e6;
+}
+
+.prev-btn:hover {
+  background: #e9ecef;
+}
+
+.unassign-btn {
+  background-color: #dc3545; /* Bootstrap danger color */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.unassign-btn:hover {
+  background-color: #c82333;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

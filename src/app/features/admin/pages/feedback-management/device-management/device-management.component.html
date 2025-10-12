@@ -1,0 +1,55 @@
+<!-- device-management.component.html -->
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Page Title -->
+  <app-page-title translationKey="titles.DEVICE_MANAGEMENT" />
+
+  <!-- Filter Bar -->
+  <app-feedback-filter-bar
+    [showCreateButton]="isAdmin()"
+    [showAssignButton]="false"
+    [showDeleteButton]="false"
+    [showExportButtons]="true"
+    [showPrintButton]="true"
+    [searchPlaceholder]="''"
+    [filterModalTitle]="'DEVICE_MANAGEMENT.FILTER_TITLE'"
+    (searchChange)="onSearchChange($event)"
+    (createClick)="onCreateDevice()"
+    (deleteClick)="onBulkDelete()"
+    (filterClick)="openFilterModal()"
+  ></app-feedback-filter-bar>
+
+  <!-- Create/Edit Device Modal -->
+  <app-create-device-modal
+    *ngIf="showCreateModal"
+    [mode]="modalMode"
+    [editData]="editingDevice"
+    (deviceCreated)="handleCreate($event)"
+    (deviceUpdated)="handleEdit($event)"
+    (modalClosed)="closeCreateModal()"
+  ></app-create-device-modal>
+
+  <!-- Filter Modal -->
+  <app-feedback-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterChange($event)"
+    (close)="showFilterModal = false"
+  ></app-feedback-filter>
+
+  <!-- Device Container -->
+  <div class="device-container">
+    <app-device-container
+      [devices]="devices"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [totalCount]="totalCount"
+      [pageSize]="pageSize"
+      (pageChanged)="onPageChange($event)"
+      (pageSizeChanged)="onPageSizeChange($event)"
+      (viewDevice)="onViewDevice($event)"
+      (editDevice)="onEditDevice($event)"
+      (deleteDevice)="onDeleteDevice($event)"
+    ></app-device-container>
+  </div>
+</div>

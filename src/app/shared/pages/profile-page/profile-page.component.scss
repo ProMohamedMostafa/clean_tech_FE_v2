@@ -1,0 +1,558 @@
+.add-user-container {
+  background-color: #e4e4e4;
+  padding: 10px;
+  padding: 20px;
+}
+
+.add-user-information {
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 11px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 25px;
+  margin-bottom: 26px;
+}
+/* Header and Image Section */
+.header-image-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Header section */
+.header-container {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 11px;
+  padding: 0px 5px;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  padding: 0px;
+  gap: 10px;
+  width: 300px;
+}
+
+.title-badge {
+  width: 8px;
+  height: 24px;
+  background: #025d8d;
+  border-radius: 2px;
+}
+
+.title-info {
+  max-width: 200px;
+  height: 32px;
+}
+
+.title-info h1 {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 32px;
+  color: #1a1d1f;
+  letter-spacing: -0.02em;
+}
+/* Centered section */
+.center-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Image preview as a circle */
+.image-preview img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Button group styling */
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #025d8d;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-group button:hover {
+  background: #025d8d;
+}
+
+#remove-button {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  color: #33383f;
+}
+
+#remove-button:hover {
+  background-color: #e7e7e7;
+}
+
+/* Form container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Form row */
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Form group */
+.form-group {
+  flex: 1;
+  min-width: calc(33.33% - 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Input styles */
+input {
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 10px 12px 14px;
+  border: 1px solid #c0c2c5;
+  border-radius: 4px;
+}
+
+/* Label styles */
+label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #33383f;
+}
+
+/* Gender section styling */
+.gender-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 90%;
+  padding-top: 5px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.gender-section label {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #33383f;
+}
+
+.gender-options {
+  display: flex;
+  align-items: start;
+  flex-direction: row;
+}
+
+.gender-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  color: #33383f;
+}
+
+input[type="radio"] {
+  accent-color: #00933e; /* Customize the checkbox color */
+}
+
+/* Input and select styles */
+input,
+select {
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 10px 12px 14px;
+  border: 1px solid #c0c2c5;
+  border-radius: 4px;
+}
+
+/* Label styles */
+label {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #33383f;
+}
+
+.buttons-container {
+  margin-right: auto;
+}
+
+.btn-dark {
+  background: #025d8d;
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  line-height: 24px;
+  color: #ffffff;
+}
+.btn-light {
+  padding: 8px 14px;
+  background: #efefef;
+  border-radius: 4px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #33383f;
+  width: 40%;
+}
+
+/* Validation message styling */
+.validation-message {
+  color: #d9534f;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Base styles for larger screens (default) */
+.add-user-container {
+  background-color: #e4e4e4;
+  padding: 20px;
+}
+
+.add-user-information {
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 11px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 25px;
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* For medium and small screen sizes */
+@media (max-width: 768px) {
+  /* Adjust container padding */
+  .add-user-container {
+    padding: 15px;
+  }
+
+  .add-user-information {
+    padding: 15px;
+  }
+
+  /* Stack form fields on smaller screens */
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-group {
+    flex: none;
+    width: 100%;
+  }
+
+  /* Adjust the button widths */
+  .btn-dark {
+    width: 100%;
+  }
+
+  .btn-light {
+    width: 100%;
+  }
+
+  /* Make the profile image smaller on small screens */
+  .image-preview img {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Stack gender options vertically */
+  .gender-options {
+    gap: 10px;
+  }
+
+  /* Reduce the space between the title and form on smaller screens */
+  .title-container {
+    width: 100%;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Further adjustments for very small screens */
+
+  .form-container {
+    padding: 10px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  /* Reduce font sizes on very small screens */
+  .title-info h1 {
+    font-size: 18px;
+  }
+
+  /* Adjust button sizes */
+  .btn-dark,
+  .btn-light {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  /* Make the profile image smaller on very small screens */
+  .image-preview img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.gender-options {
+  display: flex;
+  gap: 16px;
+}
+
+.gender-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Responsive: Stack on small screens */
+@media (max-width: 480px) {
+  .gender-options {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.clear-btn {
+  background: #c8ecff;
+  border-radius: 4px;
+
+  font-family: sans-serif "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 24px;
+  /* identical to box height, or 160% */
+  letter-spacing: -0.01em;
+
+  color: #025d8d;
+
+  /* Inside auto layout */
+  order: 0;
+  flex-grow: 0;
+  padding: 8px 20px;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+
+.toggle-password:hover {
+  color: #333;
+}
+
+/* Make sure the input has enough padding to prevent text behind the icon */
+input[type="password"],
+input[type="text"] {
+  padding-right: 35px;
+  width: 100%;
+}
+
+/* //////////////// */
+
+/* Profile Section Styling */
+.profile-section {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.profile-image-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 100%;
+}
+
+.profile-image-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-image-wrapper:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.profile-image-wrapper:hover .image-overlay {
+  opacity: 1;
+}
+
+.image-overlay i {
+  font-size: 1.5rem;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: #025d8d;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #014a70;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #025d8d;
+  border: 1px solid #025d8d;
+}
+
+.btn-outline:hover {
+  background-color: rgba(2, 93, 141, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-image-wrapper {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-image-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-actions {
+    gap: 0.75rem;
+  }
+}

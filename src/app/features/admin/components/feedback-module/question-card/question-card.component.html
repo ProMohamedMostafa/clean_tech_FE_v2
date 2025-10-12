@@ -1,0 +1,106 @@
+<!-- question-card.component.html - LOCALIZED VERSION -->
+<div class="question-card">
+  <!-- Question Header -->
+  <div class="question-container">
+    <!-- Selection Checkbox -->
+    <div class="checkbox-container">
+      <input
+        *ngIf="showCheck"
+        type="checkbox"
+        [checked]="isSelected || isPreChecked"
+        (change)="onSelectChange($event)"
+        class="question-checkbox"
+        [class.pre-checked]="isPreChecked"
+        [title]="isPreChecked ? ('FEEDBACK.ALREADY_ASSIGNED' | translate) : ''"
+      />
+    </div>
+
+    <!-- Question Text -->
+    <div class="question-text">
+      {{ questionText }}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <!-- Edit Button -->
+      <button
+        *ngIf="showButtons"
+        class="edit-button"
+        (click)="onEdit()"
+        [title]="'FEEDBACK.EDIT_QUESTION' | translate"
+      >
+        <svg class="edit-icon" viewBox="0 0 24 24">
+          <path
+            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+          />
+        </svg>
+      </button>
+
+      <!-- Delete Button -->
+      <button
+        *ngIf="showButtons"
+        class="delete-button"
+        (click)="onDelete()"
+        [title]="'FEEDBACK.DELETE_QUESTION' | translate"
+      >
+        <svg class="delete-icon" viewBox="0 0 24 24">
+          <path
+            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+          />
+        </svg>
+      </button>
+
+      <!-- Expand/Collapse Button -->
+      <button
+        class="expand-button"
+        (click)="onToggleAnswers()"
+        [title]="
+          isCollapsed
+            ? ('FEEDBACK.EXPAND_ANSWERS' | translate)
+            : ('FEEDBACK.COLLAPSE_ANSWERS' | translate)
+        "
+      >
+        <svg
+          class="expand-icon"
+          [class.expanded]="!isCollapsed"
+          viewBox="0 0 24 24"
+        >
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Answers Section -->
+  <div class="answers-row" *ngIf="!isCollapsed">
+    <!-- Show message if no answers available -->
+    <div *ngIf="displayAnswers.length === 0" class="no-answers-message">
+      <span class="text-muted">{{ "FEEDBACK.NO_ANSWERS" | translate }}</span>
+    </div>
+
+    <!-- Answer Items - for both static and regular answers -->
+    <div *ngFor="let answer of displayAnswers" class="answer-item">
+      <div class="answer-content">
+        <!-- Static Template Icon (for Rating types) -->
+        <div *ngIf="shouldUseStaticTemplate && answer.icon" class="answer-icon">
+          {{ answer.icon }}
+        </div>
+
+        <!-- Answer Image (for regular answers) -->
+        <img
+          *ngIf="!shouldUseStaticTemplate && hasImage(answer)"
+          [src]="answer.image"
+          alt="{{ 'FEEDBACK.ANSWER_IMAGE_ALT' | translate }}"
+          class="answer-image"
+          (error)="onImageError(answer)"
+          loading="lazy"
+        />
+
+        <!-- Answer Text -->
+        <div class="answer-text" [title]="answer.text">
+          {{ answer.text }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

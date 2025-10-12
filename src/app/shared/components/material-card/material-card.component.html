@@ -1,0 +1,62 @@
+<div class="col-md-4 col-lg-3" dir="ltr">
+  <div class="material-card">
+    <!-- Three Dots Menu -->
+    <div class="menu-container">
+      <button
+        class="menu-btn"
+        aria-label="Material actions menu"
+        (click)="toggleMenu($event)"
+      >
+        <i class="fas fa-ellipsis-h"></i>
+      </button>
+      <ul
+        class="menu-dropdown"
+        *ngIf="isMenuOpen"
+        (click)="$event.stopPropagation()"
+      >
+        <li (click)="onEdit()">Edit</li>
+        <li (click)="onDelete()">Delete</li>
+        <li (click)="onView()">View</li>
+      </ul>
+    </div>
+    <!-- Material Name -->
+    <h5 class="material-name" [title]="material?.name">{{ material?.name }}</h5>
+    <!-- Material Details -->
+    <div class="details">
+      <div class="detail-item">
+        <div>
+          Quantity:
+          <span>{{ material?.quantity }}</span>
+        </div>
+      </div>
+      <div class="detail-item">
+        <div>
+          Minimum:
+          <span>{{ material?.minThreshold }}</span>
+        </div>
+      </div>
+      <div class="detail-item special-item">
+        <div>
+          Category:
+          <span>{{ material?.categoryName }}</span>
+        </div>
+        <div class="button-group">
+          <button
+            class="btn btn-sm plus-btn"
+            (click)="onAdd()"
+            aria-label="Add material"
+          >
+            +
+          </button>
+          <button
+            class="btn btn-sm minus-btn"
+            (click)="onReduce()"
+            aria-label="Reduce material"
+          >
+            -
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

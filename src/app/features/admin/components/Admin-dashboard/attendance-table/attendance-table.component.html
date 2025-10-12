@@ -1,0 +1,77 @@
+<div class="attendance-container">
+  <div class="attendance-header">
+    <h3>{{ "dashboard.RECORDS_TITLE" | translate }}</h3>
+
+  </div>
+
+  @if (!isLoading) {
+  <div class="attendance-table-container">
+    <table class="attendance-table">
+      <thead>
+        <tr>
+          <th>{{ "dashboard.EMPLOYEE" | translate }}</th>
+          <th>{{ "dashboard.DATE" | translate }}</th>
+          <th>{{ "dashboard.CHECK_IN" | translate }}</th>
+          <th>{{ "dashboard.CHECK_OUT" | translate }}</th>
+          <th>{{ "dashboard.STATUS" | translate }}</th>
+          <th>{{ "dashboard.HOURS" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (record of attendanceData; track record) {
+        <tr>
+          <td>{{ record.firstName }} {{ record.lastName }}</td>
+          <td>{{ formatDate(record.date) }}</td>
+          <td>{{ formatTime(record.clockIn) }}</td>
+          <td>{{ record.clockOut ? formatTime(record.clockOut) : "-" }}</td>
+          <td>
+            <span [class]="getStatusClass(record.status)">
+              {{ getStatusDisplay(record.status) }}
+            </span>
+          </td>
+          <td>
+            {{ calculateHours(record.clockIn, record.clockOut) }}
+          </td>
+        </tr>
+        } @if (attendanceData.length === 0) {
+        <tr>
+          <td colspan="6" class="no-records">
+            {{ "dashboard.NO_RECORDS" | translate }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    @if (totalPages > 1) {
+    <div class="pagination">
+      <button
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        {{ "pagination.PREVIOUS" | translate }}
+      </button>
+      <span>{{
+        "pagination.PAGE_X_OF_Y"
+          | translate : { current: currentPage, total: totalPages }
+      }}</span>
+      <button
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+      >
+        {{ "pagination.NEXT" | translate }}
+      </button>
+    </div>
+    }
+  </div>
+  } @else {
+  <div class="loading-spinner">
+    {{ "COMMON.LOADING_ATTENDANCE" | translate }}
+  </div>
+  }
+
+  <ng-template #loading>
+    <div class="loading-spinner">
+      {{ "COMMON.LOADING_ATTENDANCE" | translate }}
+    </div>
+  </ng-template>
+</div>

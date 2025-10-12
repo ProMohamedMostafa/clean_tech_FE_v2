@@ -1,0 +1,17 @@
+@if (buildings && buildings.length > 0) {
+<div class="organizations-grid">
+  @for (building of buildings; track building.id) {
+  <div class="org-card" (click)="navigateToAddUser(building.id)">
+    <div class="org-card-content">
+      <i class="bi bi-building"></i>
+      <h3>{{ building.name }}</h3>
+    </div>
+  </div>
+  }
+</div>
+} @else {
+<div class="empty-state">
+  <i class="bi bi-building"></i>
+  <p>No buildings available</p>
+</div>
+}

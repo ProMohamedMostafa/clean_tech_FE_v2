@@ -1,0 +1,127 @@
+<!-- offcanvas with RTL support -->
+<div
+  class="offcanvas p-2 offcanvas-wide"
+  [ngClass]="{
+    'offcanvas-end': !isRTL(),
+    'offcanvas-start': isRTL()
+  }"
+  tabindex="-1"
+  id="categoryOffcanvas"
+  aria-labelledby="categoryOffcanvasLabel"
+  (hidden.bs.offcanvas)="onOffcanvasHidden()"
+>
+  <div class="offcanvas-header">
+    <div class="my-profile-title mb-3 pt-5">
+      <div class="title-container">
+        <div class="title-bage"></div>
+        <div class="title-info">
+          <h1>
+            {{
+              categoryEditData
+                ? ("CATEGORY-FORM.TITLES.EDIT_CATEGORY" | translate)
+                : ("CATEGORY-FORM.TITLES.ADD_CATEGORY" | translate)
+            }}
+          </h1>
+        </div>
+      </div>
+    </div>
+    <button
+      type="button"
+      class="btn-close text-reset"
+      data-bs-dismiss="offcanvas"
+      [attr.aria-label]="'CATEGORY-FORM.BUTTONS.CLOSE' | translate"
+    ></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form #createCategoryForm="ngForm" (ngSubmit)="updateCategory()">
+      <!-- Name Input -->
+      <div class="mb-3">
+        <label for="name" class="form-label">{{
+          "CATEGORY-FORM.FIELDS.NAME" | translate
+        }}</label>
+        <input
+          type="text"
+          id="name"
+          class="form-control"
+          [(ngModel)]="categoryData.name"
+          name="name"
+          [placeholder]="'CATEGORY-FORM.PLACEHOLDERS.NAME' | translate"
+          required
+        />
+      </div>
+
+      <!-- Unit Dropdown -->
+      <div class="mb-3">
+        <label for="unit" class="form-label">{{
+          "CATEGORY-FORM.FIELDS.UNIT" | translate
+        }}</label>
+        <select
+          id="unit"
+          class="form-select"
+          [(ngModel)]="categoryData.unit"
+          name="unit"
+          required
+        >
+          <option value="" disabled>
+            {{ "CATEGORY-FORM.PLACEHOLDERS.SELECT_UNIT" | translate }}
+          </option>
+          <option *ngFor="let unit of unitOptions" [ngValue]="unit.id">
+            {{  unit.name  }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Parent Category Dropdown -->
+      <div class="mb-3">
+        <label for="parentCategory" class="form-label">{{
+          "CATEGORY-FORM.FIELDS.PARENT_CATEGORY" | translate
+        }}</label>
+        <select
+          id="parentCategory"
+          class="form-select"
+          [(ngModel)]="categoryData.parentCategoryId"
+          name="parentCategoryId"
+        >
+          <option value="" disabled>
+            {{ "CATEGORY-FORM.PLACEHOLDERS.SELECT_PARENT" | translate }}
+          </option>
+          <option value="">
+            {{ "CATEGORY-FORM.OPTIONS.NO_PARENT" | translate }}
+          </option>
+          <option
+            *ngFor="let category of parentCategories"
+            [value]="category.id"
+          >
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-footer">
+        <button
+          type="submit"
+          data-bs-dismiss="offcanvas"
+          [attr.aria-label]="'CATEGORY-FORM.BUTTONS.CLOSE' | translate"
+          class="btn add-btn"
+          [disabled]="!createCategoryForm.form.valid"
+        >
+          {{
+            categoryEditData
+              ? ("CATEGORY-FORM.BUTTONS.UPDATE" | translate)
+              : ("CATEGORY-FORM.BUTTONS.CREATE" | translate)
+          }}
+        </button>
+        <button
+          type="button"
+          class="btn cancel-btn"
+          data-bs-dismiss="offcanvas"
+          [attr.aria-label]="'CATEGORY-FORM.BUTTONS.CLOSE' | translate"
+        >
+          {{ "CATEGORY-FORM.BUTTONS.CANCEL" | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<!-- feedback-chart.component.html -->
+<div class="feedback-chart">
+  <div class="chart-header">
+    <h3>{{ "dashboard.FEEDBACK_PER_YEAR" | translate }}</h3>
+
+    <div class="chart-filters">
+      <!-- Year Filter -->
+      <div class="filter-group">
+        <label for="yearFilter">{{ "dashboard.YEAR" | translate }}:</label>
+        <select
+          id="yearFilter"
+          [(ngModel)]="selectedYear"
+          (change)="onFilterChange()"
+        >
+          <option [value]="null">
+            {{ "dashboard.ALL_YEARS" | translate }}
+          </option>
+          @for (year of years; track year) {
+          <option [value]="year">{{ year }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Device Filter -->
+      <div class="filter-group">
+        <label for="deviceFilter">{{ "dashboard.DEVICE" | translate }}:</label>
+        <select
+          id="deviceFilter"
+          [(ngModel)]="selectedDeviceId"
+          (change)="onFilterChange()"
+        >
+          <option [value]="null">
+            {{ "dashboard.ALL_DEVICES" | translate }}
+          </option>
+          @for (device of devices; track device) {
+          <option [value]="device.id">{{ device.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Chart Type Filter -->
+      <div class="filter-group">
+        <label for="chartTypeFilter"
+          >{{ "dashboard.CHART_TYPE" | translate }}:</label
+        >
+        <select
+          id="chartTypeFilter"
+          [(ngModel)]="selectedChartType"
+          (change)="onChartTypeChange()"
+        >
+          <option value="bar">{{ "dashboard.BAR_CHART" | translate }}</option>
+          <option value="line">{{ "dashboard.LINE_CHART" | translate }}</option>
+          <option value="radar">
+            {{ "dashboard.RADAR_CHART" | translate }}
+          </option>
+          <option value="polarArea">
+            {{ "dashboard.POLAR_AREA_CHART" | translate }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-container">
+    <canvas
+      baseChart
+      [type]="selectedChartType"
+      [data]="chartData"
+      [options]="chartOptions"
+    ></canvas>
+  </div>
+</div>

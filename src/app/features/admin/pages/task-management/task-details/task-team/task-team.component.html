@@ -1,0 +1,40 @@
+<div class="team-container">
+  <div class="team-header">
+    <strong>{{ "Assigned Team" | translate }}</strong>
+  </div>
+
+  @if (users.length) {
+  <div class="team-members">
+    @for (user of users; track user.id) {
+    <div
+      class="member-avatar"
+      [title]="user.firstName + ' ' + user.lastName"
+      (click)="goToUserDetails(user.id)"
+    >
+      @if (user.image) {
+      <img
+        [src]="user.image || 'assets/default-avatar.png'"
+        [alt]="
+          (user.firstName?.charAt(0) || '') + (user.lastName?.charAt(0) || '')
+        "
+        class="member-image"
+        (error)="onImageError($event)"
+      />
+      } @else {
+      <div class="member-initials">
+        {{
+          (user.firstName?.charAt(0) || "") + (user.lastName?.charAt(0) || "")
+        }}
+      </div>
+      }
+      <span class="member-name">{{ user.firstName }}</span>
+    </div>
+    }
+  </div>
+  } @else {
+  <div class="no-members">
+    <i class="icon-user"></i>
+    <span>{{ "No team members assigned" | translate }}</span>
+  </div>
+  }
+</div>

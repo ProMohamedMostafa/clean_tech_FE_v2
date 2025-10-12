@@ -1,0 +1,17 @@
+@if (floors && floors.length > 0) {
+<div class="organizations-grid">
+  @for (floor of floors; track floor.id) {
+  <div class="org-card" (click)="navigateToAddUser(floor.id)">
+    <div class="org-card-content">
+      <i class="bi bi-building"></i>
+      <h3>{{ floor.name }}</h3>
+    </div>
+  </div>
+  }
+</div>
+} @else {
+<div class="empty-state">
+  <i class="bi bi-building"></i>
+  <p>No floors available</p>
+</div>
+}

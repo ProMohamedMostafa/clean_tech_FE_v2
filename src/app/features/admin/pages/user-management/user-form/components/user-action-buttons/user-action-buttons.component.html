@@ -1,0 +1,28 @@
+<div class="form-container">
+  <div
+    class="mt-3 d-flex align-items-center justify-content-start gap-2 w-25 buttons-container"
+  >
+    <button
+      class="btn-dark form-control"
+      type="submit"
+      [disabled]="isSubmitting"
+    >
+      <i class="fas fa-save"></i>
+      <span *ngIf="isSubmitting">
+        <i class="fas fa-spinner fa-spin"></i>
+        {{ "COMMON.SAVING" | translate }}
+      </span>
+      <span *ngIf="!isSubmitting">
+        {{ saveButtonText | translate }}
+      </span>
+    </button>
+    <button
+      class="clear-btn form-control"
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting"
+    >
+      <i class="fas fa-times"></i> {{ cancelButtonText | translate }}
+    </button>
+  </div>
+</div>

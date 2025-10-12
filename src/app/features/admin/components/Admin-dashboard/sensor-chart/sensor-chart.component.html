@@ -1,0 +1,136 @@
+<div class="sensor-chart-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title">{{ "dashboard.SENSOR_TITLE" | translate }}</div>
+
+    <div class="dropdowns">
+      <!-- Section Selector -->
+      <div class="dropdown">
+        <select
+          [(ngModel)]="selectedSectionId"
+          (change)="onSectionChange()"
+          [disabled]="loadingSections"
+        >
+          <option [ngValue]="null" disabled>
+            {{
+              loadingSections
+                ? ("dashboard.LOADING_SECTIONS" | translate)
+                : ("dashboard.SELECT_SECTION" | translate)
+            }}
+          </option>
+          <option *ngFor="let section of sections" [ngValue]="section.id">
+            {{ section.name }} ({{ section.buildingName }},
+            {{ section.floorName }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Year Selector -->
+      <div class="dropdown">
+        <select [(ngModel)]="selectedYear" (change)="onYearChange()">
+          <option *ngFor="let year of yearOptions" [ngValue]="year">
+            {{ year }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Month Selector -->
+      <div class="dropdown">
+        <select [(ngModel)]="selectedMonth" (change)="onMonthChange()">
+          <option *ngFor="let month of monthOptions" [ngValue]="month.value">
+            {{ month.label | translate }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Chart Type Selector -->
+      <div class="dropdown">
+        <select
+          [(ngModel)]="selectedChartType"
+          (change)="chartType = selectedChartType"
+        >
+          <option *ngFor="let type of availableChartTypes" [value]="type.key">
+            {{ type.label | translate }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <!-- Sensor Data -->
+    <div class="sensor-data">
+      <div class="data-header">
+        <div class="sensors-label">{{ "dashboard.SENSORS" | translate }}</div>
+        <div class="battery-label">{{ "dashboard.BATTERY" | translate }}</div>
+        <div class="tasks-label">{{ "dashboard.TASKS" | translate }}</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="data-rows" *ngIf="!loading && sensorData.length > 0">
+        <div class="data-row" *ngFor="let sensor of sensorData">
+          <div class="sensor-name">{{ sensor.name }}</div>
+          <div class="battery-value">
+            <i class="fa-solid fa-battery-full" *ngIf="sensor.battery > 50"></i>
+            <i
+              class="fa-solid fa-battery-half"
+              *ngIf="sensor.battery > 20 && sensor.battery <= 50"
+            ></i>
+            <i
+              class="fa-solid fa-battery-quarter"
+              *ngIf="sensor.battery > 10 && sensor.battery <= 20"
+            ></i>
+            <i
+              class="fa-solid fa-battery-empty"
+              *ngIf="sensor.battery <= 10"
+            ></i>
+            <span>{{ sensor.battery }}%</span>
+          </div>
+          <div class="tasks-value">
+            {{ sensor.completionPercentage | number : "1.0-0" }}%
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="loading" class="loading-message">
+        {{ "dashboard.LOADING_SENSORS" | translate }}
+      </div>
+
+      <div
+        *ngIf="!loading && sensorData.length === 0 && selectedSectionId"
+        class="no-data-message"
+      >
+        {{ "dashboard.NO_SENSOR_DATA" | translate }}
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrapper">
+      <canvas
+        *ngIf="hasChartData && !loading"
+        baseChart
+        [data]="chartData"
+        [options]="chartOptions"
+        [type]="chartType"
+      ></canvas>
+
+      <div
+        *ngIf="!hasChartData && !loading && selectedSectionId"
+        class="no-data-message"
+      >
+        {{ "dashboard.NO_CHART_DATA" | translate }}
+      </div>
+
+      <div *ngIf="loading" class="loading-message">
+        {{ "dashboard.LOADING_CHART" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Completed -->
+  <div class="total-completed">
+    <div class="label">{{ "dashboard.TOTAL_COMPLETED" | translate }}</div>
+    <div class="percentage">{{ totalCompletion | number : "1.0-0" }}%</div>
+  </div>
+</div>

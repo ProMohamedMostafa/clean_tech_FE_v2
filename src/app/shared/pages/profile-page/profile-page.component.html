@@ -1,0 +1,356 @@
+<div class="add-user-container">
+  <div class="add-user-information">
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!isLoading">
+      <!-- Header and Image Section -->
+      <div class="header-image-section">
+        <div class="header-container">
+          <div class="title-container">
+            <div class="title-badge"></div>
+            <div class="title-info">
+              <h1>{{ pageTitle | translate }}</h1>
+            </div>
+          </div>
+
+          <!-- Profile Image Section -->
+          <div class="profile-section">
+            <div class="profile-image-container">
+              <!-- Image preview with fallback -->
+              <div class="profile-image-wrapper" (click)="triggerImageUpload()">
+                <img
+                  id="profileImagePreview"
+                  [src]="imagePreview || '../assets/header-profile-image.svg'"
+                  alt="Profile Image"
+                  class="profile-avatar"
+                />
+                <div class="image-overlay">
+                  <i class="fas fa-camera"></i>
+                </div>
+              </div>
+
+              <!-- Hidden file input -->
+              <input
+                type="file"
+                id="profileImageInput"
+                accept="image/*"
+                (change)="onImageSelect($event)"
+                class="hidden-file-input"
+              />
+
+              <!-- Action buttons -->
+              <div class="profile-actions">
+                <button
+                  id="upload-button"
+                  (click)="triggerImageUpload()"
+                  class="btn btn-primary"
+                >
+                  <i class="fas fa-camera"></i>
+                  {{ "PROFILE.UPLOAD" | translate }}
+                </button>
+                <button
+                  id="cancel-image-button"
+                  (click)="cancelImage()"
+                  class="btn btn-outline"
+                  [title]="'PROFILE.REMOVE' | translate"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                  {{ "PROFILE.REMOVE" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <div class="form-container mt-1">
+          <!-- First row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first-name">
+                {{ "PROFILE.FIRST_NAME" | translate }}
+              </label>
+              <input
+                type="text"
+                id="first-name"
+                [placeholder]="'PROFILE.FIRST_NAME' | translate"
+                formControlName="firstName"
+              />
+              <div *ngIf="isInvalid('firstName')" class="validation-message">
+                <div *ngIf="userForm.get('firstName')?.hasError('required')">
+                  {{ "PROFILE.FIRST_NAME_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('firstName')?.hasError('minlength')">
+                  {{ "PROFILE.FIRST_NAME_MIN_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('firstName')?.hasError('maxlength')">
+                  {{ "PROFILE.FIRST_NAME_MAX_LENGTH" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="last-name">
+                {{ "PROFILE.LAST_NAME" | translate }}
+              </label>
+              <input
+                type="text"
+                id="last-name"
+                [placeholder]="'PROFILE.LAST_NAME' | translate"
+                formControlName="lastName"
+              />
+              <div *ngIf="isInvalid('lastName')" class="validation-message">
+                <div *ngIf="userForm.get('lastName')?.hasError('required')">
+                  {{ "PROFILE.LAST_NAME_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('lastName')?.hasError('minlength')">
+                  {{ "PROFILE.LAST_NAME_MIN_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('lastName')?.hasError('maxlength')">
+                  {{ "PROFILE.LAST_NAME_MAX_LENGTH" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="username">
+                {{ "PROFILE.USERNAME" | translate }}
+              </label>
+              <input
+                type="text"
+                id="username"
+                [placeholder]="'PROFILE.USERNAME' | translate"
+                formControlName="userName"
+              />
+              <div *ngIf="isInvalid('userName')" class="validation-message">
+                <div *ngIf="userForm.get('userName')?.hasError('required')">
+                  {{ "PROFILE.USERNAME_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('userName')?.hasError('minlength')">
+                  {{ "PROFILE.USERNAME_MIN_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('userName')?.hasError('maxlength')">
+                  {{ "PROFILE.USERNAME_MAX_LENGTH" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Second row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone-number">
+                {{ "PROFILE.PHONE_NUMBER" | translate }}
+              </label>
+              <input
+                type="text"
+                id="phone-number"
+                [placeholder]="'PROFILE.PHONE_NUMBER' | translate"
+                formControlName="phoneNumber"
+                inputmode="numeric"
+              />
+              <div *ngIf="isInvalid('phoneNumber')" class="validation-message">
+                <div *ngIf="userForm.get('phoneNumber')?.hasError('required')">
+                  {{ "PROFILE.PHONE_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('phoneNumber')?.hasError('minlength')">
+                  {{ "PROFILE.PHONE_MIN_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('phoneNumber')?.hasError('maxlength')">
+                  {{ "PROFILE.PHONE_MAX_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('phoneNumber')?.hasError('pattern')">
+                  {{ "PROFILE.PHONE_PATTERN" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">
+                {{ "PROFILE.EMAIL" | translate }}
+              </label>
+              <input
+                type="email"
+                id="email"
+                [placeholder]="'PROFILE.EMAIL' | translate"
+                formControlName="email"
+              />
+              <div *ngIf="isInvalid('email')" class="validation-message">
+                <div *ngIf="userForm.get('email')?.hasError('required')">
+                  {{ "PROFILE.EMAIL_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('email')?.hasError('email')">
+                  {{ "PROFILE.EMAIL_INVALID" | translate }}
+                </div>
+                <div *ngIf="userForm.get('email')?.hasError('pattern')">
+                  {{ "PROFILE.EMAIL_PATTERN" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="id-number">
+                {{ "PROFILE.ID_NUMBER" | translate }}
+              </label>
+              <input
+                type="text"
+                id="id-number"
+                [placeholder]="'PROFILE.ID_NUMBER' | translate"
+                formControlName="idNumber"
+              />
+              <div *ngIf="isInvalid('idNumber')" class="validation-message">
+                <div *ngIf="userForm.get('idNumber')?.hasError('required')">
+                  {{ "PROFILE.ID_NUMBER_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('idNumber')?.hasError('minlength')">
+                  {{ "PROFILE.ID_NUMBER_MIN_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('idNumber')?.hasError('maxlength')">
+                  {{ "PROFILE.ID_NUMBER_MAX_LENGTH" | translate }}
+                </div>
+                <div *ngIf="userForm.get('idNumber')?.hasError('pattern')">
+                  {{ "PROFILE.ID_NUMBER_PATTERN" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Third row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="birth-date">
+                {{ "PROFILE.BIRTH_DATE" | translate }}
+              </label>
+              <input
+                type="date"
+                id="birth-date"
+                formControlName="birthdate"
+                [max]="today"
+              />
+              <div *ngIf="isInvalid('birthdate')" class="validation-message">
+                <div *ngIf="userForm.get('birthdate')?.hasError('required')">
+                  {{ "PROFILE.BIRTH_DATE_REQUIRED" | translate }}
+                </div>
+                <div *ngIf="userForm.get('birthdate')?.hasError('futureDate')">
+                  {{ "PROFILE.BIRTH_DATE_FUTURE" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty columns for spacing -->
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+          </div>
+        </div>
+
+        <!-- Gender Section -->
+        <div class="gender-section">
+          <label>{{ "PROFILE.GENDER" | translate }}</label>
+          <div class="gender-options">
+            <label>
+              <input type="radio" value="0" formControlName="gender" />
+              {{ "PROFILE.MALE" | translate }}
+            </label>
+            <label>
+              <input type="radio" value="1" formControlName="gender" />
+              {{ "PROFILE.FEMALE" | translate }}
+            </label>
+          </div>
+          <div *ngIf="isInvalid('gender')" class="validation-message">
+            {{ "PROFILE.GENDER_REQUIRED" | translate }}
+          </div>
+        </div>
+
+        <!-- User Information Section 2 -->
+        <div class="form-container">
+          <!-- Dropdown Inputs -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nationality">
+                {{ "PROFILE.NATIONALITY" | translate }}
+              </label>
+              <select id="nationality" formControlName="nationalityName">
+                <option value="" disabled>
+                  {{ "PROFILE.SELECT_NATIONALITY" | translate }}
+                </option>
+                <option
+                  *ngFor="let country of countries; trackBy: trackByCountry"
+                  [value]="country.name"
+                >
+                  {{ country.name }}
+                </option>
+              </select>
+              <div
+                *ngIf="isInvalid('nationalityName')"
+                class="validation-message"
+              >
+                {{ "PROFILE.NATIONALITY_REQUIRED" | translate }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="country">
+                {{ "PROFILE.COUNTRY" | translate }}
+              </label>
+              <select id="country" formControlName="countryName">
+                <option value="" disabled>
+                  {{ "PROFILE.SELECT_COUNTRY" | translate }}
+                </option>
+                <option
+                  *ngFor="let country of countries; trackBy: trackByCountry"
+                  [value]="country.name"
+                >
+                  {{ country.name }}
+                </option>
+              </select>
+              <div *ngIf="isInvalid('countryName')" class="validation-message">
+                {{ "PROFILE.COUNTRY_REQUIRED" | translate }}
+              </div>
+            </div>
+
+            <!-- Empty column for spacing -->
+            <div class="form-group"></div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Section -->
+        <div class="form-container">
+          <div
+            class="mt-3 d-flex align-items-center justify-content-start gap-2 w-50 buttons-container"
+          >
+            <button
+              class="btn-dark form-control"
+              type="submit"
+              [disabled]="isSubmitting"
+            >
+              <i class="fas fa-save"></i>
+              <span *ngIf="isSubmitting">
+                <i class="fas fa-spinner fa-spin"></i>
+                {{ "COMMON.SAVING" | translate }}
+              </span>
+              <span *ngIf="!isSubmitting">
+                {{ saveButtonText | translate }}
+              </span>
+            </button>
+            <button
+              class="clear-btn form-control"
+              Type="button"
+              (click)="cancel()"
+              [disabled]="isSubmitting"
+            >
+              <i class="fas fa-times"></i> {{ cancelButtonText | translate }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

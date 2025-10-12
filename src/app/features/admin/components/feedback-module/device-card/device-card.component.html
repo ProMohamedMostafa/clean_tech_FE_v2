@@ -1,0 +1,89 @@
+<div class="device-card" (click)="navigateToDetails()">
+  <div class="content-container">
+    <!-- header -->
+    <div class="device-card-header">
+      <div class="d-flex align-items-center justify-start gap-1">
+        <img
+          src="./assets/device-card-img.svg"
+          [alt]="'DEVICE.ICON_ALT' | translate"
+        />
+        <div class="d-flex flex-column align-items-start justify-center">
+          <p class="device-name">{{ getDisplayValue(device.name) }}</p>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button
+          class="btn btn-sm edit-btn me-2"
+          (click)="onEdit(); $event.stopPropagation()"
+          [title]="'DEVICE.EDIT' | translate"
+        >
+          <i class="fas fa-edit"></i>
+        </button>
+
+        <button
+          class="btn btn-sm delete-btn"
+          (click)="onDelete(); $event.stopPropagation()"
+          [title]="'DEVICE.DELETE' | translate"
+        >
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="status-card">
+      <div class="status-row">
+        <span class="label">{{ "DEVICE.BUILDING" | translate }}</span>
+        <span class="value">
+          <span>{{ getDisplayValue(device.buildingName) }}</span>
+        </span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "DEVICE.FLOOR" | translate }}</span>
+        <span class="value">
+          <span>{{ getDisplayValue(device.floorName) }}</span>
+        </span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "DEVICE.SECTION" | translate }}</span>
+        <span class="value">
+          <span *ngIf="device.sectionName; else sectionIdOnly">
+            {{ getDisplayValue(device.sectionName) }}
+          </span>
+          <ng-template #sectionIdOnly>
+            <span class="text-muted">{{
+              getDisplayValue(
+                device.sectionId,
+                "DEVICE.SECTION_DEFAULT" | translate
+              )
+            }}</span>
+          </ng-template>
+        </span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{ "DEVICE.FEEDBACK" | translate }}</span>
+        <span class="value">
+          <span>{{ getDisplayValue(device.feedbackName) }}</span>
+        </span>
+      </div>
+
+      <div class="status-row">
+        <span class="label">{{
+          "DEVICE.NUMBER_OF_QUESTIONS" | translate
+        }}</span>
+        <span class="value">
+          <span>{{ getDisplayValue(device.questionNumber) }}</span>
+        </span>
+      </div>
+      
+      <div class="status-row">
+        <span class="label">{{ "DEVICE.DEVICE_ANSWER" | translate }}</span>
+        <span class="value">
+          <span>{{ getDisplayValue(device.deviceAnswer) }}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

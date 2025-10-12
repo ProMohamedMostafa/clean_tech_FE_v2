@@ -1,0 +1,43 @@
+<div
+  class="container-fluid d-flex flex-column align-items-center justify-content-start"
+>
+  <!-- Title -->
+  <app-page-title translationKey="titles.CITY_MANAGEMENT_OVERVIEW" />
+
+
+  <!-- Reusable Filter Bar -->
+  <reusable-filter-bar
+    [showAddButton]="isAdmin()"
+    [showRecycleButton]="isAdmin()"
+    [addButtonRoute]="'/admin/add-city'"
+    [recycleButtonRoute]="'/admin/deleted-cities'"
+    (searchChange)="onSearchChange($event)"
+    (filterClick)="openFilterModal()"
+    (exportPdf)="downloadAsPDF()"
+    (exportExcel)="downloadAsExcel()"
+    (print)="printPDF()"
+  ></reusable-filter-bar>
+
+  <!-- Reusable Table Section -->
+  <app-table-data
+    [data]="cities"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [currentUserRole]="currentUserRole"
+    [showPagination]="true"
+    [trackByField]="'id'"
+    (pageChanged)="onPageChange($event)"
+    (pageSizeChanged)="onPageSizeChange($event)"
+  ></app-table-data>
+
+  <!-- Filter Modal -->
+  <app-city-filter
+    *ngIf="showFilterModal"
+    (filterChange)="onFilterApplied($event)"
+    (close)="closeFilterModal()"
+  ></app-city-filter>
+</div>

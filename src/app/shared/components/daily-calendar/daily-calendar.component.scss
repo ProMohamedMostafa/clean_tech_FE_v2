@@ -1,0 +1,408 @@
+.page-header {
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  
+  
+  .calendar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  /* Year */
+  .year-selector {
+    /* Box sizing */
+    box-sizing: border-box;
+  
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px;
+    gap: 20px;
+    margin-right: 10px;
+  
+    /* Size */
+    max-width:200px;
+    height: auto;
+  
+    /* Base/White background */
+    background: #ffffff;
+    border: 2px solid #f0f1f2;
+    border-radius: 6px;
+    /* Gray border */
+    border-radius: 6px;
+  
+    /* Inside auto layout */
+  
+  
+
+  }
+  
+  /* Iconsax/Linear/arrowleft2 */
+  .arrow {
+    /* Size of the icon */
+    width: 24px;
+    height: 24px;
+  
+    /* Gray border */
+  }
+  
+  /* 2025 */
+  .year {
+    width: 51px;
+    height: 30px;
+  
+    /* Font styling */
+    font-family: "Inter", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 30px; /* identical to box height */
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: -0.01em;
+  
+    /* Gray text color */
+    color: #2d3036;
+  
+    /* Inside auto layout */
+  }
+  
+  /* Month */
+  .month-names {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 32px;
+    gap: 2px;
+  
+    /* Base/White background */
+    background: #ffffff;
+  
+    /* Gray border */
+    border: 2px solid #f0f1f2;
+    border-radius: 6px;
+  
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    flex-grow: 1;
+  }
+  
+  /* Month styling */
+  .month-names span {
+    margin: 0 auto;
+    height: 26px;
+    font-family: "Inter", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 26px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #898e99;
+    cursor: pointer;
+  }
+  
+  /* Style for selected month */
+  .month-names span.selected-month {
+    color: #072275;  /* Blue color for selected month */
+    font-weight: bold; /* Make it bold */
+  }
+  
+  /* Date */
+  .date-container {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 32px;
+    gap: 2px;
+    width: 100%;
+    height: 62px;
+    background: #ffffff;
+    border: 2px solid #f0f1f2;
+    border-radius: 6px;
+  }
+  
+  .date-item {
+    margin: 0 auto;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 26px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #898e99;
+    cursor: pointer;
+  }
+  
+  /* Style for selected day */
+  .date-item.selected-day {
+    background-color: #072275;  /* Blue background for selected day */
+    color: white;  /* White text for selected day */
+    border-radius: 4px;  /* Slight border radius for square corners */
+    padding: 10px;  /* Adjust padding to make it more square-shaped */
+  }
+  
+  
+  /* Button Date */
+  .button-date {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 12px;
+    gap: 10px;
+    margin: 0 auto;
+    width: 34px;
+    height: 34px;
+    background: #072275;
+    border-radius: 6px;
+  }
+  
+  .button-text {
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 26px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #ffffff;
+  }
+  
+  
+  
+  
+  /* Style for selected month */
+  .month-names span.selected-month {
+    font-weight: bold;
+    color: #072275; /* Highlight active month */
+  }
+  
+  /* Style for all days - default small circle */
+  .date-item {
+    width: auto;
+    height: 30px;
+    border-radius: 50%;  /* Circle shape */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #898e99;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  
+  
+  /* Style for selected day - highlight with a different background */
+  .date-item.selected-day {
+    background-color: #072275;  /* Blue background for selected day */
+    color: white;  /* White text for selected day */
+  }
+  
+  /* Style for selected month (optional) */
+  .month-names span.selected-month {
+    font-weight: bold;
+    color: #072275;  /* Highlight active month */
+  }
+  
+  /* Style for empty slots before the first day of the month */
+  .date-item.empty {
+    visibility: hidden;
+  }
+  
+  
+  .year-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 55%;
+    padding: 10px;
+    font-size: 1.2rem;
+  }
+  
+  .arrow-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .arrow-container:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+  }
+  
+  .arrow {
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+    cursor: pointer;
+  
+  }
+  
+  .arrow-container:hover .arrow {
+    color: #0056b3; /* Darker blue when hovered */
+  }
+  
+  .year {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333; /* Dark text for the year */
+  }
+  
+  /* Keep your existing styles as-is */
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .year-selector {
+    width: 70%;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  .month-names {
+    padding: 12px 16px;
+    gap: 5px;
+  }
+
+  .month-names span {
+    font-size: 14px;
+  }
+
+  .date-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for the days */
+    gap: 5px; /* Gap between days */
+    width: auto;
+    height: auto;
+    padding: 10px;
+    box-sizing: border-box; /* Include padding in total width/height */
+  }
+
+  .date-item {
+    font-size: 14px;
+    padding: 10px;
+    text-align: center;
+    box-sizing: border-box; /* Prevent overflow */
+  }
+  .arrow {
+    font-size: 1.3rem; /* Reduce arrow size for medium screens */
+  }
+
+  .year {
+    font-size: 1.3rem; /* Adjust year font size */
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 10px;
+  }
+
+  .year-selector {
+    width: 90%;
+    flex-direction: row;
+    font-size: 0.9rem;
+  }
+
+  .month-names {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px;
+  }
+
+  .month-names span {
+    font-size: 12px;
+    padding: 4px;
+  }
+
+  .date-container {
+    grid-template-columns: repeat(7, 1fr); /* Keep grid with 7 columns */
+    gap: 4px;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .date-item {
+    font-size: 12px;
+    padding: 8px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .arrow {
+    font-size: 1.2rem; /* Smaller arrow size for smaller screens */
+  }
+
+  .year {
+    font-size: 1.2rem; /* Reduce year font size */
+    text-align: center; /* Center text for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .year-selector {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    font-size: 0.8rem;
+  }
+
+  .month-names {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .date-container {
+    grid-template-columns: repeat(7, 1fr); /* Maintain grid */
+    gap: 2px;
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+  }
+
+  .date-item {
+    font-size: 10px;
+    padding: 6px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .arrow {
+    font-size: 1rem; /* Compact size for very small screens */
+  }
+
+  .year {
+    font-size: 1rem; /* Compact year font size */
+    text-align: center; /* Ensure proper alignment on small screens */
+  }
+
+  .arrow-container {
+    padding: 5px; /* Add spacing for touch targets */
+  }
+}
+
+[dir="rtl"] .year-selector {
+  flex-direction: row-reverse; /* reverse arrows */
+  gap: 20px; /* adjust spacing if needed */
+}
+
+[dir="rtl"] .month-names {
+  flex-direction: row-reverse; /* reverse month order */
+}

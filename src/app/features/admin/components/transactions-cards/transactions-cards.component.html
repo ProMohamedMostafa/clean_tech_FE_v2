@@ -1,0 +1,29 @@
+<!-- transactions-management.component.html -->
+<!-- Transaction Statistics Section -->
+<div class="transaction-charts">
+  <div class="card-group">
+    <!-- All Transactions Card -->
+    <div class="card total-transactions">
+      <div class="card-body">
+        <h5 class="card-title">{{ "TRANSACTIONS.ALL_TITLE" | translate }}</h5>
+        <p class="card-text">{{ allTransactionCount }}</p>
+      </div>
+    </div>
+
+    <!-- In Transactions Card -->
+    <div class="card in-transactions">
+      <div class="card-body">
+        <h5 class="card-title">{{ "TRANSACTIONS.IN_TITLE" | translate }}</h5>
+        <p class="card-text">{{ inTransactionCount }}</p>
+      </div>
+    </div>
+
+    <!-- Out Transactions Card -->
+    <div class="card out-transactions">
+      <div class="card-body">
+        <h5 class="card-title">{{ "TRANSACTIONS.OUT_TITLE" | translate }}</h5>
+        <p class="card-text">{{ outTransactionCount }}</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,144 @@
+/* Modal base styling */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Show modal class */
+.modal.show {
+  display: block;
+}
+
+/* Modal dialog container */
+.modal-dialog {
+  width: 700px;
+  max-width: 800px;
+}
+
+/* Modal content styling */
+.modal-content {
+  background: #ffffff;
+  box-shadow: 0px 0px 2px #404040;
+  border-radius: 32px;
+  width: 600px;
+  padding: 20px 30px;
+  max-width: 600px;
+  margin: 0 20px;
+  border-radius: 8px;
+}
+
+/* Profile title section */
+.my-profile-title {
+  width: 95%;
+  background: #ffffff;
+  border-radius: 11px;
+  padding: 0px 5px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Title container flex layout */
+.title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  padding: 0px;
+  gap: 10px;
+  height: 50px;
+}
+
+/* Title badge styling */
+.title-bage {
+  width: 8px;
+  height: 24px;
+  background: #025d8d;
+  border-radius: 2px;
+}
+
+/* Title info container */
+.title-info {
+  height: 32px;
+}
+
+/* Title text styling */
+.title-info h1 {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 32px;
+  color: #1a1d1f;
+  order: 1;
+  flex-grow: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Apply button styling */
+.apply-btn {
+  background: #025d8d;
+  border-radius: 4px;
+  padding: 12px 20px;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #fcfcfc;
+  border: none;
+}
+
+/* Clear button styling */
+.clear-btn {
+  background: #c8ecff;
+  border-radius: 4px;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #025d8d;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  padding: 12px 20px;
+  border: none;
+}
+
+/* Form labels */
+.shift-form-label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #344054;
+}
+
+/* Form controls */
+.form-control,
+.form-select {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+/* Medium screens modal adjustment */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 90%;
+  }
+}
+
+/* Small screens modal adjustment */
+@media (max-width: 576px) {
+  .modal-dialog {
+    max-width: 100%;
+  }
+}

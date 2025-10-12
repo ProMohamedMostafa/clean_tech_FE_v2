@@ -1,0 +1,112 @@
+<div class="cards-container">
+  <!-- Card 1: Total Users -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/Group.svg" alt="group" />
+      {{ "dashboard.TOTAL_USERS" | translate }}:
+      <span>{{ userData.total || ("dashboard.LOADING" | translate) }}</span>
+    </div>
+    <div class="card-content-1">
+      <div class="content-item" (click)="navigateToUserManagement(1)">
+        <div class="admins-label">{{ "dashboard.ADMINS" | translate }}</div>
+        <div class="admin-values">{{ getRoleValue("Admin") }}</div>
+      </div>
+      <div class="content-item" (click)="navigateToUserManagement(2)">
+        <div class="managers-label">{{ "dashboard.MANAGERS" | translate }}</div>
+        <div class="manager-values">{{ getRoleValue("Manager") }}</div>
+      </div>
+      <div class="content-item" (click)="navigateToUserManagement(3)">
+        <div class="supervisors-label">
+          {{ "dashboard.SUPERVISORS" | translate }}
+        </div>
+        <div class="supervisor-values">{{ getRoleValue("Supervisor") }}</div>
+      </div>
+      <div class="content-item" (click)="navigateToUserManagement(4)">
+        <div class="cleaners-label">{{ "dashboard.CLEANERS" | translate }}</div>
+        <div class="cleaner-values">{{ getRoleValue("Cleaner") }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Total Stock In Cost -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/money-bag_svgrepo.com.svg" alt="cost" />
+      {{ "dashboard.TOTAL_STOCK_COST" | translate }}
+      <select class="month-dropdown w-25" (change)="onMonthChange($event)">
+        <option value="">{{ "dashboard.MONTH" | translate }}</option>
+        @for (month of monthNames; track month; let i = $index) {
+        <option [value]="i + 1" [selected]="i + 1 === stockData.selectedMonth">
+          {{ month }}
+        </option>
+        }
+      </select>
+    </div>
+    <div class="content-item">
+      <h4>{{ stockData.currentMonthTotal }} <span>$</span></h4>
+    </div>
+    <div
+      class="stock-range"
+      [class.positive]="stockData.percentageChange >= 0"
+      [class.negative]="stockData.percentageChange < 0"
+    >
+      {{ stockData.percentageChange | number : "1.2-2" }}%
+      <img
+        [src]="
+          stockData.percentageChange >= 0
+            ? 'assets/arrow-hign.svg'
+            : 'assets/arrow-low.svg'
+        "
+        alt="arrow"
+      />
+    </div>
+  </div>
+
+  <!-- Card 3: Expiring Materials -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/stock-out_svgrepo.com.svg" alt="stock-out" />
+      {{ "dashboard.EXPIRING_MATERIALS" | translate }}
+    </div>
+    <div class="content-item">
+      <h4>{{ materialsData.count }}</h4>
+    </div>
+    <div class="stock-range">
+      {{ materialsData.percentage | number : "1.1-2" }}%
+    </div>
+  </div>
+
+  <!-- Card 4: Shifts -->
+  <div class="card">
+    <div class="card-title">
+      <img src="assets/clock-circle_svgrepo.com.svg" alt="clock" />
+      {{ "dashboard.SHIFTS" | translate }}
+    </div>
+    <div class="content-item">
+      <h4>{{ shiftsData.totalCount }}</h4>
+      <div class="d-flex flex-column gap-2">
+        <div class="status-indicator unActive">
+          <div class="square"></div>
+          <span class="status-text">{{
+            "dashboard.INACTIVE" | translate
+          }}</span>
+          <span class="status-number">{{ shiftsData.inactiveCount }}</span>
+          <div class="arrow">
+            <img src="assets/Stroke-1.svg" alt="" class="svg-icon" />
+          </div>
+        </div>
+        <div class="status-indicator active">
+          <div class="square"></div>
+          <span class="status-text">{{ "dashboard.ACTIVE" | translate }}</span>
+          <span class="status-number">{{ shiftsData.activeCount }}</span>
+          <div class="arrow">
+            <img src="assets/Stroke-2.svg" alt="" class="svg-icon" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stock-range">
+      {{ shiftsData.activePercentage | number : "1.1-2" }}%
+    </div>
+  </div>
+</div>
