@@ -24,7 +24,7 @@ export class QuestionFilterComponent {
     pointId: undefined,
   };
 
-  // Dropdown options
+  // Dropdown options - Updated for new enum values
   questionTypes = [
     { value: QuestionType.Radio, label: 'QUESTION_MANAGEMENT.TYPES.RADIO' },
     {
@@ -32,7 +32,14 @@ export class QuestionFilterComponent {
       label: 'QUESTION_MANAGEMENT.TYPES.CHECKBOX',
     },
     { value: QuestionType.Text, label: 'QUESTION_MANAGEMENT.TYPES.TEXT' },
-    { value: QuestionType.Rating, label: 'QUESTION_MANAGEMENT.TYPES.RATING' },
+    {
+      value: QuestionType.RatingStar,
+      label: 'QUESTION_MANAGEMENT.TYPES.RATING_STAR',
+    },
+    {
+      value: QuestionType.RatingEmoji,
+      label: 'QUESTION_MANAGEMENT.TYPES.RATING_EMOJI',
+    },
     { value: QuestionType.Bool, label: 'QUESTION_MANAGEMENT.TYPES.BOOL' },
   ];
 
@@ -96,6 +103,7 @@ export class QuestionFilterComponent {
     console.log('Processed filters before emit:', filters); // Log processed filters
     this.filterChange.emit(filters);
   }
+
   resetFilters(): void {
     this.filterData = {
       searchQuery: '',

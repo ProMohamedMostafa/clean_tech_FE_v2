@@ -41,8 +41,7 @@ export enum QuestionType {
   Radio = 0,
   Checkbox = 1,
   Text = 2,
-  Rating = 3,
-  Bool = 4,
-  RatingStar = 5,
-  RatingEmoji = 6,
+  Bool = 3,
+  RatingStar = 4,
+  RatingEmoji = 5,
 }

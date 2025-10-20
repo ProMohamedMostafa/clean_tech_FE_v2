@@ -7,6 +7,7 @@
 >
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
+      <!-- Header -->
       <div class="my-profile-title">
         <div class="title-container">
           <div class="title-bage"></div>
@@ -22,19 +23,17 @@
         </div>
       </div>
 
+      <!-- Body -->
       <div class="modal-body">
+        <!-- Question Text -->
         <div class="form-group mb-3">
           <label class="shift-form-label">{{
             "FEEDBACK.QUESTION_NAME" | translate
           }}</label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="questionText"
-            [placeholder]="'FEEDBACK.QUESTION_PLACEHOLDER' | translate"
-          />
+          <input type="text" class="form-control" [(ngModel)]="questionText" />
         </div>
 
+        <!-- Question Type -->
         <div class="form-group mb-3">
           <label class="shift-form-label">{{
             "FEEDBACK.SELECT_TYPE" | translate
@@ -54,28 +53,6 @@
           </div>
         </div>
 
-        <!-- Rating Type Selector - Only show when Rating is selected -->
-        <div class="form-group mb-3" *ngIf="showRatingTypeSelector()">
-          <label class="shift-form-label">{{
-            "FEEDBACK.RATING_TYPE" | translate
-          }}</label>
-          <div class="rating-type-selector">
-            <div
-              *ngFor="let ratingType of ratingTypes"
-              class="rating-type-option"
-              [class.active]="selectedRatingType === ratingType.value"
-              (click)="
-                selectedRatingType = ratingType.value; onRatingTypeChange()
-              "
-            >
-              <span class="rating-type-icon">{{ ratingType.icon }}</span>
-              <span class="rating-type-label">{{
-                ratingType.label | translate
-              }}</span>
-            </div>
-          </div>
-        </div>
-
         <!-- Options Section -->
         <div class="form-group mb-3" *ngIf="showOptions()">
           <label class="shift-form-label">{{
@@ -86,16 +63,19 @@
             cdkDropList
             (cdkDropListDropped)="drop($event)"
           >
+            <!-- Option Items -->
             <div
               *ngFor="let option of options; let i = index"
               class="option-item"
               cdkDrag
               [cdkDragDisabled]="isRatingType()"
             >
+              <!-- Drag Handle -->
               <div class="drag-handle" cdkDragHandle *ngIf="!isRatingType()">
                 <i class="fas fa-grip-vertical"></i>
               </div>
 
+              <!-- Image Upload -->
               <button
                 class="image-upload-btn"
                 (click)="triggerImageUpload(i)"
@@ -114,6 +94,7 @@
                 *ngIf="!isRatingType()"
               />
 
+              <!-- Option Input -->
               <input
                 *ngIf="!isRatingType()"
                 type="text"
@@ -122,10 +103,12 @@
                 [placeholder]="'FEEDBACK.OPTION_PLACEHOLDER' | translate"
               />
 
+              <!-- Rating Display -->
               <div *ngIf="isRatingType()" class="rating-label-display">
                 {{ getRatingLabel(i) }}
               </div>
 
+              <!-- Remove Button -->
               <button
                 class="remove-option-btn"
                 (click)="removeOption(i)"
@@ -135,6 +118,7 @@
                 ×
               </button>
 
+              <!-- Image Preview -->
               <img
                 *ngIf="option.image?.preview && !isRatingType()"
                 [src]="option.image?.preview"
@@ -142,17 +126,23 @@
                 [alt]="'FEEDBACK.OPTION_IMAGE_ALT' | translate"
               />
 
+              <!-- Rating Icon -->
               <div *ngIf="isRatingType()" class="rating-icon-display">
                 {{ getRatingIcon(i) }}
               </div>
             </div>
 
+            <!-- Add Option Button -->
             <button
               class="add-option-btn"
               (click)="addOption()"
               *ngIf="!isRatingType()"
               [disabled]="!canAddMoreOptions()"
-              [title]="!canAddMoreOptions() ? ('FEEDBACK.MAX_OPTIONS_REACHED' | translate) : ('FEEDBACK.ADD_OPTION' | translate)"
+              [title]="
+                !canAddMoreOptions()
+                  ? ('FEEDBACK.MAX_OPTIONS_REACHED' | translate)
+                  : ('FEEDBACK.ADD_OPTION' | translate)
+              "
             >
               <i class="fas fa-plus"></i>
               {{ "FEEDBACK.ADD_OPTION" | translate }}
@@ -161,6 +151,7 @@
         </div>
       </div>
 
+      <!-- Footer -->
       <div class="modal-footer">
         <button type="button" class="btn apply-btn" (click)="onSave()">
           {{

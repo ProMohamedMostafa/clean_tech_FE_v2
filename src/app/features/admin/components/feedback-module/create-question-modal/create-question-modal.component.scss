@@ -133,20 +133,32 @@
 /* Tabs Styles */
 .tabs-container {
   margin-top: 0.75rem;
+  position: relative;
 }
 
 .nav-tabs {
   border-bottom: 2px solid #025d8d;
   background-color: #f1f9ff;
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: nowrap; /* keep items in one row */
+  overflow-x: auto; /* allow horizontal scroll */
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  white-space: nowrap; /* ensure no wrapping */
+  gap: 0.25rem;
 }
 
+/* Remove any rule that hides the scrollbar.
+   If you want a thin scrollbar instead, use this (works on modern browsers): */
+.nav-tabs {
+  scrollbar-width: auto; /* Firefox */
+  padding-bottom: 1px;
+}
 .nav-tabs::-webkit-scrollbar {
-  display: none;
+  height: 8px; /* show horizontal scrollbar */
+}
+.nav-tabs::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
 .nav-item {
@@ -312,36 +324,36 @@
     padding: 0.5rem;
     align-items: center;
   }
-  
+
   .modal-dialog {
     margin: 0.5rem auto;
   }
-  
+
   .modal-content {
     padding: 1rem;
     border-radius: 1.5rem;
   }
-  
+
   .title-container {
     height: auto;
     padding: 0.3125rem 0;
   }
-  
+
   .modal-footer {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .btn {
     width: 100%;
     padding: 0.625rem;
   }
-  
+
   .option-item {
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .option-input {
     flex: 1 1 100%;
     order: 3;
@@ -353,16 +365,16 @@
     border-radius: 1rem;
     padding: 0.75rem;
   }
-  
+
   .nav-link {
     padding: 0.375rem 0.75rem;
     font-size: 0.8125rem;
   }
-  
+
   .options-container {
     padding: 0.5rem;
   }
-  
+
   .title-info h1 {
     font-size: 1.125rem;
   }
@@ -445,9 +457,9 @@
   .drag-handle {
     display: none;
   }
-  
+
   cursor: default;
-  
+
   &.cdk-drag-preview {
     display: none;
   }

@@ -33,15 +33,7 @@ export class QuestionCardComponent {
 
   // Static template options for different question types
   private staticAnswers: { [key: number]: Choice[] } = {
-    3: [
-      // Rating
-      { id: 1, text: '1 Star', image: null, icon: '⭐' },
-      { id: 2, text: '2 Stars', image: null, icon: '⭐⭐' },
-      { id: 3, text: '3 Stars', image: null, icon: '⭐⭐⭐' },
-      { id: 4, text: '4 Stars', image: null, icon: '⭐⭐⭐⭐' },
-      { id: 5, text: '5 Stars', image: null, icon: '⭐⭐⭐⭐⭐' },
-    ],
-    5: [
+    4: [
       // RatingStar
       { id: 1, text: '1 Star', image: null, icon: '⭐' },
       { id: 2, text: '2 Stars', image: null, icon: '⭐⭐' },
@@ -49,7 +41,7 @@ export class QuestionCardComponent {
       { id: 4, text: '4 Stars', image: null, icon: '⭐⭐⭐⭐' },
       { id: 5, text: '5 Stars', image: null, icon: '⭐⭐⭐⭐⭐' },
     ],
-    6: [
+    5: [
       // RatingEmoji
       { id: 1, text: 'Very Bad', image: null, icon: '😡' },
       { id: 2, text: 'Bad', image: null, icon: '😞' },
@@ -75,7 +67,7 @@ export class QuestionCardComponent {
 
   // Check if question type should use static templates
   get shouldUseStaticTemplate(): boolean {
-    return [3, 5, 6].includes(this.typeId);
+    return [4, 5].includes(this.typeId);
   }
 
   async onSelectChange(event: Event): Promise<void> {

@@ -1516,7 +1516,9 @@
       "CHECKBOX": "Checkbox",
       "TEXT": "Text",
       "RATING": "Rating",
-      "BOOL": "Yes/No"
+      "BOOL": "Yes/No",
+      "RATING_STAR": "Rating Stars",
+      "RATING_EMOJI": "Rating Emojis"
     },
     "FILTER_TITLE": "Filter Questions",
     "TYPE": "Question Type",

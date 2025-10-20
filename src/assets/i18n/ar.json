@@ -1195,7 +1195,7 @@
       "FILES": "المرفقات",
       "ADDITIONAL_INFO": "معلومات إضافية",
       "ASSIGNMENT": "التكليف",
-       "DETAILS": "التفاصيل",
+      "DETAILS": "التفاصيل",
       "SCHEDULE": "الجدول الزمني"
     },
     "TOOLTIPS": {
@@ -1500,7 +1500,9 @@
       "CHECKBOX": "مربع اختيار",
       "TEXT": "نص",
       "RATING": "تقييم",
-      "BOOL": "نعم/لا"
+      "BOOL": "نعم/لا",
+      "RATING_STAR": "تقييم بالنجوم",
+      "RATING_EMOJI": "تقييم بالرموز التعبيرية"
     },
     "FILTER_TITLE": "تصفية الأسئلة",
     "TYPE": "نوع السؤال",
