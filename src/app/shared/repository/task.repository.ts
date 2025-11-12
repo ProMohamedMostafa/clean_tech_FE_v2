@@ -18,8 +18,8 @@ import {
 export class TaskRepository {
   // Base API URL for task-related endpoints
   private readonly baseUrl = `${environment.apiUrl}/tasks`;
-  private readonly commentsUrl = 'http://192.168.1.27:8080/api/v1/comments';
-  private readonly statusUrl = 'http://192.168.1.27:8080/api/v1/update-status'; // Added new URL
+  private readonly commentsUrl = `${environment.apiUrl}/comments`;
+  private readonly statusUrl = `${environment.apiUrl}/update-status`;
 
   constructor(private http: HttpClient) {}
 
