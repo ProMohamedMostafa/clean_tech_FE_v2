@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { SectionService } from '../../../services/work-location/section.service';
@@ -30,6 +26,7 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
 
 /**
  * Section Management Component
@@ -107,7 +104,8 @@ export class SectionManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private sectionService: SectionService
+    private sectionService: SectionService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -178,48 +176,74 @@ export class SectionManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Floor', 'Building', 'Organization']],
-      body: this.sections.map((s) => [
-        s.name,
-        s.floorName,
-        s.buildingName,
-        s.organizationName,
-      ]),
-    });
-    doc.save('sections.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'sections',
+      headers: ['Name', 'Floor', 'Building', 'Organization'],
+      data: this.sections,
+      columnKeys: ['name', 'floorName', 'buildingName', 'organizationName'],
+      pdfTitle: 'Sections List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.sections.map((s) => ({
-        Name: s.name,
-        Floor: s.floorName,
-        Building: s.buildingName,
-        Organization: s.organizationName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sections');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'sections.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'sections',
+      sheetName: 'Sections',
+      headers: ['Name', 'Floor', 'Building', 'Organization'],
+      data: this.sections,
+      columnKeys: ['name', 'floorName', 'buildingName', 'organizationName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Floor', 'Building', 'Organization']],
-      body: this.sections.map((s) => [
-        s.name,
-        s.floorName,
-        s.buildingName,
-        s.organizationName,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'sections',
+      headers: ['Name', 'Floor', 'Building', 'Organization'],
+      data: this.sections,
+      columnKeys: ['name', 'floorName', 'buildingName', 'organizationName'],
+      pdfTitle: 'Sections List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.sections.map((section) => [
+      section.name,
+      section.floorName,
+      section.buildingName,
+      section.organizationName,
+    ]);
+
+    this.exportService.quickPDF(
+      'sections',
+      ['Name', 'Floor', 'Building', 'Organization'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.sections.map((section) => [
+      section.name,
+      section.floorName,
+      section.buildingName,
+      section.organizationName,
+    ]);
+
+    this.exportService.quickExcel(
+      'sections',
+      ['Name', 'Floor', 'Building', 'Organization'],
+      tableData
+    );
   }
 
   // ==================== SECTION ACTIONS ====================

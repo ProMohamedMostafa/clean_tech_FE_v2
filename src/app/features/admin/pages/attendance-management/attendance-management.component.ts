@@ -6,10 +6,6 @@ import { Router } from '@angular/router';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { AttendanceService } from '../../services/attendance.service';
@@ -31,6 +27,10 @@ import {
   formatDuration,
   parseUtcToLocal,
 } from '../../../../core/helpers/date-time.utils';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../shared/services/export.service';
 
 /**
  * Attendance Management Component
@@ -84,7 +84,8 @@ export class AttendanceManagementComponent {
   // ==================== CONSTRUCTOR ====================
   constructor(
     private router: Router,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -136,6 +137,7 @@ export class AttendanceManagementComponent {
       timer: 3000,
     });
   }
+
   /**
    * Update component state with paginated data
    */
@@ -181,61 +183,158 @@ export class AttendanceManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        ['User', 'Role', 'Date', 'Clock In', 'Clock Out', 'Duration', 'Status'],
+    const exportConfig: ExportConfig = {
+      fileName: 'attendance_history',
+      headers: [
+        'User',
+        'Role',
+        'Date',
+        'Clock In',
+        'Clock Out',
+        'Duration',
+        'Status',
+        'ShiftName',
       ],
-      body: this.attendanceHistory.map((item) => [
-        item.userName,
-        item.role,
-        item.date,
-        item.clockIn,
-        item.clockOut || 'N/A',
-        item.duration || 'N/A',
-        item.status,
-      ]),
-    });
-    doc.save('attendance_history.pdf');
+      data: this.attendanceHistory,
+      columnKeys: [
+        'userName',
+        'role',
+        'date',
+        'clockIn',
+        'clockOut',
+        'duration',
+        'status',
+        'shiftName',
+      ],
+      pdfTitle: 'Attendance History Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.attendanceHistory.map((item) => ({
-        User: item.userName,
-        Role: item.role,
-        Date: item.date,
-        'Clock In': item.clockIn,
-        'Clock Out': item.clockOut || 'N/A',
-        Duration: item.duration || 'N/A',
-        Status: item.status,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance History');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'attendance_history.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'attendance_history',
+      sheetName: 'Attendance History',
+      headers: [
+        'User',
+        'Role',
+        'Date',
+        'Clock In',
+        'Clock Out',
+        'Duration',
+        'Status',
+        'ShiftName',
+      ],
+      data: this.attendanceHistory,
+      columnKeys: [
+        'userName',
+        'role',
+        'date',
+        'clockIn',
+        'clockOut',
+        'duration',
+        'status',
+        'shiftName',
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        ['User', 'Role', 'Date', 'Clock In', 'Clock Out', 'Duration', 'Status'],
+    const exportConfig: ExportConfig = {
+      fileName: 'attendance_history',
+      headers: [
+        'User',
+        'Role',
+        'Date',
+        'Clock In',
+        'Clock Out',
+        'Duration',
+        'Status',
+        'ShiftName',
       ],
-      body: this.attendanceHistory.map((item) => [
-        item.userName,
-        item.role,
-        item.date,
-        item.clockIn,
-        item.clockOut || 'N/A',
-        item.duration || 'N/A',
-        item.status,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+      data: this.attendanceHistory.map((item) => ({
+        ...item,
+        startShift: item.startShift || '03:25:00',
+        endShift: item.endShift || '23:55:00',
+      })),
+      columnKeys: [
+        'userName',
+        'role',
+        'date',
+        'clockIn',
+        'clockOut',
+        'duration',
+        'status',
+        'shiftName',
+      ],
+      pdfTitle: 'Attendance History Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.attendanceHistory.map((item) => [
+      item.userName,
+      item.role,
+      item.date,
+      item.clockIn,
+      item.clockOut || 'N/A',
+      item.duration || 'N/A',
+      item.status,
+      item.shiftName,
+    ]);
+
+    this.exportService.quickPDF(
+      'attendance_history',
+      [
+        'User',
+        'Role',
+        'Date',
+        'Clock In',
+        'Clock Out',
+        'Duration',
+        'Status',
+        'shiftName',
+      ],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.attendanceHistory.map((item) => [
+      item.userName,
+      item.role,
+      item.date,
+      item.clockIn,
+      item.clockOut || 'N/A',
+      item.duration || 'N/A',
+      item.status,
+      item.shiftName,
+    ]);
+
+    this.exportService.quickExcel(
+      'attendance_history',
+      [
+        'User',
+        'Role',
+        'Date',
+        'Clock In',
+        'Clock Out',
+        'Duration',
+        'Status',
+        'shiftName',
+      ],
+      tableData
+    );
   }
 
   // ==================== ATTENDANCE ACTIONS ====================

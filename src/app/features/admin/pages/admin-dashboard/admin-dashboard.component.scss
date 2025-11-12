@@ -1,176 +1,140 @@
-/* ========================
-           Container Styling
-        ======================== */
-.user-charts {
-  width: 100%;
-  margin: 0 auto;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.parent {
+.grid-container {
+  padding: 25px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
-  padding: 16px;
+  grid-template-rows: repeat(5, auto);
+  gap: 1rem;
   width: 100%;
-}
 
-.dashboard-cards {
-  grid-column: 1 / -1; /* Span all columns */
-  width: 100%;
-}
-
-.div2 {
-  grid-column: span 5; /* Full width by default */
-  grid-row: 2;
-}
-
-.stock-barline {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 16px;
-  gap: 12px;
-  width: 100%;
-  background: #ffffff;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 11px;
-}
-
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 250px;
-}
-
-.div3 {
-  grid-column: span 5; /* Only spans 1 column (20% width) */
-  grid-row: 3;
-  background: #ffffff;
-  border-radius: 11px;
-  max-height: 500px; /* set max height (adjust as you like) */
-  overflow-y: auto; /* enable vertical scrolling */
-  padding: 5px; /* some spacing inside */
-}
-
-.div4 {
-  grid-column: span 5; /* Full width by default */
-  grid-row: 4;
-}
-
-/* Task completion styling like stock chart */
-.task-completion {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 16px;
-  gap: 12px;
-  width: 100%;
-  background: #ffffff;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 11px;
-}
-
-.sensor-chart {
-  grid-column: span 5; /* Full width by default */
-  grid-row: 5;
-}
-
-/* Sensor chart styling like stock chart */
-.sensor-barline {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 16px;
-  gap: 12px;
-  width: 100%;
-  background: #ffffff;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 11px;
-}
-
-.div5 {
-  grid-column: 1 / -1; /* Full width for all screen sizes */
-  grid-row: 6;
-}
-
-.div6 {
-  grid-column: 1 / -1;
-  grid-row: 7;
-}
-
-.div7 {
-  grid-column: 1 / -1;
-  grid-row: 8;
-}
-
-/* Medium screens (tablets) */
-@media (min-width: 768px) {
-  .parent {
-    gap: 12px;
-    padding: 20px;
+  .item {
+    text-align: center;
+    min-height: 0; /* Crucial for grid item sizing */
+    min-width: 0; /* Crucial for grid item sizing */
   }
 
-  .div2 {
-    grid-column: span 4;
-    grid-row: 2;
+  // Dashboard cards specific styling for item1
+  .item1 {
+    grid-column: span 5;
+
+    padding: 0;
+
+    app-dashboard-cards {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 
-  .div3 {
-    grid-column: span 1;
-    grid-row: 2;
+  .item2 {
+    grid-column: span 3;
+    grid-row-start: 2;
+    display: flex;
+    flex-direction: column;
   }
 
-  .div4 {
-    grid-column: span 4; /* Task Completion Rate - spans 4 columns like stock chart */
-    grid-row: 3;
+  .item3 {
+    grid-column: span 3;
+    grid-row-start: 3;
+    display: flex; /* Add flex for consistency */
+    flex-direction: column; /* Add flex for consistency */
   }
 
-  .sensor-chart {
-    grid-column: span 4; /* Sensor Chart - spans 4 columns like stock chart */
-    grid-row: 4;
+  .item4 {
+    grid-column: span 3;
+    grid-row-start: 4;
+    display: flex; /* Add flex for consistency */
+    flex-direction: column; /* Add flex for consistency */
   }
 
-  .div5 {
-    grid-column: 1 / -1; /* Keep full width */
-    grid-row: 5;
-  }
-
-  .div6 {
-    grid-column: span 1; /* Task Pie Chart - spans 1 column like Recent Activity */
-    grid-row: 3 / 5; /* Spans rows 3-4 to match height of div4 + sensor-chart */
-    background: #ffffff;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 11px;
-  }
-
-  .div7 {
+  .item5 {
     grid-column: span 2;
-    grid-row: 6;
-  }
-}
-
-/* Large screens (desktops) */
-@media (min-width: 1024px) {
-  .parent {
-    gap: 16px;
-    padding: 30px;
+    grid-row-start: 2;
   }
 
-  .stock-barline {
-    min-width: 0;
-  }
-}
-
-/* Extra small adjustments */
-@media (max-width: 480px) {
-  .parent {
-    gap: 12px;
-    padding: 12px;
+  .item6 {
+    grid-column: span 2;
+    grid-row: span 2;
   }
 
-  .chart-container {
-    height: 200px;
+  .item7 {
+    grid-column: span 5;
+    grid-row-start: 5;
+  }
+
+  // -----------------------------
+  // Tablet (≤1024px)
+  // -----------------------------
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    gap: 0.9rem;
+
+    .item1 {
+      grid-column: span 3;
+
+      padding: 0;
+    }
+
+    .item2 {
+      grid-column: span 2;
+      grid-row: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item3 {
+      grid-column: span 2;
+      grid-row: auto;
+      display: flex; /* Maintain flex */
+      flex-direction: column;
+    }
+
+    .item4 {
+      grid-column: span 2;
+      grid-row: auto;
+      display: flex; /* Maintain flex */
+      flex-direction: column;
+    }
+
+    .item5,
+    .item6 {
+      grid-column: span 1;
+      grid-row: auto;
+    }
+
+    .item7 {
+      grid-column: span 3;
+      grid-row: auto;
+    }
+  }
+
+  // -----------------------------
+  // Mobile (≤768px)
+  // -----------------------------
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 0.8rem;
+
+    .item {
+      grid-column: span 1;
+      grid-row: auto;
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .item1 {
+      padding: 0;
+    }
+
+    .item2,
+    .item3 {
+      display: flex;
+      flex-direction: column;
+    }
+    .item4 {
+      display: flex;
+      flex-direction: column;
+    }
   }
 }

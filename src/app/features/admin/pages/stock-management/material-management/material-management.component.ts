@@ -5,10 +5,6 @@ import { PageTitleComponent } from '../../../../../shared/components/page-title/
 import { MaterialFilterComponent } from '../../../../../shared/components/filters/material-filter/material-filter.component';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { ReusableFilterBarComponent } from '../../../../../shared/components/filter-bar/filter-bar.component';
 import { MaterialContainerComponent } from '../../../../../shared/components/material-container/material-container.component';
 import { MaterialService } from '../../../services/stock-service/material.service';
@@ -19,6 +15,10 @@ import { CategoryService } from '../../../services/stock-service/category.servic
 import { ProviderService } from '../../../services/provider.service';
 import { DecreaseQualityComponent } from './decrease-quality/decrease-quality.component';
 import { IncreaseQualityComponent } from './increase-quality/increase-quality.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-material-management',
@@ -71,7 +71,8 @@ export class MaterialManagementComponent implements OnInit {
     private materialService: MaterialService,
     private categoryService: CategoryService,
     private providerService: ProviderService,
-    private router: Router
+    private router: Router,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   ngOnInit(): void {
@@ -109,51 +110,97 @@ export class MaterialManagementComponent implements OnInit {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Description', 'Quantity', 'Category', 'Unit']],
-      body: this.materials.map((m) => [
-        m.name,
-        m.description,
-        m.quantity,
-        m.category?.name || 'N/A',
-        m.unit,
-      ]),
-    });
-    doc.save('materials.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'materials',
+      headers: ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
+      data: this.materials,
+      columnKeys: ['name', 'description', 'quantity', 'category.name', 'unit'],
+      columnFormatter: (material) => [
+        material.name,
+        material.description,
+        material.quantity,
+        material.category?.name || 'N/A',
+        material.unit,
+      ],
+      pdfTitle: 'Materials Inventory Report',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.materials.map((m) => ({
-        Name: m.name,
-        Description: m.description,
-        Quantity: m.quantity,
-        Category: m.category?.name || 'N/A',
-        Unit: m.unit,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Materials');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'materials.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'materials',
+      sheetName: 'Materials',
+      headers: ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
+      data: this.materials,
+      columnKeys: ['name', 'description', 'quantity', 'category.name', 'unit'],
+      columnFormatter: (material) => [
+        material.name,
+        material.description,
+        material.quantity,
+        material.category?.name || 'N/A',
+        material.unit,
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Description', 'Quantity', 'Category', 'Unit']],
-      body: this.materials.map((m) => [
-        m.name,
-        m.description,
-        m.quantity,
-        m.category?.name || 'N/A',
-        m.unit,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'materials',
+      headers: ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
+      data: this.materials,
+      columnKeys: ['name', 'description', 'quantity', 'category.name', 'unit'],
+      columnFormatter: (material) => [
+        material.name,
+        material.description,
+        material.quantity,
+        material.category?.name || 'N/A',
+        material.unit,
+      ],
+      pdfTitle: 'Materials Inventory Report',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.materials.map((material) => [
+      material.name,
+      material.description,
+      material.quantity,
+      material.category?.name || 'N/A',
+      material.unit,
+    ]);
+
+    this.exportService.quickPDF(
+      'materials',
+      ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.materials.map((material) => [
+      material.name,
+      material.description,
+      material.quantity,
+      material.category?.name || 'N/A',
+      material.unit,
+    ]);
+
+    this.exportService.quickExcel(
+      'materials',
+      ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
+      tableData
+    );
   }
 
   // ==================== PERMISSIONS ====================

@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { UserService } from '../../services/user.service';
@@ -28,6 +24,10 @@ import { ReusableFilterBarComponent } from '../../../../shared/components/filter
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../shared/components/page-title/page-title.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../shared/services/export.service';
 
 /**
  * User Management Component
@@ -100,7 +100,8 @@ export class UserManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -162,50 +163,99 @@ export class UserManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Email', 'Phone', 'Role']],
-      body: this.users.map((u) => [
-        `${u.firstName} ${u.lastName}`,
-        u.email,
-        u.phoneNumber,
-        u.role,
-      ]),
-    });
-    doc.save('users.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'users',
+      headers: ['Name', 'Email', 'Phone', 'Role', 'ID Number', 'Nationality'],
+      data: this.users,
+      columnKeys: [
+        'userName',
+        'email',
+        'phoneNumber',
+        'role',
+        'idNumber',
+        'nationalityName',
+      ],
+      pdfTitle: 'Users List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.users.map((u) => ({
-        Name: `${u.firstName} ${u.lastName}`,
-        Email: u.email,
-        Phone: u.phoneNumber,
-        Role: u.role,
-        ID: u.idNumber,
-        Nationality: u.nationalityName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'users.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'users',
+      sheetName: 'Users',
+      headers: ['Name', 'Email', 'Phone', 'Role', 'ID Number', 'Nationality'],
+      data: this.users,
+      columnKeys: [
+        'userName',
+        'email',
+        'phoneNumber',
+        'role',
+        'idNumber',
+        'nationalityName',
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Email', 'Phone', 'Role']],
-      body: this.users.map((u) => [
-        `${u.firstName} ${u.lastName}`,
-        u.email,
-        u.phoneNumber,
-        u.role,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'users',
+      headers: ['Name', 'Email', 'Phone', 'Role', 'ID Number', 'Nationality'],
+      data: this.users,
+      columnKeys: [
+        'userName',
+        'email',
+        'phoneNumber',
+        'role',
+        'idNumber',
+        'nationalityName',
+      ],
+      pdfTitle: 'Users List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.users.map((user) => [
+      `${user.firstName} ${user.lastName}`,
+      user.email,
+      user.phoneNumber,
+      user.role,
+      user.idNumber,
+      user.nationalityName,
+    ]);
+
+    this.exportService.quickPDF(
+      'users',
+      ['Name', 'Email', 'Phone', 'Role', 'ID Number', 'Nationality'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.users.map((user) => [
+      `${user.firstName} ${user.lastName}`,
+      user.email,
+      user.phoneNumber,
+      user.role,
+      user.idNumber,
+      user.nationalityName,
+    ]);
+
+    this.exportService.quickExcel(
+      'users',
+      ['Name', 'Email', 'Phone', 'Role', 'ID Number', 'Nationality'],
+      tableData
+    );
   }
 
   // ==================== USER ACTIONS ====================

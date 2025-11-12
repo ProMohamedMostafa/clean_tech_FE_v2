@@ -3,10 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
+import { Observable } from 'rxjs';
 
 // Components
 import {
@@ -27,7 +24,7 @@ import { UserService } from '../../../services/user.service';
 // Models & Helpers
 import { LeaveItem } from '../../../models/leave.model';
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
-import { Observable } from 'rxjs';
+import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-leaves-request',
@@ -60,6 +57,7 @@ export class LeavesRequestComponent {
   totalCount: number = 0;
   currentUserRole: string = '';
   isCleanerRole: boolean = false;
+
   // Table Configuration
   tableColumns: TableColumn[] = [
     { key: 'userName', label: 'LEAVE.USER', type: 'text' },
@@ -106,16 +104,17 @@ export class LeavesRequestComponent {
   constructor(
     private router: Router,
     private leaveService: LeaveService,
-    private userService: UserService
+    private userService: UserService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   ngOnInit(): void {
     this.currentUserRole = getUserRole();
-    this.isCleanerRole = this.currentUserRole.toLowerCase() === 'cleaner'; // NEW: Set cleaner flag
+    this.isCleanerRole = this.currentUserRole.toLowerCase() === 'cleaner';
 
     this.loadLeaveRequests();
 
-    // NEW: Only load users if not cleaner role
+    // Only load users if not cleaner role
     if (!this.isCleanerRole) {
       this.loadUsers();
     }
@@ -127,10 +126,10 @@ export class LeavesRequestComponent {
     this.leaveService.getLeavesWithPagination(filters).subscribe({
       next: (response) => {
         if (response?.succeeded) {
-          // NEW: Add isCleaner flag to each leave item if user is cleaner
+          // Add isCleaner flag to each leave item if user is cleaner
           const leaveData = response.data.data.map((item: any) => ({
             ...item,
-            isCleaner: this.isCleanerRole, // Add the flag here
+            isCleaner: this.isCleanerRole,
           }));
 
           this.updateLeaveData({
@@ -145,7 +144,7 @@ export class LeavesRequestComponent {
   }
 
   loadUsers(): void {
-    // NEW: Don't load users if cleaner role
+    // Don't load users if cleaner role
     if (this.isCleanerRole) {
       this.users = [];
       return;
@@ -247,9 +246,8 @@ export class LeavesRequestComponent {
   }
 
   openFilterModal(): void {
-    // NEW: Don't show filter modal for cleaner role if it contains user selection
+    // Don't show filter modal for cleaner role if it contains user selection
     if (this.isCleanerRole) {
-      // You might want to show a message or handle differently
       console.log('Filter options limited for cleaner role');
       return;
     }
@@ -272,7 +270,7 @@ export class LeavesRequestComponent {
     this.loadLeaveRequests();
   }
 
-  // Add these new methods to the component class
+  // Approval/Rejection Methods
   approveLeave(id: number): void {
     Swal.fire({
       title: 'Approve Leave',
@@ -332,61 +330,128 @@ export class LeavesRequestComponent {
 
   // Export Methods
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+    const exportConfig: ExportConfig = {
+      fileName: 'leave_requests',
+      headers: [
+        'User',
+        'Role',
+        'Start Date',
+        'End Date',
+        'Type',
+        'Status',
+        'Reason',
       ],
-      body: this.leaveRequests.map((item) => [
-        item.userName,
-        item.role,
-        item.startDate,
-        item.endDate,
-        item.type,
-        item.status,
-        item.reason,
-      ]),
-    });
-    doc.save('leave_requests.pdf');
+      data: this.leaveRequests,
+      columnKeys: [
+        'userName',
+        'role',
+        'startDate',
+        'endDate',
+        'type',
+        'status',
+        'reason',
+      ],
+      pdfTitle: 'Leave Requests Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.leaveRequests.map((item) => ({
-        User: item.userName,
-        Role: item.role,
-        'Start Date': item.startDate,
-        'End Date': item.endDate,
-        Type: item.type,
-        Status: item.status,
-        Reason: item.reason,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leave Requests');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'leave_requests.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'leave_requests',
+      sheetName: 'Leave Requests',
+      headers: [
+        'User',
+        'Role',
+        'Start Date',
+        'End Date',
+        'Type',
+        'Status',
+        'Reason',
+      ],
+      data: this.leaveRequests,
+      columnKeys: [
+        'userName',
+        'role',
+        'startDate',
+        'endDate',
+        'type',
+        'status',
+        'reason',
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+    const exportConfig: ExportConfig = {
+      fileName: 'leave_requests',
+      headers: [
+        'User',
+        'Role',
+        'Start Date',
+        'End Date',
+        'Type',
+        'Status',
+        'Reason',
       ],
-      body: this.leaveRequests.map((item) => [
-        item.userName,
-        item.role,
-        item.startDate,
-        item.endDate,
-        item.type,
-        item.status,
-        item.reason,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+      data: this.leaveRequests,
+      columnKeys: [
+        'userName',
+        'role',
+        'startDate',
+        'endDate',
+        'type',
+        'status',
+        'reason',
+      ],
+      pdfTitle: 'Leave Requests Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.leaveRequests.map((item) => [
+      item.userName,
+      item.role,
+      item.startDate,
+      item.endDate,
+      item.type,
+      item.status,
+      item.reason || 'N/A',
+    ]);
+
+    this.exportService.quickPDF(
+      'leave_requests',
+      ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.leaveRequests.map((item) => [
+      item.userName,
+      item.role,
+      item.startDate,
+      item.endDate,
+      item.type,
+      item.status,
+      item.reason || 'N/A',
+    ]);
+
+    this.exportService.quickExcel(
+      'leave_requests',
+      ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+      tableData
+    );
   }
 
   // Helper Methods
@@ -442,7 +507,7 @@ export class LeavesRequestComponent {
     Swal.fire({ icon: 'success', title: 'Success', text: message });
   }
 
-  // NEW: Method to handle leave creation using createLeaveRequest
+  // Method to handle leave creation using createLeaveRequest
   createLeaveRequest(
     startDate: string,
     endDate: string,
@@ -459,7 +524,7 @@ export class LeavesRequestComponent {
     );
   }
 
-  // NEW: Method to handle leave editing using editLeaveRequest
+  // Method to handle leave editing using editLeaveRequest
   editLeaveRequest(
     id: number,
     startDate: string,

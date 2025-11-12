@@ -3,10 +3,6 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { Modal } from 'bootstrap';
 import { PageTitleComponent } from '../../../../shared/components/page-title/page-title.component';
 import { ReusableFilterBarComponent } from '../../../../shared/components/filter-bar/filter-bar.component';
@@ -15,6 +11,10 @@ import { SensorFilterComponent } from '../../../../shared/components/filters/sen
 import { SensorService } from '../../services/sensor.service';
 import { getUserRole } from '../../../../core/helpers/auth.helpers';
 import { AssignModalComponent } from '../../../../shared/components/sensor-card/assign-modal/assign-modal.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-sensor-management',
@@ -64,7 +64,8 @@ export class SensorManagementComponent implements OnInit {
 
   constructor(
     private sensorService: SensorService,
-    private router: Router
+    private router: Router,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   ngOnInit(): void {
@@ -157,60 +158,133 @@ export class SensorManagementComponent implements OnInit {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location']],
-      body: this.devices.map((d) => [
-        d.name,
-        d.applicationName,
-        d.active ? 'Active' : 'Inactive',
-        `${d.battery}%`,
-        this.formatDate(d.lastSeenAt),
-        `${d.organizationName || '--'} > ${d.buildingName || '--'} > ${
-          d.floorName || '--'
-        }`,
-      ]),
-    });
-    doc.save('sensors.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'sensors',
+      headers: ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
+      data: this.devices,
+      columnKeys: [
+        'name',
+        'applicationName',
+        'active',
+        'battery',
+        'lastSeenAt',
+        'location',
+      ],
+      columnFormatter: (device) => [
+        device.name,
+        device.applicationName,
+        device.active ? 'Active' : 'Inactive',
+        `${device.battery}%`,
+        this.formatDate(device.lastSeenAt),
+        `${device.organizationName || '--'} > ${
+          device.buildingName || '--'
+        } > ${device.floorName || '--'}`,
+      ],
+      pdfTitle: 'Sensors Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.devices.map((d) => ({
-        Name: d.name,
-        Type: d.applicationName,
-        Status: d.active ? 'Active' : 'Inactive',
-        Battery: `${d.battery}%`,
-        'Last Seen': this.formatDate(d.lastSeenAt),
-        Location: `${d.organizationName || '--'} > ${
-          d.buildingName || '--'
-        } > ${d.floorName || '--'}`,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sensors');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'sensors.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'sensors',
+      sheetName: 'Sensors',
+      headers: ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
+      data: this.devices,
+      columnKeys: [
+        'name',
+        'applicationName',
+        'active',
+        'battery',
+        'lastSeenAt',
+        'location',
+      ],
+      columnFormatter: (device) => [
+        device.name,
+        device.applicationName,
+        device.active ? 'Active' : 'Inactive',
+        `${device.battery}%`,
+        this.formatDate(device.lastSeenAt),
+        `${device.organizationName || '--'} > ${
+          device.buildingName || '--'
+        } > ${device.floorName || '--'}`,
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location']],
-      body: this.devices.map((d) => [
-        d.name,
-        d.applicationName,
-        d.active ? 'Active' : 'Inactive',
-        `${d.battery}%`,
-        this.formatDate(d.lastSeenAt),
-        `${d.organizationName || '--'} > ${d.buildingName || '--'} > ${
-          d.floorName || '--'
-        }`,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'sensors',
+      headers: ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
+      data: this.devices,
+      columnKeys: [
+        'name',
+        'applicationName',
+        'active',
+        'battery',
+        'lastSeenAt',
+        'location',
+      ],
+      columnFormatter: (device) => [
+        device.name,
+        device.applicationName,
+        device.active ? 'Active' : 'Inactive',
+        `${device.battery}%`,
+        this.formatDate(device.lastSeenAt),
+        `${device.organizationName || '--'} > ${
+          device.buildingName || '--'
+        } > ${device.floorName || '--'}`,
+      ],
+      pdfTitle: 'Sensors Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.devices.map((device) => [
+      device.name,
+      device.applicationName,
+      device.active ? 'Active' : 'Inactive',
+      `${device.battery}%`,
+      this.formatDate(device.lastSeenAt),
+      `${device.organizationName || '--'} > ${device.buildingName || '--'} > ${
+        device.floorName || '--'
+      }`,
+    ]);
+
+    this.exportService.quickPDF(
+      'sensors',
+      ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.devices.map((device) => [
+      device.name,
+      device.applicationName,
+      device.active ? 'Active' : 'Inactive',
+      `${device.battery}%`,
+      this.formatDate(device.lastSeenAt),
+      `${device.organizationName || '--'} > ${device.buildingName || '--'} > ${
+        device.floorName || '--'
+      }`,
+    ]);
+
+    this.exportService.quickExcel(
+      'sensors',
+      ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
+      tableData
+    );
   }
 
   // ==================== MODAL ACTIONS ====================

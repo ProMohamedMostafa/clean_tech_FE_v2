@@ -19,6 +19,7 @@ export interface AttendanceHistoryItem {
   duration: string | null;
   date: string;
   status: string;
+  shiftName: string;
 }
 
 export interface AttendanceHistoryResponse {

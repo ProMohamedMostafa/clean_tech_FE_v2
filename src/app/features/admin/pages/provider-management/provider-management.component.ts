@@ -14,13 +14,11 @@ import { ProviderModalComponent } from '../../components/provider-modal/provider
 
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
-
-// Export & Print Libraries
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { PageTitleComponent } from '../../../../shared/components/page-title/page-title.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-provider-management',
@@ -85,7 +83,8 @@ export class ProviderManagementComponent implements OnInit {
   constructor(
     private providerService: ProviderService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   ngOnInit(): void {
@@ -146,35 +145,62 @@ export class ProviderManagementComponent implements OnInit {
 
   /** Export providers list as PDF */
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name']],
-      body: this.providers.map((p) => [p.name]),
-    });
-    doc.save('providers.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'providers',
+      headers: ['Name'],
+      data: this.providers,
+      columnKeys: ['name'], // Map the 'name' property from provider objects
+      pdfTitle: 'Providers List',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   /** Export providers list as Excel */
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.providers.map((p) => ({ Name: p.name }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Providers');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'providers.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'providers',
+      sheetName: 'Providers',
+      headers: ['Name'],
+      data: this.providers,
+      columnKeys: ['name'], // Map the 'name' property from provider objects
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   /** Print providers list as PDF */
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name']],
-      body: this.providers.map((p) => [p.name]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'providers',
+      headers: ['Name'],
+      data: this.providers,
+      columnKeys: ['name'],
+      pdfTitle: 'Providers List',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    this.exportService.quickPDF(
+      'providers',
+      ['Name'],
+      this.providers.map((p) => [p.name])
+    );
+  }
+
+  quickDownloadExcel(): void {
+    this.exportService.quickExcel(
+      'providers',
+      ['Name'],
+      this.providers.map((p) => [p.name])
+    );
   }
 
   // ==================== PERMISSIONS ====================

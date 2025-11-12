@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { OrganizationService } from '../../../services/work-location/organization.service';
@@ -30,6 +26,7 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
 
 /**
  * Organization Management Component
@@ -99,7 +96,8 @@ export class OrganizationManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -163,48 +161,74 @@ export class OrganizationManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'City', 'Area', 'Country', 'Created At', 'Updated At']],
-      body: this.organizations.map((o) => [
-        o.name,
-        o.cityName,
-        o.areaName,
-        o.countryName,
-      ]),
-    });
-    doc.save('organizations.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'organizations',
+      headers: ['Name', 'City', 'Area', 'Country'],
+      data: this.organizations,
+      columnKeys: ['name', 'cityName', 'areaName', 'countryName'],
+      pdfTitle: 'Organizations List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.organizations.map((o) => ({
-        Name: o.name,
-        City: o.cityName,
-        Area: o.areaName,
-        Country: o.countryName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Organizations');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'organizations.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'organizations',
+      sheetName: 'Organizations',
+      headers: ['Name', 'City', 'Area', 'Country'],
+      data: this.organizations,
+      columnKeys: ['name', 'cityName', 'areaName', 'countryName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'City', 'Area', 'Country', 'Created At', 'Updated At']],
-      body: this.organizations.map((o) => [
-        o.name,
-        o.cityName,
-        o.areaName,
-        o.countryName,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'organizations',
+      headers: ['Name', 'City', 'Area', 'Country'],
+      data: this.organizations,
+      columnKeys: ['name', 'cityName', 'areaName', 'countryName'],
+      pdfTitle: 'Organizations List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.organizations.map((org) => [
+      org.name,
+      org.cityName,
+      org.areaName,
+      org.countryName,
+    ]);
+
+    this.exportService.quickPDF(
+      'organizations',
+      ['Name', 'City', 'Area', 'Country'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.organizations.map((org) => [
+      org.name,
+      org.cityName,
+      org.areaName,
+      org.countryName,
+    ]);
+
+    this.exportService.quickExcel(
+      'organizations',
+      ['Name', 'City', 'Area', 'Country'],
+      tableData
+    );
   }
 
   // ==================== ORGANIZATION ACTIONS ====================

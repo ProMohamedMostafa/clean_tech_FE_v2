@@ -1,5 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 
 // Shared & Reusable Components
 import {
@@ -12,25 +14,27 @@ import { ReusableFilterBarComponent } from '../../../../shared/components/filter
 // Translate
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-// Export & Print Libraries
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
-import { PageTitleComponent } from '../../../../shared/components/page-title/page-title.component';
-import { TaskFilterComponent } from '../../../../shared/components/filters/task-filter/task-filter.component';
+// Services
 import { TaskService } from '../../../../shared/services/task.service';
+import { CalendarService } from '../../../../shared/services/calendar.service';
+import {
+  ExportService,
+  ExportConfig,
+} from '../../../../shared/services/export.service'; // Import ExportService
+
+// Models & Helpers
 import {
   Task,
   TaskPaginationFilters,
 } from '../../../../shared/models/task.model';
-import { TaskContainerComponent } from '../../../../shared/components/task-container/task-container.component';
-import { CalendarService } from '../../../../shared/services/calendar.service';
-import { DailyCalendarComponent } from '../../../../shared/components/daily-calendar/daily-calendar.component';
 import { getUserRole } from '../../../../core/helpers/auth.helpers';
+
+// Components
+import { PageTitleComponent } from '../../../../shared/components/page-title/page-title.component';
+import { TaskFilterComponent } from '../../../../shared/components/filters/task-filter/task-filter.component';
+import { TaskContainerComponent } from '../../../../shared/components/task-container/task-container.component';
+import { DailyCalendarComponent } from '../../../../shared/components/daily-calendar/daily-calendar.component';
 import Swal from 'sweetalert2';
-import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-task-management',
@@ -38,13 +42,13 @@ import { Observable } from 'rxjs';
   styleUrls: ['./task-management.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     ReusableFilterBarComponent,
     TaskFilterComponent,
     TranslateModule,
     PageTitleComponent,
     TaskContainerComponent,
     DailyCalendarComponent,
-    CommonModule,
   ],
 })
 export class TaskManagementComponent implements OnInit {
@@ -122,7 +126,8 @@ export class TaskManagementComponent implements OnInit {
     private route: ActivatedRoute,
     private calendarService: CalendarService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef // Add ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   ngOnInit(): void {
@@ -403,33 +408,29 @@ export class TaskManagementComponent implements OnInit {
         'TASK-MANAGEMENT.TABLE.STATUS',
       ])
       .subscribe((translations) => {
-        const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text(translations['TASK-MANAGEMENT.EXPORT.PDF_TITLE'], 14, 15);
-
-        const tableData = this.tasks.map((task) => [
-          task.title,
-          task.description,
-          task.dueDate,
-          task.priority,
-          this.translate.instant(this.getStatusTranslationKey(task.status)),
-        ]);
-
-        autoTable(doc, {
-          head: [
-            [
-              translations['TASK-MANAGEMENT.TABLE.TITLE'],
-              translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
-              translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
-              translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
-              translations['TASK-MANAGEMENT.TABLE.STATUS'],
-            ],
+        const exportConfig: ExportConfig = {
+          fileName: `${this.currentRoute}-tasks`,
+          headers: [
+            translations['TASK-MANAGEMENT.TABLE.TITLE'],
+            translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
+            translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
+            translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
+            translations['TASK-MANAGEMENT.TABLE.STATUS'],
           ],
-          body: tableData,
-          startY: 25,
-        });
+          data: this.tasks,
+          columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
+          columnFormatter: (task) => [
+            task.title,
+            task.description,
+            task.dueDate,
+            task.priority,
+            this.translate.instant(this.getStatusTranslationKey(task.status)),
+          ],
+          pdfTitle: translations['TASK-MANAGEMENT.EXPORT.PDF_TITLE'],
+          pdfOrientation: 'landscape',
+        };
 
-        doc.save(`${this.currentRoute}-tasks.pdf`);
+        this.exportService.exportToPDF(exportConfig);
       });
   }
 
@@ -445,27 +446,28 @@ export class TaskManagementComponent implements OnInit {
         'TASK-MANAGEMENT.EXPORT.EXCEL_SHEET_NAME',
       ])
       .subscribe((translations) => {
-        const worksheetData = this.tasks.map((task) => ({
-          [translations['TASK-MANAGEMENT.TABLE.TITLE']]: task.title,
-          [translations['TASK-MANAGEMENT.TABLE.DESCRIPTION']]: task.description,
-          [translations['TASK-MANAGEMENT.TABLE.DUE_DATE']]: task.dueDate,
-          [translations['TASK-MANAGEMENT.TABLE.PRIORITY']]: task.priority,
-          [translations['TASK-MANAGEMENT.TABLE.STATUS']]:
+        const exportConfig: ExportConfig = {
+          fileName: `${this.currentRoute}-tasks`,
+          sheetName: translations['TASK-MANAGEMENT.EXPORT.EXCEL_SHEET_NAME'],
+          headers: [
+            translations['TASK-MANAGEMENT.TABLE.TITLE'],
+            translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
+            translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
+            translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
+            translations['TASK-MANAGEMENT.TABLE.STATUS'],
+          ],
+          data: this.tasks,
+          columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
+          columnFormatter: (task) => [
+            task.title,
+            task.description,
+            task.dueDate,
+            task.priority,
             this.translate.instant(this.getStatusTranslationKey(task.status)),
-        }));
+          ],
+        };
 
-        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(
-          workbook,
-          worksheet,
-          translations['TASK-MANAGEMENT.EXPORT.EXCEL_SHEET_NAME']
-        );
-        const buffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
-        FileSaver.saveAs(new Blob([buffer]), `${this.currentRoute}-tasks.xlsx`);
+        this.exportService.exportToExcel(exportConfig);
       });
   }
 
@@ -481,36 +483,65 @@ export class TaskManagementComponent implements OnInit {
         'TASK-MANAGEMENT.TABLE.STATUS',
       ])
       .subscribe((translations) => {
-        const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text(translations['TASK-MANAGEMENT.EXPORT.PDF_TITLE'], 14, 15);
-
-        const tableData = this.tasks.map((task) => [
-          task.title,
-          task.description,
-          task.dueDate,
-          task.priority,
-          this.translate.instant(this.getStatusTranslationKey(task.status)),
-        ]);
-
-        autoTable(doc, {
-          head: [
-            [
-              translations['TASK-MANAGEMENT.TABLE.TITLE'],
-              translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
-              translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
-              translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
-              translations['TASK-MANAGEMENT.TABLE.STATUS'],
-            ],
+        const exportConfig: ExportConfig = {
+          fileName: `${this.currentRoute}-tasks`,
+          headers: [
+            translations['TASK-MANAGEMENT.TABLE.TITLE'],
+            translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
+            translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
+            translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
+            translations['TASK-MANAGEMENT.TABLE.STATUS'],
           ],
-          body: tableData,
-          startY: 25,
-        });
+          data: this.tasks,
+          columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
+          columnFormatter: (task) => [
+            task.title,
+            task.description,
+            task.dueDate,
+            task.priority,
+            this.translate.instant(this.getStatusTranslationKey(task.status)),
+          ],
+          pdfTitle: translations['TASK-MANAGEMENT.EXPORT.PDF_TITLE'],
+          pdfOrientation: 'landscape',
+        };
 
-        const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-        pdfWindow?.focus();
-        pdfWindow?.print();
+        this.exportService.printPDF(exportConfig);
       });
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.tasks.map((task) => [
+      task.title,
+      task.description,
+      task.dueDate,
+      task.priority,
+      this.translate.instant(this.getStatusTranslationKey(task.status)),
+    ]);
+
+    this.exportService.quickPDF(
+      `${this.currentRoute}-tasks`,
+      ['Title', 'Description', 'Due Date', 'Priority', 'Status'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.tasks.map((task) => [
+      task.title,
+      task.description,
+      task.dueDate,
+      task.priority,
+      this.translate.instant(this.getStatusTranslationKey(task.status)),
+    ]);
+
+    this.exportService.quickExcel(
+      `${this.currentRoute}-tasks`,
+      ['Title', 'Description', 'Due Date', 'Priority', 'Status'],
+      tableData
+    );
   }
 
   // ==================== PERMISSIONS ====================

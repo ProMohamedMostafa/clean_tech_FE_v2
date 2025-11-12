@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { BuildingService } from '../../../services/work-location/building.service';
@@ -30,6 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Building Management Component
@@ -103,7 +103,8 @@ export class BuildingManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private buildingService: BuildingService
+    private buildingService: BuildingService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -165,48 +166,74 @@ export class BuildingManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Organization', 'City', 'Area']],
-      body: this.buildings.map((b) => [
-        b.name,
-        b.organizationName,
-        b.cityName,
-        b.areaName,
-      ]),
-    });
-    doc.save('buildings.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'buildings',
+      headers: ['Name', 'Organization', 'City', 'Area'],
+      data: this.buildings,
+      columnKeys: ['name', 'organizationName', 'cityName', 'areaName'],
+      pdfTitle: 'Buildings List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.buildings.map((b) => ({
-        Name: b.name,
-        Organization: b.organizationName,
-        City: b.cityName,
-        Area: b.areaName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Buildings');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'buildings.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'buildings',
+      sheetName: 'Buildings',
+      headers: ['Name', 'Organization', 'City', 'Area'],
+      data: this.buildings,
+      columnKeys: ['name', 'organizationName', 'cityName', 'areaName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Organization', 'City', 'Area']],
-      body: this.buildings.map((b) => [
-        b.name,
-        b.organizationName,
-        b.cityName,
-        b.areaName,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'buildings',
+      headers: ['Name', 'Organization', 'City', 'Area'],
+      data: this.buildings,
+      columnKeys: ['name', 'organizationName', 'cityName', 'areaName'],
+      pdfTitle: 'Buildings List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.buildings.map((building) => [
+      building.name,
+      building.organizationName,
+      building.cityName,
+      building.areaName,
+    ]);
+
+    this.exportService.quickPDF(
+      'buildings',
+      ['Name', 'Organization', 'City', 'Area'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.buildings.map((building) => [
+      building.name,
+      building.organizationName,
+      building.cityName,
+      building.areaName,
+    ]);
+
+    this.exportService.quickExcel(
+      'buildings',
+      ['Name', 'Organization', 'City', 'Area'],
+      tableData
+    );
   }
 
   // ==================== BUILDING ACTIONS ====================

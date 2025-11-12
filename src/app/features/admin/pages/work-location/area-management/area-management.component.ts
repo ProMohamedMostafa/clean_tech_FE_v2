@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { AreaService } from '../../../services/work-location/area.service';
@@ -30,6 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Area Management Component
@@ -97,7 +97,8 @@ export class AreaManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private areaService: AreaService
+    private areaService: AreaService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -158,36 +159,56 @@ export class AreaManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Country', 'Created At', 'Updated At']],
-      body: this.areas.map((a) => [a.name, a.countryName]),
-    });
-    doc.save('areas.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'areas',
+      headers: ['Name', 'Country'],
+      data: this.areas,
+      columnKeys: ['name', 'countryName'],
+      pdfTitle: 'Areas List',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.areas.map((a) => ({
-        Name: a.name,
-        Country: a.countryName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Areas');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'areas.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'areas',
+      sheetName: 'Areas',
+      headers: ['Name', 'Country'],
+      data: this.areas,
+      columnKeys: ['name', 'countryName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Country', 'Created At', 'Updated At']],
-      body: this.areas.map((a) => [a.name, a.countryName]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'areas',
+      headers: ['Name', 'Country'],
+      data: this.areas,
+      columnKeys: ['name', 'countryName'],
+      pdfTitle: 'Areas List',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.areas.map((area) => [area.name, area.countryName]);
+
+    this.exportService.quickPDF('areas', ['Name', 'Country'], tableData);
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.areas.map((area) => [area.name, area.countryName]);
+
+    this.exportService.quickExcel('areas', ['Name', 'Country'], tableData);
   }
 
   // ==================== AREA ACTIONS ====================

@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { TransactionsCardsComponent } from '../../../components/transactions-cards/transactions-cards.component';
 import {
   TableAction,
@@ -21,6 +17,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
 import { StockService } from '../../../services/stock-service/stock.service';
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Transactions Management Component
@@ -78,7 +78,8 @@ export class TransactionsManagementComponent implements OnInit {
     private router: Router,
     private stockService: StockService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -186,74 +187,194 @@ export class TransactionsManagementComponent implements OnInit {
 
   // ==================== EXPORT & PRINT ====================
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        [
-          this.translate.instant('TRANSACTIONS.MATERIAL'),
-          this.translate.instant('TRANSACTIONS.QUANTITY'),
-          this.translate.instant('TRANSACTIONS.TYPE'),
-          this.translate.instant('TRANSACTIONS.PROVIDER'),
-          this.translate.instant('TRANSACTIONS.DATE'),
-          this.translate.instant('TRANSACTIONS.USER'),
-        ],
-      ],
-      body: this.transactions.map((t) => [
-        t.materialName,
-        t.quantity,
-        t.transactionType,
-        t.providerName,
-        t.transactionDate,
-        t.userName,
-      ]),
-    });
-    doc.save('transactions.pdf');
+    this.translate
+      .get([
+        'TRANSACTIONS.MATERIAL',
+        'TRANSACTIONS.QUANTITY',
+        'TRANSACTIONS.TYPE',
+        'TRANSACTIONS.PROVIDER',
+        'TRANSACTIONS.DATE',
+        'TRANSACTIONS.USER',
+        'TRANSACTIONS.CATEGORY',
+        'TRANSACTIONS.EXPORT.PDF_TITLE',
+      ])
+      .subscribe((translations) => {
+        const exportConfig: ExportConfig = {
+          fileName: 'transactions',
+          headers: [
+            translations['TRANSACTIONS.MATERIAL'],
+            translations['TRANSACTIONS.QUANTITY'],
+            translations['TRANSACTIONS.TYPE'],
+            translations['TRANSACTIONS.PROVIDER'],
+            translations['TRANSACTIONS.DATE'],
+            translations['TRANSACTIONS.USER'],
+            translations['TRANSACTIONS.CATEGORY'],
+          ],
+          data: this.transactions,
+          columnKeys: [
+            'materialName',
+            'quantity',
+            'transactionType',
+            'providerName',
+            'transactionDate',
+            'userName',
+            'categoryName',
+          ],
+          columnFormatter: (transaction) => [
+            transaction.materialName,
+            transaction.quantity,
+            transaction.transactionType,
+            transaction.providerName,
+            transaction.transactionDate,
+            transaction.userName,
+            transaction.categoryName,
+          ],
+          pdfTitle: translations['TRANSACTIONS.EXPORT.PDF_TITLE'],
+          pdfOrientation: 'landscape',
+        };
+
+        this.exportService.exportToPDF(exportConfig);
+      });
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.transactions.map((t) => ({
-        [this.translate.instant('TRANSACTIONS.MATERIAL')]: t.materialName,
-        [this.translate.instant('TRANSACTIONS.QUANTITY')]: t.quantity,
-        [this.translate.instant('TRANSACTIONS.TYPE')]: t.transactionType,
-        [this.translate.instant('TRANSACTIONS.PROVIDER')]: t.providerName,
-        [this.translate.instant('TRANSACTIONS.DATE')]: t.transactionDate,
-        [this.translate.instant('TRANSACTIONS.USER')]: t.userName,
-        [this.translate.instant('TRANSACTIONS.CATEGORY')]: t.categoryName,
-        Notes: t.notes,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'transactions.xlsx');
+    this.translate
+      .get([
+        'TRANSACTIONS.MATERIAL',
+        'TRANSACTIONS.QUANTITY',
+        'TRANSACTIONS.TYPE',
+        'TRANSACTIONS.PROVIDER',
+        'TRANSACTIONS.DATE',
+        'TRANSACTIONS.USER',
+        'TRANSACTIONS.CATEGORY',
+        'TRANSACTIONS.EXPORT.EXCEL_SHEET_NAME',
+      ])
+      .subscribe((translations) => {
+        const exportConfig: ExportConfig = {
+          fileName: 'transactions',
+          sheetName: translations['TRANSACTIONS.EXPORT.EXCEL_SHEET_NAME'],
+          headers: [
+            translations['TRANSACTIONS.MATERIAL'],
+            translations['TRANSACTIONS.QUANTITY'],
+            translations['TRANSACTIONS.TYPE'],
+            translations['TRANSACTIONS.PROVIDER'],
+            translations['TRANSACTIONS.DATE'],
+            translations['TRANSACTIONS.USER'],
+            translations['TRANSACTIONS.CATEGORY'],
+          ],
+          data: this.transactions,
+          columnKeys: [
+            'materialName',
+            'quantity',
+            'transactionType',
+            'providerName',
+            'transactionDate',
+            'userName',
+            'categoryName',
+          ],
+          columnFormatter: (transaction) => [
+            transaction.materialName,
+            transaction.quantity,
+            transaction.transactionType,
+            transaction.providerName,
+            transaction.transactionDate,
+            transaction.userName,
+            transaction.categoryName,
+          ],
+        };
+
+        this.exportService.exportToExcel(exportConfig);
+      });
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        [
-          this.translate.instant('TRANSACTIONS.MATERIAL'),
-          this.translate.instant('TRANSACTIONS.QUANTITY'),
-          this.translate.instant('TRANSACTIONS.TYPE'),
-          this.translate.instant('TRANSACTIONS.PROVIDER'),
-          this.translate.instant('TRANSACTIONS.DATE'),
-          this.translate.instant('TRANSACTIONS.USER'),
-        ],
-      ],
-      body: this.transactions.map((t) => [
-        t.materialName,
-        t.quantity,
-        t.transactionType,
-        t.providerName,
-        t.transactionDate,
-        t.userName,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    this.translate
+      .get([
+        'TRANSACTIONS.MATERIAL',
+        'TRANSACTIONS.QUANTITY',
+        'TRANSACTIONS.TYPE',
+        'TRANSACTIONS.PROVIDER',
+        'TRANSACTIONS.DATE',
+        'TRANSACTIONS.USER',
+        'TRANSACTIONS.CATEGORY',
+        'TRANSACTIONS.EXPORT.PDF_TITLE',
+      ])
+      .subscribe((translations) => {
+        const exportConfig: ExportConfig = {
+          fileName: 'transactions',
+          headers: [
+            translations['TRANSACTIONS.MATERIAL'],
+            translations['TRANSACTIONS.QUANTITY'],
+            translations['TRANSACTIONS.TYPE'],
+            translations['TRANSACTIONS.PROVIDER'],
+            translations['TRANSACTIONS.DATE'],
+            translations['TRANSACTIONS.USER'],
+            translations['TRANSACTIONS.CATEGORY'],
+          ],
+          data: this.transactions,
+          columnKeys: [
+            'materialName',
+            'quantity',
+            'transactionType',
+            'providerName',
+            'transactionDate',
+            'userName',
+            'categoryName',
+          ],
+          columnFormatter: (transaction) => [
+            transaction.materialName,
+            transaction.quantity,
+            transaction.transactionType,
+            transaction.providerName,
+            transaction.transactionDate,
+            transaction.userName,
+            transaction.categoryName,
+          ],
+          pdfTitle: translations['TRANSACTIONS.EXPORT.PDF_TITLE'],
+          pdfOrientation: 'landscape',
+        };
+
+        this.exportService.printPDF(exportConfig);
+      });
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.transactions.map((transaction) => [
+      transaction.materialName,
+      transaction.quantity,
+      transaction.transactionType,
+      transaction.providerName,
+      transaction.transactionDate,
+      transaction.userName,
+      transaction.categoryName,
+    ]);
+
+    this.exportService.quickPDF(
+      'transactions',
+      ['Material', 'Quantity', 'Type', 'Provider', 'Date', 'User', 'Category'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.transactions.map((transaction) => [
+      transaction.materialName,
+      transaction.quantity,
+      transaction.transactionType,
+      transaction.providerName,
+      transaction.transactionDate,
+      transaction.userName,
+      transaction.categoryName,
+    ]);
+
+    this.exportService.quickExcel(
+      'transactions',
+      ['Material', 'Quantity', 'Type', 'Provider', 'Date', 'User', 'Category'],
+      tableData
+    );
   }
 
   // ==================== TRANSACTION ACTIONS ====================

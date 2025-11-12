@@ -3,10 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { ChartType, NgApexchartsModule } from 'ng-apexcharts';
 
 // Components
@@ -28,6 +24,10 @@ import { UserService } from '../../services/user.service';
 // Models & Helpers
 import { LeaveItem } from '../../models/leave.model';
 import { getUserRole } from '../../../../core/helpers/auth.helpers';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-leaves-management',
@@ -106,7 +106,8 @@ export class LeavesManagementComponent {
   constructor(
     private router: Router,
     private leaveService: LeaveService,
-    private userService: UserService
+    private userService: UserService,
+    private exportService: ExportService // Inject ExportService
   ) {
     // Initialize chart options
     this.chartOptions = {
@@ -308,61 +309,128 @@ export class LeavesManagementComponent {
 
   // Export Methods
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+    const exportConfig: ExportConfig = {
+      fileName: 'leave_history',
+      headers: [
+        'User',
+        'Role',
+        'Start Date',
+        'End Date',
+        'Type',
+        'Status',
+        'Reason',
       ],
-      body: this.leaveHistory.map((item) => [
-        item.userName,
-        item.role,
-        item.startDate,
-        item.endDate,
-        item.type,
-        item.status,
-        item.reason,
-      ]),
-    });
-    doc.save('leave_history.pdf');
+      data: this.leaveHistory,
+      columnKeys: [
+        'userName',
+        'role',
+        'startDate',
+        'endDate',
+        'type',
+        'status',
+        'reason',
+      ],
+      pdfTitle: 'Leave History Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.leaveHistory.map((item) => ({
-        User: item.userName,
-        Role: item.role,
-        'Start Date': item.startDate,
-        'End Date': item.endDate,
-        Type: item.type,
-        Status: item.status,
-        Reason: item.reason,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leave History');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'leave_history.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'leave_history',
+      sheetName: 'Leave History',
+      headers: [
+        'User',
+        'Role',
+        'Start Date',
+        'End Date',
+        'Type',
+        'Status',
+        'Reason',
+      ],
+      data: this.leaveHistory,
+      columnKeys: [
+        'userName',
+        'role',
+        'startDate',
+        'endDate',
+        'type',
+        'status',
+        'reason',
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+    const exportConfig: ExportConfig = {
+      fileName: 'leave_history',
+      headers: [
+        'User',
+        'Role',
+        'Start Date',
+        'End Date',
+        'Type',
+        'Status',
+        'Reason',
       ],
-      body: this.leaveHistory.map((item) => [
-        item.userName,
-        item.role,
-        item.startDate,
-        item.endDate,
-        item.type,
-        item.status,
-        item.reason,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+      data: this.leaveHistory,
+      columnKeys: [
+        'userName',
+        'role',
+        'startDate',
+        'endDate',
+        'type',
+        'status',
+        'reason',
+      ],
+      pdfTitle: 'Leave History Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.leaveHistory.map((item) => [
+      item.userName,
+      item.role,
+      item.startDate,
+      item.endDate,
+      item.type,
+      item.status,
+      item.reason || 'N/A',
+    ]);
+
+    this.exportService.quickPDF(
+      'leave_history',
+      ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.leaveHistory.map((item) => [
+      item.userName,
+      item.role,
+      item.startDate,
+      item.endDate,
+      item.type,
+      item.status,
+      item.reason || 'N/A',
+    ]);
+
+    this.exportService.quickExcel(
+      'leave_history',
+      ['User', 'Role', 'Start Date', 'End Date', 'Type', 'Status', 'Reason'],
+      tableData
+    );
   }
 
   // Helper Methods

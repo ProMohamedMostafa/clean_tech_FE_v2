@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { FloorService } from '../../../services/work-location/floor.service';
@@ -30,6 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Floor Management Component
@@ -107,7 +107,8 @@ export class FloorManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private floorService: FloorService
+    private floorService: FloorService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -169,48 +170,74 @@ export class FloorManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Building', 'Organization', 'City']],
-      body: this.floors.map((f) => [
-        f.name,
-        f.buildingName,
-        f.organizationName,
-        f.cityName,
-      ]),
-    });
-    doc.save('floors.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'floors',
+      headers: ['Name', 'Building', 'Organization', 'City'],
+      data: this.floors,
+      columnKeys: ['name', 'buildingName', 'organizationName', 'cityName'],
+      pdfTitle: 'Floors List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.floors.map((f) => ({
-        Name: f.name,
-        Building: f.buildingName,
-        Organization: f.organizationName,
-        City: f.cityName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Floors');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'floors.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'floors',
+      sheetName: 'Floors',
+      headers: ['Name', 'Building', 'Organization', 'City'],
+      data: this.floors,
+      columnKeys: ['name', 'buildingName', 'organizationName', 'cityName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Building', 'Organization', 'City']],
-      body: this.floors.map((f) => [
-        f.name,
-        f.buildingName,
-        f.organizationName,
-        f.cityName,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'floors',
+      headers: ['Name', 'Building', 'Organization', 'City'],
+      data: this.floors,
+      columnKeys: ['name', 'buildingName', 'organizationName', 'cityName'],
+      pdfTitle: 'Floors List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.floors.map((floor) => [
+      floor.name,
+      floor.buildingName,
+      floor.organizationName,
+      floor.cityName,
+    ]);
+
+    this.exportService.quickPDF(
+      'floors',
+      ['Name', 'Building', 'Organization', 'City'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.floors.map((floor) => [
+      floor.name,
+      floor.buildingName,
+      floor.organizationName,
+      floor.cityName,
+    ]);
+
+    this.exportService.quickExcel(
+      'floors',
+      ['Name', 'Building', 'Organization', 'City'],
+      tableData
+    );
   }
 
   // ==================== FLOOR ACTIONS ====================

@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { ShiftService } from '../../services/shift.service';
@@ -28,6 +24,7 @@ import { PageTitleComponent } from '../../../../shared/components/page-title/pag
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../core/helpers/auth.helpers';
 import { DailyCalendarComponent } from '../../../../shared/components/daily-calendar/daily-calendar.component';
+import { ExportConfig, ExportService } from '../../../../shared/services/export.service';
 
 /**
  * Shift Management Component
@@ -99,7 +96,8 @@ export class ShiftManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private shiftService: ShiftService
+    private shiftService: ShiftService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -162,37 +160,76 @@ export class ShiftManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Start Time', 'End Time', 'Duration', 'Location']],
-      body: this.shifts.map((s) => [s.name, s.startTime, s.endTime]),
-    });
-    doc.save('shifts.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'shifts',
+      headers: ['Name', 'Start Date', 'End Date', 'Start Time', 'End Time'],
+      data: this.shifts,
+      columnKeys: ['name', 'startDate', 'endDate', 'startTime', 'endTime'],
+      pdfTitle: 'Shifts List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.shifts.map((s) => ({
-        Name: s.name,
-        'Start Time': s.startTime,
-        'End Time': s.endTime,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Shifts');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'shifts.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'shifts',
+      sheetName: 'Shifts',
+      headers: ['Name', 'Start Date', 'End Date', 'Start Time', 'End Time'],
+      data: this.shifts,
+      columnKeys: ['name', 'startDate', 'endDate', 'startTime', 'endTime'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Start Time', 'End Time', 'Duration', 'Location']],
-      body: this.shifts.map((s) => [s.name, s.startTime, s.endTime]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'shifts',
+      headers: ['Name', 'Start Date', 'End Date', 'Start Time', 'End Time'],
+      data: this.shifts,
+      columnKeys: ['name', 'startDate', 'endDate', 'startTime', 'endTime'],
+      pdfTitle: 'Shifts List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.shifts.map((shift) => [
+      shift.name,
+      shift.startDate,
+      shift.endDate,
+      shift.startTime,
+      shift.endTime,
+    ]);
+
+    this.exportService.quickPDF(
+      'shifts',
+      ['Name', 'Start Date', 'End Date', 'Start Time', 'End Time'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.shifts.map((shift) => [
+      shift.name,
+      shift.startDate,
+      shift.endDate,
+      shift.startTime,
+      shift.endTime,
+    ]);
+
+    this.exportService.quickExcel(
+      'shifts',
+      ['Name', 'Start Date', 'End Date', 'Start Time', 'End Time'],
+      tableData
+    );
   }
 
   // ==================== SHIFT ACTIONS ====================

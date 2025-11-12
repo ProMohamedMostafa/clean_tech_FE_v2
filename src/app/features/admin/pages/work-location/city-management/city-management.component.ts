@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { CityService } from '../../../services/work-location/city.service';
@@ -30,6 +26,7 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
 
 /**
  * City Management Component
@@ -98,7 +95,8 @@ export class CityManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private cityService: CityService
+    private cityService: CityService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -159,37 +157,72 @@ export class CityManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Area', 'Country']],
-      body: this.cities.map((c) => [c.name, c.areaName, c.countryName]),
-    });
-    doc.save('cities.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'cities',
+      headers: ['Name', 'Area', 'Country'],
+      data: this.cities,
+      columnKeys: ['name', 'areaName', 'countryName'],
+      pdfTitle: 'Cities List',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.cities.map((c) => ({
-        Name: c.name,
-        Area: c.areaName,
-        Country: c.countryName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Cities');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'cities.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'cities',
+      sheetName: 'Cities',
+      headers: ['Name', 'Area', 'Country'],
+      data: this.cities,
+      columnKeys: ['name', 'areaName', 'countryName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Area', 'Country']],
-      body: this.cities.map((c) => [c.name, c.areaName, c.countryName]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'cities',
+      headers: ['Name', 'Area', 'Country'],
+      data: this.cities,
+      columnKeys: ['name', 'areaName', 'countryName'],
+      pdfTitle: 'Cities List',
+      pdfOrientation: 'portrait',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.cities.map((city) => [
+      city.name,
+      city.areaName,
+      city.countryName,
+    ]);
+
+    this.exportService.quickPDF(
+      'cities',
+      ['Name', 'Area', 'Country'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.cities.map((city) => [
+      city.name,
+      city.areaName,
+      city.countryName,
+    ]);
+
+    this.exportService.quickExcel(
+      'cities',
+      ['Name', 'Area', 'Country'],
+      tableData
+    );
   }
 
   // ==================== CITY ACTIONS ====================

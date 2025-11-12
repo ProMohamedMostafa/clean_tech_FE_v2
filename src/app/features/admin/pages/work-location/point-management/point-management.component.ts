@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 // ==================== THIRD-PARTY LIBRARIES ====================
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 // ==================== SERVICES & MODELS ====================
 import { PointService } from '../../../services/work-location/point.service';
@@ -30,6 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Point Management Component
@@ -106,7 +106,8 @@ export class PointManagementComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private pointService: PointService
+    private pointService: PointService,
+    private exportService: ExportService // Inject ExportService
   ) {}
 
   // ==================== LIFECYCLE ====================
@@ -170,48 +171,74 @@ export class PointManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Section', 'Floor', 'Building']],
-      body: this.points.map((p) => [
-        p.name,
-        p.sectionName,
-        p.floorName,
-        p.buildingName,
-      ]),
-    });
-    doc.save('points.pdf');
+    const exportConfig: ExportConfig = {
+      fileName: 'points',
+      headers: ['Name', 'Section', 'Floor', 'Building'],
+      data: this.points,
+      columnKeys: ['name', 'sectionName', 'floorName', 'buildingName'],
+      pdfTitle: 'Points List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.points.map((p) => ({
-        Name: p.name,
-        Section: p.sectionName,
-        Floor: p.floorName,
-        Building: p.buildingName,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Points');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'points.xlsx');
+    const exportConfig: ExportConfig = {
+      fileName: 'points',
+      sheetName: 'Points',
+      headers: ['Name', 'Section', 'Floor', 'Building'],
+      data: this.points,
+      columnKeys: ['name', 'sectionName', 'floorName', 'buildingName'],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
   }
 
   printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Name', 'Section', 'Floor', 'Building']],
-      body: this.points.map((p) => [
-        p.name,
-        p.sectionName,
-        p.floorName,
-        p.buildingName,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+    const exportConfig: ExportConfig = {
+      fileName: 'points',
+      headers: ['Name', 'Section', 'Floor', 'Building'],
+      data: this.points,
+      columnKeys: ['name', 'sectionName', 'floorName', 'buildingName'],
+      pdfTitle: 'Points List',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.points.map((point) => [
+      point.name,
+      point.sectionName,
+      point.floorName,
+      point.buildingName,
+    ]);
+
+    this.exportService.quickPDF(
+      'points',
+      ['Name', 'Section', 'Floor', 'Building'],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.points.map((point) => [
+      point.name,
+      point.sectionName,
+      point.floorName,
+      point.buildingName,
+    ]);
+
+    this.exportService.quickExcel(
+      'points',
+      ['Name', 'Section', 'Floor', 'Building'],
+      tableData
+    );
   }
 
   // ==================== POINT ACTIONS ====================

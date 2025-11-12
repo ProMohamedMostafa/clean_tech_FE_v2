@@ -5,10 +5,6 @@ import { Router } from '@angular/router';
 // Third-party libraries
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import {
   TableAction,
   TableColumn,
@@ -22,6 +18,10 @@ import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { CategoryOffcanvasComponent } from './category-offcanvas/category-offcanvas.component';
 
 import Offcanvas from 'bootstrap/js/dist/offcanvas';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-category-management',
@@ -88,7 +88,8 @@ export class CategoryManagementComponent {
 
   constructor(
     private router: Router,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -154,20 +155,28 @@ export class CategoryManagementComponent {
 
   // Export & Print Methods
   downloadAsPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        [
-          'Name',
-          'Description',
-          'Parent Category',
-          'Unit',
-          'Created At',
-          'Updated At',
-          'Status',
-        ],
+    const exportConfig: ExportConfig = {
+      fileName: 'categories',
+      headers: [
+        'Name',
+        'Description',
+        'Parent Category',
+        'Unit',
+        'Created At',
+        'Updated At',
+        'Status',
       ],
-      body: this.categories.map((item) => [
+      data: this.categories,
+      columnKeys: [
+        'name',
+        'description',
+        'parentCategory.name',
+        'unit.name',
+        'createdAt',
+        'updatedAt',
+        'status',
+      ],
+      columnFormatter: (item) => [
         item.name,
         item.description || 'N/A',
         item.parentCategory?.name || 'N/A',
@@ -175,44 +184,38 @@ export class CategoryManagementComponent {
         item.createdAt,
         item.updatedAt || 'N/A',
         item.status,
-      ]),
-    });
-    doc.save('categories.pdf');
+      ],
+      pdfTitle: 'Categories Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.exportToPDF(exportConfig);
   }
 
   downloadAsExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(
-      this.categories.map((item) => ({
-        Name: item.name,
-        Description: item.description || 'N/A',
-        'Parent Category': item.parentCategory?.name || 'N/A',
-        Unit: item.unit?.name || 'N/A',
-        'Created At': item.createdAt,
-        'Updated At': item.updatedAt || 'N/A',
-        Status: item.status,
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    FileSaver.saveAs(new Blob([buffer]), 'categories.xlsx');
-  }
-
-  printPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [
-        [
-          'Name',
-          'Description',
-          'Parent Category',
-          'Unit',
-          'Created At',
-          'Updated At',
-          'Status',
-        ],
+    const exportConfig: ExportConfig = {
+      fileName: 'categories',
+      sheetName: 'Categories',
+      headers: [
+        'Name',
+        'Description',
+        'Parent Category',
+        'Unit',
+        'Created At',
+        'Updated At',
+        'Status',
       ],
-      body: this.categories.map((item) => [
+      data: this.categories,
+      columnKeys: [
+        'name',
+        'description',
+        'parentCategory.name',
+        'unit.name',
+        'createdAt',
+        'updatedAt',
+        'status',
+      ],
+      columnFormatter: (item) => [
         item.name,
         item.description || 'N/A',
         item.parentCategory?.name || 'N/A',
@@ -220,11 +223,103 @@ export class CategoryManagementComponent {
         item.createdAt,
         item.updatedAt || 'N/A',
         item.status,
-      ]),
-    });
-    const pdfWindow = window.open(doc.output('bloburl'), '_blank');
-    pdfWindow?.focus();
-    pdfWindow?.print();
+      ],
+    };
+
+    this.exportService.exportToExcel(exportConfig);
+  }
+
+  printPDF(): void {
+    const exportConfig: ExportConfig = {
+      fileName: 'categories',
+      headers: [
+        'Name',
+        'Description',
+        'Parent Category',
+        'Unit',
+        'Created At',
+        'Updated At',
+        'Status',
+      ],
+      data: this.categories,
+      columnKeys: [
+        'name',
+        'description',
+        'parentCategory.name',
+        'unit.name',
+        'createdAt',
+        'updatedAt',
+        'status',
+      ],
+      columnFormatter: (item) => [
+        item.name,
+        item.description || 'N/A',
+        item.parentCategory?.name || 'N/A',
+        item.unit?.name || 'N/A',
+        item.createdAt,
+        item.updatedAt || 'N/A',
+        item.status,
+      ],
+      pdfTitle: 'Categories Report',
+      pdfOrientation: 'landscape',
+    };
+
+    this.exportService.printPDF(exportConfig);
+  }
+
+  // ==================== QUICK EXPORT METHODS ====================
+
+  /** Quick export using simplified methods */
+  quickDownloadPDF(): void {
+    const tableData = this.categories.map((item) => [
+      item.name,
+      item.description || 'N/A',
+      item.parentCategory?.name || 'N/A',
+      item.unit?.name || 'N/A',
+      item.createdAt,
+      item.updatedAt || 'N/A',
+      item.status,
+    ]);
+
+    this.exportService.quickPDF(
+      'categories',
+      [
+        'Name',
+        'Description',
+        'Parent Category',
+        'Unit',
+        'Created At',
+        'Updated At',
+        'Status',
+      ],
+      tableData
+    );
+  }
+
+  quickDownloadExcel(): void {
+    const tableData = this.categories.map((item) => [
+      item.name,
+      item.description || 'N/A',
+      item.parentCategory?.name || 'N/A',
+      item.unit?.name || 'N/A',
+      item.createdAt,
+      item.updatedAt || 'N/A',
+      item.status,
+    ]);
+
+    this.exportService.quickExcel(
+      'categories',
+      [
+        'Name',
+        'Description',
+        'Parent Category',
+        'Unit',
+        'Created At',
+        'Updated At',
+        'Status',
+      ],
+      tableData
+    );
   }
 
   // Helper Methods

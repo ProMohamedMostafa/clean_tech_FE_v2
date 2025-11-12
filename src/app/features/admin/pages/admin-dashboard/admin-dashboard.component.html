@@ -1,28 +1,26 @@
-<div class="user-charts">
-  <div class="parent">
-    <!-- Cards section -->
-    <app-dashboard-cards class="dashboard-cards"
-      >Dashboard Cards</app-dashboard-cards
-    >
 
-    <!-- stock Barline section with chart -->
-    <app-stock-chart class="div2">Stock Chart</app-stock-chart>
 
-    <!-- Recent Activity section -->
-    <app-recent-activity class="div3">Recent Activity</app-recent-activity>
+<div class="grid-container">
+  <div class="item item1">
+    <app-dashboard-cards></app-dashboard-cards>
+  </div>
 
-    <!-- Task Completion rate section -->
-    <app-task-completion-rate class="div4"
-      >Task Completion Rate</app-task-completion-rate
-    >
-
-    <!-- NEW: Sensor Chart Component -->
-    <app-sensor-chart class="sensor-chart">Sensor Chart</app-sensor-chart>
-
-    <app-admin-attendance-table class="div5"
-      >Admin Attendance Table</app-admin-attendance-table
-    >
-
-    <app-task-pie-chart class="div6">Task Pie Chart</app-task-pie-chart>
+  <div class="item item2">
+    <app-stock-chart></app-stock-chart>
+  </div>
+  <div class="item item3">
+    <app-task-completion-rate></app-task-completion-rate>
+  </div>
+  <div class="item item4">
+    <app-sensor-chart></app-sensor-chart>
+  </div>
+  <div class="item item5">
+    <app-recent-activity></app-recent-activity>
+  </div>
+  <div class="item item6">
+    <app-task-pie-chart></app-task-pie-chart>
+  </div>
+  <div class="item item7">
+    <app-admin-attendance-table></app-admin-attendance-table>
   </div>
 </div>
