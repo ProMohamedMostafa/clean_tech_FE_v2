@@ -104,6 +104,16 @@ export class TaskCardComponent implements OnInit, OnDestroy {
     this.unarchiveTask.emit(this.task);
   }
 
+  formatTime(time: string | null | undefined): string {
+  if (!time) return '';
+
+  
+  return time.slice(0, 5);
+}
+
+
+
+
   // Helpers for styles
   getPriorityClass() {
     switch (this.task?.priority?.toLowerCase()) {
@@ -150,7 +160,7 @@ export class TaskCardComponent implements OnInit, OnDestroy {
         return 'TASKS.NOT_RESOLVED';
       case 'rejected':
         return 'TASKS.REJECTED';
-      case 'waiting for approve':
+      case 'waiting for approval':
         return 'TASKS.WAITING_FOR_APPROVE';
       default:
         return 'TASKS.NA';

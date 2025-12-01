@@ -55,7 +55,8 @@ export class TaskActionsComponent implements OnInit {
 
     // detect direction based on lang
     this.translate.onLangChange.subscribe((event) => {
-      this.currentDir = event.lang === 'ar' || event.lang === 'ur' ? 'rtl' : 'ltr';
+      this.currentDir =
+        event.lang === 'ar' || event.lang === 'ur' ? 'rtl' : 'ltr';
     });
   }
 
@@ -111,7 +112,10 @@ export class TaskActionsComponent implements OnInit {
       );
     }
 
-    if (userRole === 'cleaner') {
+    if (
+      userRole === 'cleaner' ||
+      (userId != createdById && userRole !== 'admin')
+    ) {
       this.availableActions = this.availableActions.filter(
         (action) => action !== 'Approve' && action !== 'Reject'
       );
@@ -187,6 +191,8 @@ export class TaskActionsComponent implements OnInit {
       5: this.translate.instant('TASK_STATUSES.NOT_RESOLVED'),
       6: this.translate.instant('TASK_STATUSES.OVERDUE'),
     };
-    return statusNames[statusId] || this.translate.instant('TASK_STATUSES.UNKNOWN');
+    return (
+      statusNames[statusId] || this.translate.instant('TASK_STATUSES.UNKNOWN')
+    );
   }
 }

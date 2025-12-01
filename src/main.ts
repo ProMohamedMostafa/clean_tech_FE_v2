@@ -14,53 +14,40 @@ import { AuthInterceptor } from './app/core/interceptors/auth.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ErrorInterceptor } from './app/core/interceptors/error-interceptor.service';
 
-// 🌐 Factory function to create a loader that loads translation JSON files
 export function HttpLoaderFactory(http: HttpClient) {
-  // This tells ngx-translate where to find translation JSON files (assets/i18n/*.json)
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-// 🚀 Bootstrapping the Angular standalone app with all required providers
 bootstrapApplication(AppComponent, {
-  // Spread any global providers from appConfig (like routing etc)
   ...appConfig,
 
-  // Define additional dependency injection providers
   providers: [
-    // Include any providers from appConfig (to avoid overwriting)
     ...(appConfig.providers || []),
 
-    // Provide Angular's HttpClient with interceptors loaded from DI container
-    // This allows interceptors like AuthInterceptor to be used automatically
     provideHttpClient(withInterceptorsFromDi()),
 
-    // Import and configure ngx-translate module for i18n support
     importProvidersFrom(
       TranslateModule.forRoot({
         loader: {
-          // Use custom loader factory function defined above
           provide: TranslateLoader,
           useFactory: HttpLoaderFactory,
-          deps: [HttpClient], // Inject HttpClient to loader
+          deps: [HttpClient],
         },
       })
     ),
 
-    // Register the HTTP interceptor that adds Authorization header to requests
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true, // Important: allows multiple interceptors
+      multi: true,
     },
 
-    // Register the Error interceptor that handles API errors
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
-      multi: true, // Important: allows multiple interceptors
+      multi: true,
     },
 
-    // Provide Angular animations support asynchronously for better performance
     provideAnimationsAsync(),
   ],
-}).catch((err) => console.error(err)); // Log bootstrap errors to console
+}).catch((err) => console.error(err));

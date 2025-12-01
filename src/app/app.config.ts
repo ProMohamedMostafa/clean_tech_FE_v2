@@ -12,7 +12,7 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withHashLocation()),
-    provideHttpClient(withInterceptorsFromDi()), // <-- enables DI interceptors
+    provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: loadingInterceptor, multi: true },
   ],
 };

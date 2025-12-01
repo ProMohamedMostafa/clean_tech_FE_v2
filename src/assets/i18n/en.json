@@ -1796,7 +1796,8 @@
     "END_DATE": "End Date",
     "FLOOR": "Floor",
     "CURRENTLY_READING": "Currently Reading",
-    "POINT": "Point"
+    "POINT": "Point",
+    "NO_USERS": "No users"
   },
   "Unknown User": "Unknown User",
   "Unknown Role": "Unknown Role",
