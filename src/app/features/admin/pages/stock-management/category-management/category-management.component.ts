@@ -186,7 +186,6 @@ export class CategoryManagementComponent {
         item.status,
       ],
       pdfTitle: 'Categories Report',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -261,7 +260,6 @@ export class CategoryManagementComponent {
         item.status,
       ],
       pdfTitle: 'Categories Report',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

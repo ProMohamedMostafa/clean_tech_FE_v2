@@ -176,7 +176,6 @@ export class FloorManagementComponent {
       data: this.floors,
       columnKeys: ['name', 'buildingName', 'organizationName', 'cityName'],
       pdfTitle: 'Floors List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -201,7 +200,6 @@ export class FloorManagementComponent {
       data: this.floors,
       columnKeys: ['name', 'buildingName', 'organizationName', 'cityName'],
       pdfTitle: 'Floors List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

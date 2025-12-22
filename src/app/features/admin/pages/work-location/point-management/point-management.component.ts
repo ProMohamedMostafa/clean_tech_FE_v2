@@ -177,7 +177,6 @@ export class PointManagementComponent {
       data: this.points,
       columnKeys: ['name', 'sectionName', 'floorName', 'buildingName'],
       pdfTitle: 'Points List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -202,7 +201,6 @@ export class PointManagementComponent {
       data: this.points,
       columnKeys: ['name', 'sectionName', 'floorName', 'buildingName'],
       pdfTitle: 'Points List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

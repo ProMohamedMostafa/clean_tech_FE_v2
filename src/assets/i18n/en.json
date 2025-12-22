@@ -270,7 +270,14 @@
     "PDF_DESCRIPTION": "Portable Document Format",
     "EXPORT_AS_EXCEL": "Export as Excel",
     "EXCEL_DESCRIPTION": "Microsoft Excel Spreadsheet",
-    "CANCEL": "Cancel"
+    "CANCEL": "Cancel",
+    "FROM_DATE": "From Date",
+    "TO_DATE": "To Date",
+    "DATE_REQUIRED_TITLE": "Date Range Required",
+    "DATE_REQUIRED_TEXT": "Please select both start and end dates for export.",
+    "INVALID_DATE_TITLE": "Invalid Date Range",
+    "INVALID_DATE_TEXT": "Start date cannot be after end date.",
+    "OK": "OK"
   },
   "UserTABLE": {
     "USERS": "Users",

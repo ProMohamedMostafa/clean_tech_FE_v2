@@ -28,6 +28,7 @@ import {
   ExportConfig,
   ExportService,
 } from '../../../../shared/services/export.service';
+import { LeaveReportService } from '../../../../shared/services/pdf-services/leaves/leave-report.service';
 
 @Component({
   selector: 'app-leaves-management',
@@ -107,6 +108,8 @@ export class LeavesManagementComponent {
     private router: Router,
     private leaveService: LeaveService,
     private userService: UserService,
+      private leaveReportService: LeaveReportService
+,
     private exportService: ExportService // Inject ExportService
   ) {
     // Initialize chart options
@@ -307,10 +310,11 @@ export class LeavesManagementComponent {
     this.loadLeaveHistory();
   }
 
-  // Export Methods
   downloadAsPDF(): void {
-    const exportConfig: ExportConfig = {
+    this.leaveReportService.generateLeavePDF({
       fileName: 'leave_history',
+      pdfTitle: 'Leave History Report',
+
       headers: [
         'User',
         'Role',
@@ -320,7 +324,9 @@ export class LeavesManagementComponent {
         'Status',
         'Reason',
       ],
+
       data: this.leaveHistory,
+
       columnKeys: [
         'userName',
         'role',
@@ -330,11 +336,14 @@ export class LeavesManagementComponent {
         'status',
         'reason',
       ],
-      pdfTitle: 'Leave History Report',
-      pdfOrientation: 'landscape',
-    };
 
-    this.exportService.exportToPDF(exportConfig);
+      includeCoverPage: true,
+
+      reportInfo: {
+        reportDate: new Date(),
+        preparedBy: 'System',
+      },
+    });
   }
 
   downloadAsExcel(): void {
@@ -388,7 +397,6 @@ export class LeavesManagementComponent {
         'reason',
       ],
       pdfTitle: 'Leave History Report',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

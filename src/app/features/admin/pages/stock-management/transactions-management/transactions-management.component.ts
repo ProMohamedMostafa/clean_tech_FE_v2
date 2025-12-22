@@ -21,6 +21,7 @@ import {
   ExportConfig,
   ExportService,
 } from '../../../../../shared/services/export.service';
+import { TransactionReportService } from '../../../../../shared/services/pdf-services/transaction/transaction-report.service';
 
 /**
  * Transactions Management Component
@@ -79,6 +80,8 @@ export class TransactionsManagementComponent implements OnInit {
     private stockService: StockService,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
+    private transactionReportService: TransactionReportService,
+
     private exportService: ExportService // Inject ExportService
   ) {}
 
@@ -198,19 +201,23 @@ export class TransactionsManagementComponent implements OnInit {
         'TRANSACTIONS.CATEGORY',
         'TRANSACTIONS.EXPORT.PDF_TITLE',
       ])
-      .subscribe((translations) => {
-        const exportConfig: ExportConfig = {
+      .subscribe((t) => {
+        this.transactionReportService.generatePDF({
           fileName: 'transactions',
+          pdfTitle: t['TRANSACTIONS.EXPORT.PDF_TITLE'],
+
           headers: [
-            translations['TRANSACTIONS.MATERIAL'],
-            translations['TRANSACTIONS.QUANTITY'],
-            translations['TRANSACTIONS.TYPE'],
-            translations['TRANSACTIONS.PROVIDER'],
-            translations['TRANSACTIONS.DATE'],
-            translations['TRANSACTIONS.USER'],
-            translations['TRANSACTIONS.CATEGORY'],
+            t['TRANSACTIONS.MATERIAL'],
+            t['TRANSACTIONS.QUANTITY'],
+            t['TRANSACTIONS.TYPE'],
+            t['TRANSACTIONS.PROVIDER'],
+            t['TRANSACTIONS.DATE'],
+            t['TRANSACTIONS.USER'],
+            t['TRANSACTIONS.CATEGORY'],
           ],
+
           data: this.transactions,
+
           columnKeys: [
             'materialName',
             'quantity',
@@ -220,6 +227,7 @@ export class TransactionsManagementComponent implements OnInit {
             'userName',
             'categoryName',
           ],
+
           columnFormatter: (transaction) => [
             transaction.materialName,
             transaction.quantity,
@@ -229,11 +237,14 @@ export class TransactionsManagementComponent implements OnInit {
             transaction.userName,
             transaction.categoryName,
           ],
-          pdfTitle: translations['TRANSACTIONS.EXPORT.PDF_TITLE'],
-          pdfOrientation: 'landscape',
-        };
 
-        this.exportService.exportToPDF(exportConfig);
+          includeCoverPage: true,
+
+          reportInfo: {
+            reportDate: new Date(),
+            preparedBy: 'System',
+          },
+        });
       });
   }
 
@@ -331,7 +342,6 @@ export class TransactionsManagementComponent implements OnInit {
             transaction.categoryName,
           ],
           pdfTitle: translations['TRANSACTIONS.EXPORT.PDF_TITLE'],
-          pdfOrientation: 'landscape',
         };
 
         this.exportService.printPDF(exportConfig);

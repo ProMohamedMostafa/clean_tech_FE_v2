@@ -35,6 +35,7 @@ import { TaskFilterComponent } from '../../../../shared/components/filters/task-
 import { TaskContainerComponent } from '../../../../shared/components/task-container/task-container.component';
 import { DailyCalendarComponent } from '../../../../shared/components/daily-calendar/daily-calendar.component';
 import Swal from 'sweetalert2';
+import { TaskReportService } from '../../../../shared/services/pdf-services/tasks/task-report.service';
 
 @Component({
   selector: 'app-task-management',
@@ -127,7 +128,8 @@ export class TaskManagementComponent implements OnInit {
     private calendarService: CalendarService,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private exportService: ExportService // Inject ExportService
+    private exportService: ExportService,
+    private taskReportService: TaskReportService
   ) {}
 
   ngOnInit(): void {
@@ -408,7 +410,7 @@ export class TaskManagementComponent implements OnInit {
         'TASK-MANAGEMENT.TABLE.STATUS',
       ])
       .subscribe((translations) => {
-        const exportConfig: ExportConfig = {
+        this.taskReportService.generateTaskPDF({
           fileName: `${this.currentRoute}-tasks`,
           headers: [
             translations['TASK-MANAGEMENT.TABLE.TITLE'],
@@ -426,11 +428,13 @@ export class TaskManagementComponent implements OnInit {
             task.priority,
             this.translate.instant(this.getStatusTranslationKey(task.status)),
           ],
-          pdfTitle: translations['TASK-MANAGEMENT.EXPORT.PDF_TITLE'],
-          pdfOrientation: 'landscape',
-        };
-
-        this.exportService.exportToPDF(exportConfig);
+      pdfTitle: 'Task Report',
+          includeCoverPage: true,
+          reportInfo: {
+            reportDate: new Date(),
+            preparedBy: 'Task Management System',
+          },
+        });
       });
   }
 
@@ -477,7 +481,6 @@ export class TaskManagementComponent implements OnInit {
       .get([
         'TASK-MANAGEMENT.EXPORT.PDF_TITLE',
         'TASK-MANAGEMENT.TABLE.TITLE',
-        'TASK-MANAGEMENT.TABLE.DESCRIPTION',
         'TASK-MANAGEMENT.TABLE.DUE_DATE',
         'TASK-MANAGEMENT.TABLE.PRIORITY',
         'TASK-MANAGEMENT.TABLE.STATUS',
@@ -487,13 +490,12 @@ export class TaskManagementComponent implements OnInit {
           fileName: `${this.currentRoute}-tasks`,
           headers: [
             translations['TASK-MANAGEMENT.TABLE.TITLE'],
-            translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
             translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
             translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
             translations['TASK-MANAGEMENT.TABLE.STATUS'],
           ],
           data: this.tasks,
-          columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
+          columnKeys: ['title', 'dueDate', 'priority', 'status'],
           columnFormatter: (task) => [
             task.title,
             task.description,
@@ -502,7 +504,6 @@ export class TaskManagementComponent implements OnInit {
             this.translate.instant(this.getStatusTranslationKey(task.status)),
           ],
           pdfTitle: translations['TASK-MANAGEMENT.EXPORT.PDF_TITLE'],
-          pdfOrientation: 'landscape',
         };
 
         this.exportService.printPDF(exportConfig);
@@ -523,7 +524,7 @@ export class TaskManagementComponent implements OnInit {
 
     this.exportService.quickPDF(
       `${this.currentRoute}-tasks`,
-      ['Title', 'Description', 'Due Date', 'Priority', 'Status'],
+      ['Title', 'Due Date', 'Priority', 'Status'],
       tableData
     );
   }

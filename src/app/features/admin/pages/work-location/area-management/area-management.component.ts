@@ -165,7 +165,6 @@ export class AreaManagementComponent {
       data: this.areas,
       columnKeys: ['name', 'countryName'],
       pdfTitle: 'Areas List',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -190,7 +189,6 @@ export class AreaManagementComponent {
       data: this.areas,
       columnKeys: ['name', 'countryName'],
       pdfTitle: 'Areas List',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.printPDF(exportConfig);

@@ -13,15 +13,14 @@
         (input)="onSearchChange()"
       />
     </div>
-    }
-    @if (showFilterButton) {
+    } @if (showFilterButton) {
     <!-- Filter Button -->
     <div class="filter-button-container">
       <button class="filter-btn" (click)="onFilterClick()">
         <i class="fas fa-filter"></i> {{ "filterbar.FILTER" | translate }}
       </button>
     </div>
-  }
+    }
   </div>
 
   <!-- Add and action buttons section -->
@@ -41,11 +40,11 @@
     }
 
     <!-- Print Button -->
-    @if (showPrintButton) {
+    <!-- @if (showPrintButton) {
     <button class="btn add-btn" (click)="onPrint()">
       <i class="fas fa-print"></i> {{ "filterbar.PRINT" | translate }}
     </button>
-    }
+    } -->
 
     <!-- Recycle Button -->
     @if (showRecycleButton) {

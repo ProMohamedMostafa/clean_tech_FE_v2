@@ -26,7 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
-import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Organization Management Component
@@ -167,7 +170,6 @@ export class OrganizationManagementComponent {
       data: this.organizations,
       columnKeys: ['name', 'cityName', 'areaName', 'countryName'],
       pdfTitle: 'Organizations List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -192,7 +194,6 @@ export class OrganizationManagementComponent {
       data: this.organizations,
       columnKeys: ['name', 'cityName', 'areaName', 'countryName'],
       pdfTitle: 'Organizations List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

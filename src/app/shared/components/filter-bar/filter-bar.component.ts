@@ -28,20 +28,25 @@ export class ReusableFilterBarComponent {
   @Input() showAddButton: boolean = true;
   @Input() showRecycleButton: boolean = true;
   @Input() showExportButtons: boolean = true;
-  @Input() showPrintButton: boolean = true;
+  @Input() showPrintButton: boolean = false;
   @Input() addButtonRoute?: string;
   @Input() recycleButtonRoute: string = '';
   @Input() searchPlaceholder: string = 'filterbar.SEARCH_PLACEHOLDER';
   @Input() filterModalTitle: string = 'filterbar.FILTER_TITLE';
   @Input() showSearchBar: boolean = true;
   @Input() showFilterButton: boolean = true;
+
+  // Date range properties
+  exportStartDate: string = '';
+  exportEndDate: string = '';
+
   // Output events
   @Output() searchChange = new EventEmitter<string>();
   @Output() filterClick = new EventEmitter<void>();
   @Output() addClick = new EventEmitter<void>();
   @Output() recycleClick = new EventEmitter<void>();
-  @Output() exportPdf = new EventEmitter<void>();
-  @Output() exportExcel = new EventEmitter<void>();
+  @Output() exportPdf = new EventEmitter<{ from: string; to: string }>();
+  @Output() exportExcel = new EventEmitter<{ from: string; to: string }>();
   @Output() print = new EventEmitter<void>();
   @Output() showFilter = new EventEmitter<void>();
   searchTerm: string = '';
@@ -67,11 +72,17 @@ export class ReusableFilterBarComponent {
   }
 
   onExportPdf() {
-    this.exportPdf.emit();
+    const dateRange = this.validateDateRange();
+    if (dateRange) {
+      this.exportPdf.emit(dateRange);
+    }
   }
 
   onExportExcel() {
-    this.exportExcel.emit();
+    const dateRange = this.validateDateRange();
+    if (dateRange) {
+      this.exportExcel.emit(dateRange);
+    }
   }
 
   onPrint() {
@@ -84,64 +95,152 @@ export class ReusableFilterBarComponent {
   }
 
   onShowFilter() {
-  this.showFilter.emit();
-  console.log('Show filter button clicked');
-}
+    this.showFilter.emit();
+    console.log('Show filter button clicked');
+  }
 
+  // Validate date range and return object if valid
+  private validateDateRange(): { from: string; to: string } | null {
+    if (!this.exportStartDate || !this.exportEndDate) {
+      Swal.fire({
+        icon: 'warning',
+        title: this.translate.instant('exportSweetAlert.DATE_REQUIRED_TITLE'),
+        text: this.translate.instant('exportSweetAlert.DATE_REQUIRED_TEXT'),
+        confirmButtonText: this.translate.instant('exportSweetAlert.OK'),
+      });
+      return null;
+    }
 
-  // New SweetAlert method for export options
+    const startDate = new Date(this.exportStartDate);
+    const endDate = new Date(this.exportEndDate);
+
+    if (startDate > endDate) {
+      Swal.fire({
+        icon: 'error',
+        title: this.translate.instant('exportSweetAlert.INVALID_DATE_TITLE'),
+        text: this.translate.instant('exportSweetAlert.INVALID_DATE_TEXT'),
+        confirmButtonText: this.translate.instant('exportSweetAlert.OK'),
+      });
+      return null;
+    }
+
+    return {
+      from: this.exportStartDate,
+      to: this.exportEndDate,
+    };
+  }
+
+  // Set default date range (last 30 days)
+  private setDefaultDateRange() {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+
+    this.exportEndDate = endDate.toISOString().split('T')[0];
+    this.exportStartDate = startDate.toISOString().split('T')[0];
+  }
+
+  // New SweetAlert method for export options with date range
   showExportSweetAlert() {
+    // Set default dates if empty
+    if (!this.exportStartDate || !this.exportEndDate) {
+      this.setDefaultDateRange();
+    }
+
     Swal.fire({
       title: this.translate.instant('exportSweetAlert.TITLE'),
       html: `
-      <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-        <button id="pdf-export" class="export-option-btn" style="
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1rem;
-          border: 1px solid #e9ecef;
-          border-radius: 8px;
-          background: white;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          width: 100%;
-          text-align: left;
-        ">
-          <i class="fas fa-file-pdf" style="color: #dc3545; font-size: 1.5rem; width: 2rem; text-align: center;"></i>
-          <div>
-            <div style="font-weight: 600; color: #333;">
-              ${this.translate.instant('exportSweetAlert.EXPORT_AS_PDF')}
-            </div>
-            <small style="color: #666; font-size: 0.8rem;">
-              ${this.translate.instant('exportSweetAlert.PDF_DESCRIPTION')}
-            </small>
+      <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+        <!-- Date Range Inputs -->
+        <div style="display: flex; gap: 1rem;">
+          <div style="flex: 1;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333;">
+              ${this.translate.instant('exportSweetAlert.FROM_DATE')}
+            </label>
+            <input 
+              type="date" 
+              id="export-start-date"
+              value="${this.exportStartDate}"
+              style="
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #ced4da;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: border-color 0.15s ease-in-out;
+              "
+            >
           </div>
-        </button>
-        
-        <button id="excel-export" class="export-option-btn" style="
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1rem;
-          border: 1px solid #e9ecef;
-          border-radius: 8px;
-          background: white;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          width: 100%;
-          text-align: left;
-        ">
-          <i class="fas fa-file-excel" style="color: #198754; font-size: 1.5rem; width: 2rem; text-align: center;"></i>
-          <div>
-            <div style="font-weight: 600; color: #333;">
-              ${this.translate.instant('exportSweetAlert.EXPORT_AS_EXCEL')}
-            </div>
-            <small style="color: #666; font-size: 0.8rem;">
-              ${this.translate.instant('exportSweetAlert.EXCEL_DESCRIPTION')}
-            </small>
+          <div style="flex: 1;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333;">
+              ${this.translate.instant('exportSweetAlert.TO_DATE')}
+            </label>
+            <input 
+              type="date" 
+              id="export-end-date"
+              value="${this.exportEndDate}"
+              style="
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #ced4da;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: border-color 0.15s ease-in-out;
+              "
+            >
           </div>
-        </button>
+        </div>
+
+        <!-- Export Options -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <button id="pdf-export" class="export-option-btn" style="
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+          ">
+            <i class="fas fa-file-pdf" style="color: #dc3545; font-size: 1.5rem; width: 2rem; text-align: center;"></i>
+            <div>
+              <div style="font-weight: 600; color: #333;">
+                ${this.translate.instant('exportSweetAlert.EXPORT_AS_PDF')}
+              </div>
+              <small style="color: #666; font-size: 0.8rem;">
+                ${this.translate.instant('exportSweetAlert.PDF_DESCRIPTION')}
+              </small>
+            </div>
+          </button>
+          
+          <button id="excel-export" class="export-option-btn" style="
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+          ">
+            <i class="fas fa-file-excel" style="color: #198754; font-size: 1.5rem; width: 2rem; text-align: center;"></i>
+            <div>
+              <div style="font-weight: 600; color: #333;">
+                ${this.translate.instant('exportSweetAlert.EXPORT_AS_EXCEL')}
+              </div>
+              <small style="color: #666; font-size: 0.8rem;">
+                ${this.translate.instant('exportSweetAlert.EXCEL_DESCRIPTION')}
+              </small>
+            </div>
+          </button>
+        </div>
       </div>
     `,
       showConfirmButton: false,
@@ -152,6 +251,32 @@ export class ReusableFilterBarComponent {
         cancelButton: 'export-cancel-btn',
       },
       didOpen: () => {
+        // Set date input max attribute to today
+        const today = new Date().toISOString().split('T')[0];
+        const startDateInput = document.getElementById(
+          'export-start-date'
+        ) as HTMLInputElement;
+        const endDateInput = document.getElementById(
+          'export-end-date'
+        ) as HTMLInputElement;
+
+        if (startDateInput) {
+          startDateInput.max = today;
+        }
+        if (endDateInput) {
+          endDateInput.max = today;
+        }
+
+        // Add input event listeners
+        startDateInput?.addEventListener('change', (event) => {
+          this.exportStartDate = (event.target as HTMLInputElement).value;
+        });
+
+        endDateInput?.addEventListener('change', (event) => {
+          this.exportEndDate = (event.target as HTMLInputElement).value;
+        });
+
+        // Style export option buttons
         const buttons = document.querySelectorAll('.export-option-btn');
         buttons.forEach((button) => {
           button.addEventListener('mouseenter', () => {
@@ -170,6 +295,7 @@ export class ReusableFilterBarComponent {
           });
         });
 
+        // Add export event listeners
         document.getElementById('pdf-export')?.addEventListener('click', () => {
           this.onExportPdf();
           Swal.close();

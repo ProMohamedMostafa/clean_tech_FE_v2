@@ -26,7 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
-import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * City Management Component
@@ -163,7 +166,6 @@ export class CityManagementComponent {
       data: this.cities,
       columnKeys: ['name', 'areaName', 'countryName'],
       pdfTitle: 'Cities List',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -188,7 +190,6 @@ export class CityManagementComponent {
       data: this.cities,
       columnKeys: ['name', 'areaName', 'countryName'],
       pdfTitle: 'Cities List',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.printPDF(exportConfig);

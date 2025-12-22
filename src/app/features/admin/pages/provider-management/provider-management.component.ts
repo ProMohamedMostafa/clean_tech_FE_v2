@@ -151,7 +151,6 @@ export class ProviderManagementComponent implements OnInit {
       data: this.providers,
       columnKeys: ['name'], // Map the 'name' property from provider objects
       pdfTitle: 'Providers List',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -178,7 +177,6 @@ export class ProviderManagementComponent implements OnInit {
       data: this.providers,
       columnKeys: ['name'],
       pdfTitle: 'Providers List',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.printPDF(exportConfig);

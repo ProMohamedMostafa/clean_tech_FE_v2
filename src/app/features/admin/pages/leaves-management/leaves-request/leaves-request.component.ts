@@ -24,7 +24,11 @@ import { UserService } from '../../../services/user.service';
 // Models & Helpers
 import { LeaveItem } from '../../../models/leave.model';
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
-import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
+import { LeaveReportService } from '../../../../../shared/services/pdf-services/leaves/leave-report.service';
 
 @Component({
   selector: 'app-leaves-request',
@@ -105,6 +109,8 @@ export class LeavesRequestComponent {
     private router: Router,
     private leaveService: LeaveService,
     private userService: UserService,
+    private leaveReportService: LeaveReportService,
+
     private exportService: ExportService // Inject ExportService
   ) {}
 
@@ -330,8 +336,10 @@ export class LeavesRequestComponent {
 
   // Export Methods
   downloadAsPDF(): void {
-    const exportConfig: ExportConfig = {
-      fileName: 'leave_requests',
+    this.leaveReportService.generateLeavePDF({
+      fileName: 'leave_history',
+      pdfTitle: 'Leave History Report',
+
       headers: [
         'User',
         'Role',
@@ -341,7 +349,9 @@ export class LeavesRequestComponent {
         'Status',
         'Reason',
       ],
+
       data: this.leaveRequests,
+
       columnKeys: [
         'userName',
         'role',
@@ -351,11 +361,14 @@ export class LeavesRequestComponent {
         'status',
         'reason',
       ],
-      pdfTitle: 'Leave Requests Report',
-      pdfOrientation: 'landscape',
-    };
 
-    this.exportService.exportToPDF(exportConfig);
+      includeCoverPage: true,
+
+      reportInfo: {
+        reportDate: new Date(),
+        preparedBy: 'System',
+      },
+    });
   }
 
   downloadAsExcel(): void {
@@ -409,7 +422,6 @@ export class LeavesRequestComponent {
         'reason',
       ],
       pdfTitle: 'Leave Requests Report',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

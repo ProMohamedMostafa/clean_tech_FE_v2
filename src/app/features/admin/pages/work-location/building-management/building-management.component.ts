@@ -172,7 +172,6 @@ export class BuildingManagementComponent {
       data: this.buildings,
       columnKeys: ['name', 'organizationName', 'cityName', 'areaName'],
       pdfTitle: 'Buildings List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -197,7 +196,6 @@ export class BuildingManagementComponent {
       data: this.buildings,
       columnKeys: ['name', 'organizationName', 'cityName', 'areaName'],
       pdfTitle: 'Buildings List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

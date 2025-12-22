@@ -24,7 +24,10 @@ import { PageTitleComponent } from '../../../../shared/components/page-title/pag
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../core/helpers/auth.helpers';
 import { DailyCalendarComponent } from '../../../../shared/components/daily-calendar/daily-calendar.component';
-import { ExportConfig, ExportService } from '../../../../shared/services/export.service';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../shared/services/export.service';
 
 /**
  * Shift Management Component
@@ -166,7 +169,6 @@ export class ShiftManagementComponent {
       data: this.shifts,
       columnKeys: ['name', 'startDate', 'endDate', 'startTime', 'endTime'],
       pdfTitle: 'Shifts List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -191,7 +193,6 @@ export class ShiftManagementComponent {
       data: this.shifts,
       columnKeys: ['name', 'startDate', 'endDate', 'startTime', 'endTime'],
       pdfTitle: 'Shifts List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

@@ -15,6 +15,7 @@ import {
   ExportConfig,
   ExportService,
 } from '../../../../shared/services/export.service';
+import { SensorReportService } from '../../../../shared/services/pdf-services/sensors/sensor-report.service';
 
 @Component({
   selector: 'app-sensor-management',
@@ -65,6 +66,7 @@ export class SensorManagementComponent implements OnInit {
   constructor(
     private sensorService: SensorService,
     private router: Router,
+    private sensorReportService: SensorReportService,
     private exportService: ExportService // Inject ExportService
   ) {}
 
@@ -158,10 +160,14 @@ export class SensorManagementComponent implements OnInit {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const exportConfig: ExportConfig = {
+    this.sensorReportService.generatePDF({
       fileName: 'sensors',
+      pdfTitle: 'Sensors Report',
+
       headers: ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
+
       data: this.devices,
+
       columnKeys: [
         'name',
         'applicationName',
@@ -170,6 +176,7 @@ export class SensorManagementComponent implements OnInit {
         'lastSeenAt',
         'location',
       ],
+
       columnFormatter: (device) => [
         device.name,
         device.applicationName,
@@ -180,11 +187,14 @@ export class SensorManagementComponent implements OnInit {
           device.buildingName || '--'
         } > ${device.floorName || '--'}`,
       ],
-      pdfTitle: 'Sensors Report',
-      pdfOrientation: 'landscape',
-    };
 
-    this.exportService.exportToPDF(exportConfig);
+      includeCoverPage: true,
+
+      reportInfo: {
+        generatedAt: new Date(),
+        preparedBy: 'System',
+      },
+    });
   }
 
   downloadAsExcel(): void {
@@ -240,7 +250,6 @@ export class SensorManagementComponent implements OnInit {
         } > ${device.floorName || '--'}`,
       ],
       pdfTitle: 'Sensors Report',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

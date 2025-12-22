@@ -31,6 +31,7 @@ import {
   ExportConfig,
   ExportService,
 } from '../../../../shared/services/export.service';
+import { AttendanceReportService } from '../../../../shared/services/pdf-services/attendance/attendance.service';
 
 /**
  * Attendance Management Component
@@ -85,6 +86,7 @@ export class AttendanceManagementComponent {
   constructor(
     private router: Router,
     private attendanceService: AttendanceService,
+    private attendanceReportService: AttendanceReportService,
     private exportService: ExportService // Inject ExportService
   ) {}
 
@@ -183,7 +185,7 @@ export class AttendanceManagementComponent {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const exportConfig: ExportConfig = {
+    this.attendanceReportService.generateAttendancePDF({
       fileName: 'attendance_history',
       headers: [
         'User',
@@ -193,7 +195,7 @@ export class AttendanceManagementComponent {
         'Clock Out',
         'Duration',
         'Status',
-        'ShiftName',
+        'Shift Name',
       ],
       data: this.attendanceHistory,
       columnKeys: [
@@ -207,10 +209,12 @@ export class AttendanceManagementComponent {
         'shiftName',
       ],
       pdfTitle: 'Attendance History Report',
-      pdfOrientation: 'landscape',
-    };
-
-    this.exportService.exportToPDF(exportConfig);
+      includeCoverPage: true,
+      reportInfo: {
+        reportDate: new Date(),
+        preparedBy: 'Attendance System',
+      },
+    });
   }
 
   downloadAsExcel(): void {
@@ -272,7 +276,6 @@ export class AttendanceManagementComponent {
         'shiftName',
       ],
       pdfTitle: 'Attendance History Report',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

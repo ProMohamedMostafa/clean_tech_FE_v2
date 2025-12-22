@@ -5,26 +5,25 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 
-// Define specific types for better TypeScript support
+// START: Type Definitions and Interfaces
 type FontType = 'helvetica' | 'times' | 'courier';
 type ColorTuple = [number, number, number];
+interface LogoConfig {
+  readonly url: string;
+  readonly width: number;
+  readonly height: number;
+  readonly x?: number;
+  readonly y?: number;
+}
 
 export interface ExportConfig {
   fileName: string;
   sheetName?: string;
   headers: string[];
   data: any[];
-  columnKeys?: string[]; // Map object properties to columns
-  columnFormatter?: (data: any) => any[]; // Custom formatter function
+  columnKeys?: string[];
+  columnFormatter?: (data: any) => any[];
   pdfTitle?: string;
-  pdfOrientation?: 'portrait' | 'landscape';
-  logo?: {
-    url: string;
-    width?: number;
-    height?: number;
-    x?: number;
-    y?: number;
-  };
   companyInfo?: {
     name?: string;
     address?: string;
@@ -35,6 +34,8 @@ export interface ExportConfig {
     reportDate?: Date;
     reportId?: string;
     preparedBy?: string;
+    period?: string;
+    description?: string;
   };
   styling?: {
     primaryColor?: ColorTuple;
@@ -43,35 +44,59 @@ export interface ExportConfig {
     bodyFontSize?: number;
     font?: FontType;
   };
-  compactMode?: boolean; // New option for compact header
+  compactMode?: boolean;
+  includeCoverPage?: boolean;
+  coverPageConfig?: {
+    title?: string;
+    subtitle?: string;
+    preparedFor?: string;
+    confidentiality?: string;
+    version?: string;
+    includeToc?: boolean;
+    topRightImage?: string;
+    bottomRightImage?: string;
+    footerText?: string;
+    backgroundColor?: ColorTuple;
+  };
 }
+// END: Type Definitions and Interfaces
 
-// Default logo configuration
-const DEFAULT_LOGO_CONFIG = {
-  url: 'assets/Clean-Tech.png',
-  width: 60, // Reduced from 75
-  height: 28, // Reduced from 35
+// START: Fixed Configuration Constants
+const FIXED_LOGO_CONFIG: LogoConfig = {
+  url: 'assets/Clean-Tech-new.png',
+  width: 60,
+  height: 28,
   x: 15,
-  y: 10, // Reduced from 15
-};
+  y: 10,
+} as const;
+const FIXED_LOGO_CONFIG_NEW: LogoConfig = {
+  url: 'assets/clean-tech-cover.png',
+  width: 80,
+  height: 38,
+  x: 15,
+  y: 10,
+} as const;
+
+const FIXED_COVER_IMAGES = {
+  topRightImage: 'assets/pdf-top-right-cover.png',
+  bottomRightImage: 'assets/pdf-bottom-right-cover.png',
+} as const;
+// END: Fixed Configuration Constants
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExportService {
-  private defaultStyling: {
-    primaryColor: ColorTuple;
-    secondaryColor: ColorTuple;
-    headerFontSize: number;
-    bodyFontSize: number;
-    font: FontType;
-  } = {
-    primaryColor: [41, 128, 185],
-    secondaryColor: [52, 152, 219],
-    headerFontSize: 14, // Reduced from 16
-    bodyFontSize: 9, // Reduced from 10
-    font: 'helvetica',
+  // START: Default Configuration Properties
+  private defaultStyling = {
+    primaryColor: [41, 128, 185] as ColorTuple,
+    secondaryColor: [52, 152, 219] as ColorTuple,
+    headerFontSize: 14,
+    bodyFontSize: 9,
+    font: 'helvetica' as FontType,
   };
+
+  backgroundColor: [number, number, number] = [255, 255, 255];
 
   private defaultCompanyInfo = {
     name: '',
@@ -80,36 +105,88 @@ export class ExportService {
     email: '',
   };
 
-  // ==================== PDF EXPORT ====================
+  private fixedCoverConfig = {
+    backgroundColor: [235, 245, 255] as ColorTuple,
+    footerText: '',
+  } as const;
+  // END: Default Configuration Properties
 
-  /**
-   * Export data as PDF with professional styling
-   */
-  exportToPDF(config: ExportConfig): void {
+  // START: Fixed Configuration Getters
+  private getFixedLogoConfig(): LogoConfig {
+    return FIXED_LOGO_CONFIG;
+  }
+
+  private getFixedCoverConfig(config: ExportConfig) {
+    const fixedConfig = {
+      ...this.fixedCoverConfig,
+      topRightImage: FIXED_COVER_IMAGES.topRightImage,
+      bottomRightImage: FIXED_COVER_IMAGES.bottomRightImage,
+    };
+
+    if (config.coverPageConfig) {
+      return {
+        ...fixedConfig,
+        title: config.coverPageConfig.title,
+        subtitle: config.coverPageConfig.subtitle,
+        preparedFor: config.coverPageConfig.preparedFor,
+        confidentiality: config.coverPageConfig.confidentiality,
+        version: config.coverPageConfig.version,
+        includeToc: config.coverPageConfig.includeToc,
+        footerText: config.coverPageConfig.footerText || fixedConfig.footerText,
+      };
+    }
+
+    return fixedConfig;
+  }
+  // END: Fixed Configuration Getters
+
+  // START: Main PDF Export Methods
+  async exportToPDF(config: ExportConfig): Promise<void> {
     const doc = new jsPDF({
-      orientation: config.pdfOrientation || 'portrait',
+      orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
     });
 
     const styling = { ...this.defaultStyling, ...config.styling };
     const currentPageWidth = doc.internal.pageSize.getWidth();
+    const currentPageHeight = doc.internal.pageSize.getHeight();
 
-    // Use compact header that returns the startY position
-    const startY = this.addCompactHeaderSection(
+    const fixedLogoConfig = this.getFixedLogoConfig();
+    const fixedCoverConfig = this.getFixedCoverConfig(config);
+
+    if (config.includeCoverPage !== false) {
+      this.addCoverPage(
+        doc,
+        config,
+        styling,
+        currentPageWidth,
+        currentPageHeight,
+        fixedLogoConfig,
+        fixedCoverConfig
+      );
+      doc.addPage();
+    }
+
+    // Calculate header Y position
+    const headerY = this.addCompactHeaderSection(
       doc,
       config,
       styling,
-      currentPageWidth
+      currentPageWidth,
+      fixedLogoConfig
     );
 
+    // Calculate start position for content
+    const startY = headerY + 2;
+
     autoTable(doc, {
-      startY: startY + 3, // Reduced spacing
+      startY: startY + 5,
       head: [config.headers],
       body: this.prepareTableData(config),
       styles: {
         fontSize: styling.bodyFontSize,
-        cellPadding: 3, // Reduced from 4
+        cellPadding: 3,
         font: styling.font,
         lineColor: [200, 200, 200],
         lineWidth: 0.1,
@@ -119,15 +196,35 @@ export class ExportService {
         textColor: 255,
         fontStyle: 'bold',
         fontSize: styling.bodyFontSize + 1,
-        cellPadding: 4, // Reduced from 5
+        cellPadding: 4,
       },
       alternateRowStyles: {
         fillColor: [248, 248, 248],
       },
       tableLineColor: styling.primaryColor,
       tableLineWidth: 0.5,
-      margin: { top: startY + 3 }, // Reduced spacing
+      margin: { top: startY + 5 },
       didDrawPage: (data) => {
+        const pageNumber = data.pageNumber;
+        const hasCoverPage = config.includeCoverPage !== false;
+
+        // Determine if this is a content page (not cover page)
+        if (hasCoverPage && pageNumber === 1) {
+          // This is the cover page, don't add header or footer
+          return;
+        }
+
+        // For all content pages (including first content page and subsequent pages)
+        // Add header to all content pages
+        this.addCompactHeaderSection(
+          doc,
+          config,
+          styling,
+          currentPageWidth,
+          fixedLogoConfig
+        );
+
+        // Add footer to all content pages
         this.addCompactFooterSection(doc, config, styling, currentPageWidth);
       },
     });
@@ -135,34 +232,52 @@ export class ExportService {
     doc.save(`${config.fileName}.pdf`);
   }
 
-  /**
-   * Print data as PDF in new window with enhanced styling
-   */
-  printPDF(config: ExportConfig): void {
+  async printPDF(config: ExportConfig): Promise<void> {
     const doc = new jsPDF({
-      orientation: config.pdfOrientation || 'portrait',
+      orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
     });
 
     const styling = { ...this.defaultStyling, ...config.styling };
     const currentPageWidth = doc.internal.pageSize.getWidth();
+    const currentPageHeight = doc.internal.pageSize.getHeight();
 
-    // Use compact header
-    const startY = this.addCompactHeaderSection(
+    const fixedLogoConfig = this.getFixedLogoConfig();
+    const fixedCoverConfig = this.getFixedCoverConfig(config);
+
+    if (config.includeCoverPage !== false) {
+      this.addCoverPage(
+        doc,
+        config,
+        styling,
+        currentPageWidth,
+        currentPageHeight,
+        fixedLogoConfig,
+        fixedCoverConfig
+      );
+      doc.addPage();
+    }
+
+    // Calculate header Y position
+    const headerY = this.addCompactHeaderSection(
       doc,
       config,
       styling,
-      currentPageWidth
+      currentPageWidth,
+      fixedLogoConfig
     );
 
+    // Calculate start position for content
+    const startY = headerY + 2;
+
     autoTable(doc, {
-      startY: startY + 3, // Reduced spacing
+      startY: startY + 5,
       head: [config.headers],
       body: this.prepareTableData(config),
       styles: {
         fontSize: styling.bodyFontSize,
-        cellPadding: 3, // Reduced from 4
+        cellPadding: 3,
         font: styling.font,
         lineColor: [200, 200, 200],
         lineWidth: 0.1,
@@ -172,15 +287,35 @@ export class ExportService {
         textColor: 255,
         fontStyle: 'bold',
         fontSize: styling.bodyFontSize + 1,
-        cellPadding: 4, // Reduced from 5
+        cellPadding: 4,
       },
       alternateRowStyles: {
         fillColor: [248, 248, 248],
       },
       tableLineColor: styling.primaryColor,
       tableLineWidth: 0.5,
-      margin: { top: startY + 3 }, // Reduced spacing
+      margin: { top: startY + 5 },
       didDrawPage: (data) => {
+        const pageNumber = data.pageNumber;
+        const hasCoverPage = config.includeCoverPage !== false;
+
+        // Determine if this is a content page (not cover page)
+        if (hasCoverPage && pageNumber === 1) {
+          // This is the cover page, don't add header or footer
+          return;
+        }
+
+        // For all content pages (including first content page and subsequent pages)
+        // Add header to all content pages
+        this.addCompactHeaderSection(
+          doc,
+          config,
+          styling,
+          currentPageWidth,
+          fixedLogoConfig
+        );
+
+        // Add footer to all content pages
         this.addCompactFooterSection(doc, config, styling, currentPageWidth);
       },
     });
@@ -189,203 +324,238 @@ export class ExportService {
     pdfWindow?.focus();
     pdfWindow?.print();
   }
+  // END: Main PDF Export Methods
 
-  // ==================== COMPACT HEADER & FOOTER SECTIONS ====================
-
-  /**
-   * Add compact header with logo and company info - returns startY position for table
-   */
-  private addCompactHeaderSection(
+  // START: PDF Layout Methods
+  private addCoverPage(
     doc: jsPDF,
     config: ExportConfig,
-    styling: {
-      primaryColor: ColorTuple;
-      secondaryColor: ColorTuple;
-      headerFontSize: number;
-      bodyFontSize: number;
-      font: FontType;
-    },
-    pageWidth: number
-  ): number {
-    const headerY = 8; // Reduced from 15
-    let maxContentHeight = 0;
+    styling: typeof this.defaultStyling,
+    pageWidth: number,
+    pageHeight: number,
+    fixedLogoConfig: LogoConfig,
+    fixedCoverConfig: any
+  ): void {
+    doc.setFillColor(...this.backgroundColor);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
-    // Add logo to top left (smaller size)
-    const logoConfig = config.logo || DEFAULT_LOGO_CONFIG;
+    const centerX = pageWidth / 2;
+    let currentY = 0;
 
-    if (logoConfig?.url) {
+    if (fixedLogoConfig.url) {
       try {
-        const logoWidth = logoConfig.width || 50; // Smaller default
-        const logoHeight = logoConfig.height || 23; // Smaller default
-        const logoX = logoConfig.x || 15;
-        const logoY = headerY;
-
-        doc.addImage(
-          logoConfig.url,
-          'PNG',
-          logoX,
-          logoY,
-          logoWidth,
-          logoHeight
-        );
-        maxContentHeight = Math.max(maxContentHeight, logoHeight);
+        doc.addImage(FIXED_LOGO_CONFIG_NEW.url, 'PNG', 0, 0, 100, 50);
       } catch (error) {
-        console.warn('Could not load logo image:', error);
+        console.warn('Could not load fixed logo image for cover page:', error);
       }
     }
 
-    // Compact company info section - top right
-    const companyInfo = { ...this.defaultCompanyInfo, ...config.companyInfo };
-    const companyX = pageWidth - 15; // Right aligned
-    let companyY = headerY;
+    if (fixedCoverConfig.topRightImage) {
+      try {
+        const topRightImageWidth = 60;
+        const topRightImageHeight = 80;
+        const topRightImageX = pageWidth - topRightImageWidth;
+        const topRightImageY = 0;
 
-    if (companyInfo.name) {
-      doc.setFont(styling.font, 'bold');
-      doc.setFontSize(styling.headerFontSize - 2); // Smaller font
-      doc.setTextColor(
-        styling.primaryColor[0],
-        styling.primaryColor[1],
-        styling.primaryColor[2]
-      );
-      doc.text(companyInfo.name, companyX, companyY, { align: 'right' });
-      companyY += 3; // Reduced spacing
+        doc.addImage(
+          fixedCoverConfig.topRightImage,
+          'PNG',
+          topRightImageX,
+          topRightImageY,
+          topRightImageWidth,
+          topRightImageHeight
+        );
+      } catch (error) {
+        console.warn(
+          'Could not load fixed top-right image for cover page:',
+          error
+        );
+      }
     }
 
-    // Smaller font for details
+    currentY = pageHeight / 2 - 30;
+
+    const title =
+      fixedCoverConfig.title ||
+      config.pdfTitle ||
+      'Smart operating solutions for more productive facilities';
+
+    doc.setFont(styling.font, 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(...styling.primaryColor);
+
+    const splitTitle = doc.splitTextToSize(title, pageWidth);
+    const titleHeight = splitTitle.length * 7;
+    doc.text(splitTitle, centerX, currentY, { align: 'center' });
+
+    currentY += titleHeight + 15;
+
+    const description =
+      fixedCoverConfig.subtitle ||
+      config.reportInfo?.description ||
+      'This report is generated by a CleanTech company.';
     doc.setFont(styling.font, 'normal');
-    doc.setFontSize(styling.bodyFontSize - 1);
-    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(12);
+    doc.setTextColor(80, 80, 80);
 
-    // Combine contact info to save space
-    const contactDetails = [];
-    if (companyInfo.phone) contactDetails.push(`Tel: ${companyInfo.phone}`);
-    if (companyInfo.email) contactDetails.push(companyInfo.email);
+    const splitDesc = doc.splitTextToSize(description, pageWidth);
+    const descHeight = splitDesc.length * 6;
+    doc.text(splitDesc, centerX, currentY, { align: 'center' });
 
-    if (contactDetails.length > 0) {
-      doc.text(contactDetails.join(' | '), companyX, companyY, {
-        align: 'right',
-      });
-      companyY += 3;
+    if (fixedCoverConfig.bottomRightImage) {
+      try {
+        const cleanerImageWidth = 100;
+        const cleanerImageHeight = 120;
+        const cleanerImageX = pageWidth - cleanerImageWidth;
+        const cleanerImageY = pageHeight - cleanerImageHeight;
+
+        doc.addImage(
+          fixedCoverConfig.bottomRightImage,
+          'PNG',
+          cleanerImageX,
+          cleanerImageY,
+          cleanerImageWidth,
+          cleanerImageHeight
+        );
+      } catch (error) {
+        console.warn(
+          'Could not load fixed cleaner image for cover page:',
+          error
+        );
+      }
     }
 
-    if (companyInfo.address) {
-      doc.text(companyInfo.address, companyX, companyY, { align: 'right' });
-      companyY += 3;
-    }
+    const footerY = pageHeight - 5;
+    doc.setFont(styling.font, 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(120, 120, 120);
 
-    maxContentHeight = Math.max(maxContentHeight, companyY - headerY);
-
-    // Report title (centered, below header)
-    let currentY = headerY + maxContentHeight + 5; // Reduced spacing
-
-    if (config.pdfTitle) {
-      doc.setFont(styling.font, 'bold');
-      doc.setFontSize(styling.headerFontSize);
-      doc.setTextColor(40, 40, 40);
-      doc.text(config.pdfTitle, pageWidth / 2, currentY, { align: 'center' });
-      currentY += 5; // Reduced spacing
-    }
-
-    // Report metadata (compact, single line if possible)
-    const reportInfo = {
-      reportDate: new Date(),
-      reportId: `RPT-${Date.now()}`,
-      preparedBy: 'System',
-      ...config.reportInfo,
-    };
-
-    const metaData = [];
-    if (reportInfo.reportDate) {
-      metaData.push(`Date: ${reportInfo.reportDate.toLocaleDateString()}`);
-    }
-    if (reportInfo.reportId && config.reportInfo?.reportId) {
-      metaData.push(`ID: ${reportInfo.reportId}`);
-    }
-    if (reportInfo.preparedBy) {
-      metaData.push(`By: ${reportInfo.preparedBy}`);
-    }
-
-    if (metaData.length > 0) {
-      doc.setFont(styling.font, 'normal');
-      doc.setFontSize(styling.bodyFontSize - 1);
-      doc.setTextColor(100, 100, 100);
-      doc.text(metaData.join(' | '), pageWidth / 2, currentY, {
-        align: 'center',
-      });
-      currentY += 4; // Reduced spacing
-    }
-
-    // Add compact header separator line
-    doc.setDrawColor(
-      styling.primaryColor[0],
-      styling.primaryColor[1],
-      styling.primaryColor[2]
-    );
-    doc.setLineWidth(0.3); // Thinner line
-    doc.line(15, currentY, pageWidth - 15, currentY);
-
-    return currentY + 2; // Return position for table start
+    doc.text(fixedCoverConfig.footerText, centerX, footerY, {
+      align: 'center',
+    });
   }
 
-  /**
-   * Add compact footer with minimal height
-   */
+  private addCompactHeaderSection(
+    doc: jsPDF,
+    config: ExportConfig,
+    styling: typeof this.defaultStyling,
+    pageWidth: number,
+    fixedLogoConfig: LogoConfig
+  ): number {
+    const headerY = 10;
+    const paddingX = 0;
+    const headerHeight = 17;
+
+    /* ---------------- Logo (Left) ---------------- */
+    if (fixedLogoConfig.url) {
+      try {
+        const logoHeight = 12; // compact height
+        const logoWidth =
+          (fixedLogoConfig.width / fixedLogoConfig.height) * logoHeight;
+
+        doc.addImage(fixedLogoConfig.url, 'PNG', 5, headerY, 40, logoHeight);
+      } catch (error) {
+        console.warn('Could not load fixed logo image:', error);
+      }
+    }
+
+    /* ---------------- Title (Right) ---------------- */
+    if (config.pdfTitle) {
+      doc.setFont(styling.font, 'bold');
+      doc.setFontSize(styling.headerFontSize - 2);
+      doc.setTextColor(40, 40, 40);
+
+      doc.text(config.pdfTitle, pageWidth - 5, headerY + 8, {
+        align: 'right',
+      });
+    }
+
+    /* ---------------- Divider ---------------- */
+    const dividerY = headerY + headerHeight - 2;
+    doc.setDrawColor(39, 174, 96);
+    doc.setLineWidth(0.4);
+    doc.line(paddingX, dividerY, pageWidth - paddingX, dividerY);
+
+    return dividerY + 4;
+  }
+
   private addCompactFooterSection(
     doc: jsPDF,
     config: ExportConfig,
-    styling: {
-      primaryColor: ColorTuple;
-      secondaryColor: ColorTuple;
-      headerFontSize: number;
-      bodyFontSize: number;
-      font: FontType;
-    },
+    styling: typeof this.defaultStyling,
     pageWidth: number
   ): void {
     const pageHeight = doc.internal.pageSize.getHeight();
-    const footerY = pageHeight - 8; // Raised footer
+    const footerY = pageHeight - 8;
 
-    // Thin footer separator line
     doc.setDrawColor(200, 200, 200);
-    doc.setLineWidth(0.1); // Thinner line
+    doc.setLineWidth(0.1);
     doc.line(15, footerY - 3, pageWidth - 15, footerY - 3);
 
-    // Compact footer content
     doc.setFont(styling.font, 'normal');
-    doc.setFontSize(styling.bodyFontSize - 2); // Smaller font
-    doc.setTextColor(120, 120, 120); // Lighter color
+    doc.setFontSize(styling.bodyFontSize - 2);
+    doc.setTextColor(120, 120, 120);
 
     const companyInfo = { ...this.defaultCompanyInfo, ...config.companyInfo };
 
-    // Left: Company name
     if (companyInfo.name) {
       doc.text(companyInfo.name, 15, footerY);
     }
 
-    // Center: Timestamp (shorter format)
     const timestamp = new Date().toLocaleDateString();
     doc.text(`Generated: ${timestamp}`, pageWidth / 2, footerY, {
       align: 'center',
     });
 
-    // Right: Page number
     const pageCount = (doc as any).internal.getNumberOfPages();
     const currentPage = (doc as any).internal.getCurrentPageInfo().pageNumber;
     doc.text(`Page ${currentPage}/${pageCount}`, pageWidth - 15, footerY, {
       align: 'right',
     });
   }
+  // END: PDF Layout Methods
 
-  // ==================== EXCEL EXPORT ====================
+  // START: Data Preparation Methods
+  private prepareTableData(config: ExportConfig): any[][] {
+    if (!config.data || config.data.length === 0) {
+      return [['No data available']];
+    }
 
-  /**
-   * Export data as Excel file
-   */
+    if (config.columnFormatter) {
+      return config.data.map((item) => config.columnFormatter!(item));
+    }
+
+    if (config.columnKeys && config.columnKeys.length > 0) {
+      return config.data.map((item) =>
+        config.columnKeys!.map((key) => this.getNestedValue(item, key))
+      );
+    }
+
+    return config.data.map((item) => {
+      if (Array.isArray(item)) {
+        return item;
+      }
+      return Object.values(item);
+    });
+  }
+
+  private getNestedValue(obj: any, path: string): any {
+    if (!obj || !path) return '';
+
+    return path.split('.').reduce((current, key) => {
+      return current && current[key] !== undefined ? current[key] : '';
+    }, obj);
+  }
+  // END: Data Preparation Methods
+
+  // START: Excel Export Methods
   exportToExcel(config: ExportConfig): void {
     const excelData = this.prepareExcelData(config);
+
     const worksheet = XLSX.utils.json_to_sheet(excelData);
 
     const workbook = XLSX.utils.book_new();
+
     XLSX.utils.book_append_sheet(
       workbook,
       worksheet,
@@ -405,46 +575,11 @@ export class ExportService {
     );
   }
 
-  // ==================== DATA PREPARATION ====================
-
-  /**
-   * Prepare table data for PDF based on configuration
-   */
-  private prepareTableData(config: ExportConfig): any[][] {
-    if (!config.data || config.data.length === 0) {
-      return [['No data available']];
-    }
-
-    // Use custom formatter if provided
-    if (config.columnFormatter) {
-      return config.data.map((item) => config.columnFormatter!(item));
-    }
-
-    // Use column keys mapping if provided
-    if (config.columnKeys && config.columnKeys.length > 0) {
-      return config.data.map((item) =>
-        config.columnKeys!.map((key) => this.getNestedValue(item, key))
-      );
-    }
-
-    // Default: use array values or object values
-    return config.data.map((item) => {
-      if (Array.isArray(item)) {
-        return item;
-      }
-      return Object.values(item);
-    });
-  }
-
-  /**
-   * Prepare data for Excel export
-   */
   private prepareExcelData(config: ExportConfig): any[] {
     if (!config.data || config.data.length === 0) {
       return [{ 'No Data': 'No data available' }];
     }
 
-    // Use column keys mapping if provided
     if (config.columnKeys && config.columnKeys.length > 0) {
       return config.data.map((item) => {
         const row: any = {};
@@ -456,26 +591,11 @@ export class ExportService {
       });
     }
 
-    // Default: use the data as is (assuming it's already in key-value format)
     return config.data;
   }
+  // END: Excel Export Methods
 
-  /**
-   * Get nested object value using dot notation
-   */
-  private getNestedValue(obj: any, path: string): any {
-    if (!obj || !path) return '';
-
-    return path.split('.').reduce((current, key) => {
-      return current && current[key] !== undefined ? current[key] : '';
-    }, obj);
-  }
-
-  // ==================== CONFIGURATION METHODS ====================
-
-  /**
-   * Set default company information
-   */
+  // START: Configuration Methods
   setDefaultCompanyInfo(
     companyInfo: Partial<{
       name: string;
@@ -487,22 +607,16 @@ export class ExportService {
     this.defaultCompanyInfo = { ...this.defaultCompanyInfo, ...companyInfo };
   }
 
-  /**
-   * Set default logo configuration
-   */
   setDefaultLogo(
-    logoUrl: string,
-    width: number = 50, // Smaller default
-    height: number = 23 // Smaller default
+    logoUrl?: string,
+    width: number = 50,
+    height: number = 23
   ): void {
-    DEFAULT_LOGO_CONFIG.url = logoUrl;
-    DEFAULT_LOGO_CONFIG.width = width;
-    DEFAULT_LOGO_CONFIG.height = height;
+    console.warn(
+      'setDefaultLogo() is deprecated. Logo configuration is now fixed and cannot be changed.'
+    );
   }
 
-  /**
-   * Set default styling
-   */
   setDefaultStyling(
     styling: Partial<{
       primaryColor: ColorTuple;
@@ -512,7 +626,6 @@ export class ExportService {
       font: FontType;
     }>
   ): void {
-    // Type-safe assignment
     this.defaultStyling = {
       primaryColor: styling.primaryColor || this.defaultStyling.primaryColor,
       secondaryColor:
@@ -523,26 +636,17 @@ export class ExportService {
       font: styling.font || this.defaultStyling.font,
     };
   }
+  // END: Configuration Methods
 
-  // ==================== QUICK EXPORT METHODS ====================
-
-  /**
-   * Quick PDF export with minimal configuration
-   */
+  // START: Convenience Methods
   quickPDF(fileName: string, headers: string[], data: any[]): void {
     this.exportToPDF({ fileName, headers, data });
   }
 
-  /**
-   * Quick Excel export with minimal configuration
-   */
   quickExcel(fileName: string, headers: string[], data: any[]): void {
     this.exportToExcel({ fileName, headers, data });
   }
 
-  /**
-   * Export with object mapping
-   */
   exportMappedData(
     fileName: string,
     headers: string[],
@@ -557,15 +661,11 @@ export class ExportService {
     });
   }
 
-  /**
-   * Enhanced export with professional styling
-   */
   exportProfessionalReport(
     fileName: string,
     headers: string[],
     data: any[],
     title: string,
-    logoUrl?: string,
     companyName?: string
   ): void {
     const config: ExportConfig = {
@@ -573,7 +673,7 @@ export class ExportService {
       headers,
       data,
       pdfTitle: title,
-      logo: logoUrl ? { url: logoUrl } : undefined,
+      includeCoverPage: true,
       companyInfo: companyName ? { name: companyName } : undefined,
       reportInfo: {
         reportDate: new Date(),
@@ -584,9 +684,6 @@ export class ExportService {
     this.exportToPDF(config);
   }
 
-  /**
-   * Ultra-compact export for data-heavy reports
-   */
   exportCompactReport(
     fileName: string,
     headers: string[],
@@ -599,6 +696,7 @@ export class ExportService {
       data,
       pdfTitle: title,
       compactMode: true,
+      includeCoverPage: false,
       styling: {
         headerFontSize: 12,
         bodyFontSize: 8,
@@ -607,4 +705,77 @@ export class ExportService {
 
     this.exportToPDF(config);
   }
+
+  exportWithCoverPage(
+    fileName: string,
+    headers: string[],
+    data: any[],
+    title: string,
+    coverPageConfig: {
+      title?: string;
+      subtitle?: string;
+      preparedFor?: string;
+      confidentiality?: string;
+      version?: string;
+      footerText?: string;
+    },
+    companyInfo?: {
+      name?: string;
+      address?: string;
+      phone?: string;
+      email?: string;
+    }
+  ): void {
+    const config: ExportConfig = {
+      fileName,
+      headers,
+      data,
+      pdfTitle: title,
+      includeCoverPage: true,
+      coverPageConfig: {
+        title: coverPageConfig.title || title,
+        subtitle: coverPageConfig.subtitle,
+        confidentiality: coverPageConfig.confidentiality,
+        version: coverPageConfig.version,
+        footerText: coverPageConfig.footerText,
+      },
+      companyInfo,
+      reportInfo: {
+        reportDate: new Date(),
+        preparedBy: 'System',
+      },
+    };
+
+    this.exportToPDF(config);
+  }
+
+  exportWithSvgStyleCover(
+    fileName: string,
+    headers: string[],
+    data: any[],
+    companyInfo?: {
+      name?: string;
+      address?: string;
+      phone?: string;
+      email?: string;
+    }
+  ): void {
+    const config: ExportConfig = {
+      fileName,
+      headers,
+      data,
+      pdfTitle: 'Smart operating solutions for more productive facilities',
+      includeCoverPage: true,
+      companyInfo,
+      reportInfo: {
+        reportDate: new Date(),
+        description:
+          'We offer an integrated facility management system that goes beyond mere cleaning, to include meticulously organizing every detail of daily work.',
+        preparedBy: 'System',
+      },
+    };
+
+    this.exportToPDF(config);
+  }
+  // END: Convenience Methods
 }

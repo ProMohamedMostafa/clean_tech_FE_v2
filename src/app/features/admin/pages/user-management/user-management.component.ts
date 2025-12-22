@@ -176,7 +176,6 @@ export class UserManagementComponent {
         'nationalityName',
       ],
       pdfTitle: 'Users List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -215,7 +214,6 @@ export class UserManagementComponent {
         'nationalityName',
       ],
       pdfTitle: 'Users List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

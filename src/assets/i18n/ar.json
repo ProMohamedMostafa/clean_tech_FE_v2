@@ -267,7 +267,14 @@
     "PDF_DESCRIPTION": "تنسيق المستند المحمول",
     "EXPORT_AS_EXCEL": "تصدير كملف Excel",
     "EXCEL_DESCRIPTION": "جدول بيانات مايكروسوفت إكسل",
-    "CANCEL": "إلغاء"
+    "CANCEL": "إلغاء",
+    "FROM_DATE": "من تاريخ",
+    "TO_DATE": "إلى تاريخ",
+    "DATE_REQUIRED_TITLE": "نطاق التاريخ مطلوب",
+    "DATE_REQUIRED_TEXT": "يرجى تحديد تاريخ البداية وتاريخ النهاية للتصدير.",
+    "INVALID_DATE_TITLE": "نطاق تاريخ غير صالح",
+    "INVALID_DATE_TEXT": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية.",
+    "OK": "موافق"
   },
   "UserTABLE": {
     "USERS": "المستخدمون",

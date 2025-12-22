@@ -26,7 +26,10 @@ import { ReusableFilterBarComponent } from '../../../../../shared/components/fil
 // ==================== HELPERS ====================
 import { getUserRole } from '../../../../../core/helpers/auth.helpers';
 import { PageTitleComponent } from '../../../../../shared/components/page-title/page-title.component';
-import { ExportConfig, ExportService } from '../../../../../shared/services/export.service';
+import {
+  ExportConfig,
+  ExportService,
+} from '../../../../../shared/services/export.service';
 
 /**
  * Section Management Component
@@ -182,7 +185,6 @@ export class SectionManagementComponent {
       data: this.sections,
       columnKeys: ['name', 'floorName', 'buildingName', 'organizationName'],
       pdfTitle: 'Sections List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.exportToPDF(exportConfig);
@@ -207,7 +209,6 @@ export class SectionManagementComponent {
       data: this.sections,
       columnKeys: ['name', 'floorName', 'buildingName', 'organizationName'],
       pdfTitle: 'Sections List',
-      pdfOrientation: 'landscape',
     };
 
     this.exportService.printPDF(exportConfig);

@@ -19,6 +19,7 @@ import {
   ExportConfig,
   ExportService,
 } from '../../../../../shared/services/export.service';
+import { StockReportService } from '../../../../../shared/services/pdf-services/stock/stock-report.service';
 
 @Component({
   selector: 'app-material-management',
@@ -72,6 +73,7 @@ export class MaterialManagementComponent implements OnInit {
     private categoryService: CategoryService,
     private providerService: ProviderService,
     private router: Router,
+    private stockReportService: StockReportService,
     private exportService: ExportService // Inject ExportService
   ) {}
 
@@ -110,11 +112,16 @@ export class MaterialManagementComponent implements OnInit {
   // ==================== EXPORT & PRINT ====================
 
   downloadAsPDF(): void {
-    const exportConfig: ExportConfig = {
+    this.stockReportService.generatePDF({
       fileName: 'materials',
+      pdfTitle: 'Materials Inventory Report',
+
       headers: ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
+
       data: this.materials,
+
       columnKeys: ['name', 'description', 'quantity', 'category.name', 'unit'],
+
       columnFormatter: (material) => [
         material.name,
         material.description,
@@ -122,11 +129,14 @@ export class MaterialManagementComponent implements OnInit {
         material.category?.name || 'N/A',
         material.unit,
       ],
-      pdfTitle: 'Materials Inventory Report',
-      pdfOrientation: 'portrait',
-    };
 
-    this.exportService.exportToPDF(exportConfig);
+      includeCoverPage: true,
+
+      reportInfo: {
+        generatedAt: new Date(),
+        preparedBy: 'System',
+      },
+    });
   }
 
   downloadAsExcel(): void {
@@ -162,7 +172,6 @@ export class MaterialManagementComponent implements OnInit {
         material.unit,
       ],
       pdfTitle: 'Materials Inventory Report',
-      pdfOrientation: 'portrait',
     };
 
     this.exportService.printPDF(exportConfig);
