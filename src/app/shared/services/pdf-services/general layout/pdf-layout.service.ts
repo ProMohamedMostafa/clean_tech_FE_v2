@@ -20,18 +20,36 @@ export class PdfLayoutService {
     return 30;
   }
 
-  addFooter(doc: jsPDF, pageWidth: number): void {
+  /**
+   * Overloaded method for backward compatibility
+   */
+  addFooter(doc: jsPDF, pageWidth: number): void;
+  addFooter(
+    doc: jsPDF,
+    pageWidth: number,
+    currentPage?: number,
+    pageCount?: number
+  ): void {
     const y = doc.internal.pageSize.getHeight() - 8;
 
     doc.setFontSize(8);
     doc.setTextColor(120, 120, 120);
 
-    const pageCount = (doc as any).internal.getNumberOfPages();
-    const currentPage = (doc as any).internal.getCurrentPageInfo().pageNumber;
-
-    doc.text(`Page ${currentPage}/${pageCount}`, pageWidth - 15, y, {
-      align: 'right',
-    });
+    // Calculate page numbers if not provided
+    if (currentPage === undefined || pageCount === undefined) {
+      // For backward compatibility with other services
+      // This is a simplified version that may not be 100% accurate
+      const totalPages = (doc as any).getNumberOfPages();
+      const current = (doc as any).internal.getCurrentPageInfo().pageNumber;
+      doc.text(`Page ${current}/${totalPages}`, pageWidth - 15, y, {
+        align: 'right',
+      });
+    } else {
+      // Use provided page numbers
+      doc.text(`Page ${currentPage}/${pageCount}`, pageWidth - 15, y, {
+        align: 'right',
+      });
+    }
   }
 
   addMetadata(

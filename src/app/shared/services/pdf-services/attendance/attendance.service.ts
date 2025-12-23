@@ -1,63 +1,171 @@
+// attendance-report.service.ts
 import { Injectable } from '@angular/core';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
 import { PdfLayoutService } from '../general layout/pdf-layout.service';
-import { AttendancePdfService } from './attendance-pdf.service';
-import { PdfStyleService } from '../general layout/pdf-style.service';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { AttendanceChartService } from './attendance-chart.service';
+import { AttendanceTableService } from './attendance-table.service';
 import { AttendanceReportConfig } from '../models/attendance-report.model';
-import { TableStyleService } from '../general layout/table-style.service';
+import {
+  AttendanceHistoryItem,
+  TaskStatusData,
+} from './attendance-report.model';
+import jsPDF from 'jspdf';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AttendanceReportService {
+  private taskStatusData: TaskStatusData = {
+    total: 100,
+    pending: 10,
+    inProgress: 40,
+    completed: 45,
+    notResolved: 5,
+  };
+
   constructor(
     private cover: PdfCoverService,
     private layout: PdfLayoutService,
-    private attendance: AttendancePdfService,
-    private style: PdfStyleService,
-    private tableStyle: TableStyleService
+    private chart: AttendanceChartService,
+    private table: AttendanceTableService
   ) {}
 
-  generateAttendancePDF(config: AttendanceReportConfig): void {
+  generateAttendancePDF(config: AttendanceReportConfig): Observable<void> {
+    const fullConfig = this.buildCompleteConfig(config);
+
+    return this.fetchAttendanceData(fullConfig).pipe(
+      map((data) => this.createPDF(fullConfig, data)),
+      catchError((err) => {
+        console.error('Error generating PDF', err);
+        throw err;
+      })
+    );
+  }
+
+  private buildCompleteConfig(config: AttendanceReportConfig) {
+    return {
+      fileName: config.fileName || 'attendance_report',
+      pdfTitle: config.pdfTitle || 'Attendance Report',
+      includeCoverPage: config.includeCoverPage ?? true,
+      reportInfo: {
+        reportDate: config.reportInfo?.reportDate || new Date(),
+        preparedBy: config.reportInfo?.preparedBy || 'Attendance System',
+        ...config.reportInfo,
+      },
+      headers: config.headers || this.table.defaultHeaders,
+      data: config.data || [],
+      columnKeys: config.columnKeys || this.table.defaultColumnKeys,
+      columnFormatter: config.columnFormatter || ((data) => data),
+    };
+  }
+
+  private fetchAttendanceData(
+    config: any
+  ): Observable<AttendanceHistoryItem[]> {
+    return of(this.getMockData());
+  }
+
+  private getMockData(): AttendanceHistoryItem[] {
+    return [
+      {
+        id: '1',
+        userId: 'u1',
+        userName: 'John Doe',
+        role: 'Cleaner',
+        date: '2024-01-15',
+        clockIn: '08:00',
+        clockOut: '17:00',
+        duration: '9h',
+        status: 'Present',
+        shiftName: 'Morning',
+      },
+      {
+        id: '2',
+        userId: 'u2',
+        userName: 'Jane Smith',
+        role: 'Supervisor',
+        date: '2024-01-15',
+        clockIn: '09:00',
+        clockOut: '18:00',
+        duration: '9h',
+        status: 'Present',
+        shiftName: 'Day',
+      },
+    ];
+  }
+
+  private createPDF(config: any, data: AttendanceHistoryItem[]): void {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
     const marginX = 5;
+    const contentWidth = pageWidth - marginX * 2;
 
-    if (config.includeCoverPage !== false) {
-      this.cover.addCover(doc, config, pageWidth, pageHeight);
+    // Cover page
+    if (config.includeCoverPage) {
+      this.cover.addCover(
+        doc,
+        config,
+        pageWidth,
+        doc.internal.pageSize.getHeight()
+      );
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(
+    // Header & Metadata
+    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
+    this.layout.addMetadata(doc, config, pageWidth, startY);
+
+    // Charts Section
+    const chartHeight = 80;
+    const chartSpacing = 10;
+    const pieWidth = contentWidth / 3;
+    const lineWidth = contentWidth - pieWidth - chartSpacing;
+    const chartY = startY + 12;
+
+    // Pie chart (with proper padding & single border)
+    this.chart.addStatusChart(doc, marginX, chartY, this.taskStatusData);
+
+    // Line chart (with proper padding & single border)
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const monthlyValues = [50, 70, 65, 80, 90, 75, 60, 85, 95, 70, 55, 80];
+    this.chart.addMonthlyLineChart(
       doc,
-      config.pdfTitle || 'Attendance Report',
+      marginX + pieWidth + chartSpacing,
+      chartY,
+      lineWidth,
+      chartHeight,
+      months,
+      monthlyValues
+    );
+
+    // Table Section
+    const tableY = chartY + chartHeight + 35;
+    this.table.addAttendanceTable(
+      doc,
+      config,
+      data,
+      tableY,
+      marginX,
       pageWidth
     );
 
-    this.layout.addMetadata(doc, config, pageWidth, startY);
-
-    autoTable(doc, {
-      startY: startY + 15,
-
-      margin: {
-        left: marginX,
-        right: marginX,
-      },
-      tableWidth: pageWidth - marginX * 2,
-
-      head: [config.headers],
-      body: this.attendance.prepareTable(config),
-      styles: this.tableStyle.getDefaultStyles(),
-      headStyles: this.tableStyle.getHeadStyles(),
-      alternateRowStyles: this.tableStyle.getAlternateRowStyles(),
-      columnStyles: this.tableStyle.getColumnStyles(),
-      didDrawPage: () => {
-        this.layout.addHeader(doc, config.pdfTitle || '', pageWidth);
-        this.layout.addFooter(doc, pageWidth);
-      },
-    });
-
     doc.save(`${config.fileName}.pdf`);
+  }
+
+  updateChartData(statusData?: TaskStatusData) {
+    if (statusData) this.taskStatusData = statusData;
   }
 }

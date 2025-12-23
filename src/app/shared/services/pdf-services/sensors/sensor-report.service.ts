@@ -1,66 +1,129 @@
 import { Injectable } from '@angular/core';
+import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
 import { PdfLayoutService } from '../general layout/pdf-layout.service';
-import { PdfStyleService } from '../general layout/pdf-style.service';
-import { SensorPdfService } from './sensor-pdf.service';
+import { SensorChartService } from './sensor-chart.service';
+import { SensorTableService } from './sensor-table.service';
 import { SensorReportConfig } from '../models/sensor-report.model';
-import { TableStyleService } from '../general layout/table-style.service';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import {
+  SensorHistoryItem,
+  SensorStatusData,
+  SensorTypeData,
+} from './sensor-report.model';
 
 @Injectable({ providedIn: 'root' })
 export class SensorReportService {
+  private typeData: SensorTypeData = {
+    temperature: 30,
+    humidity: 20,
+    pressure: 10,
+  };
+  private statusData: SensorStatusData = { active: 50, inactive: 8, error: 2 };
+
   constructor(
     private cover: PdfCoverService,
     private layout: PdfLayoutService,
-    private style: PdfStyleService,
-    private pdf: SensorPdfService,
-    private tableStyle: TableStyleService
+    private chart: SensorChartService,
+    private table: SensorTableService
   ) {}
 
-  generatePDF(config: SensorReportConfig): void {
+  generateSensorPDF(config: SensorReportConfig): Observable<void> {
+    const fullConfig = this.buildConfig(config);
+
+    return this.fetchSensorData(fullConfig).pipe(
+      map((data) => this.createPDF(fullConfig, data)),
+      catchError((err) => {
+        console.error('Error generating Sensor PDF', err);
+        throw err;
+      })
+    );
+  }
+
+  private buildConfig(config: SensorReportConfig) {
+    return {
+      fileName: config.fileName || 'sensor_report',
+      pdfTitle: config.pdfTitle || 'Sensor Report',
+      includeCoverPage: config.includeCoverPage ?? true,
+      reportInfo: config.reportInfo || {
+        reportDate: new Date(),
+        preparedBy: 'Sensor System',
+      },
+      headers: config.headers || this.table.defaultHeaders,
+      columnKeys: config.columnKeys || this.table.defaultColumnKeys,
+      data: config.data || [],
+    };
+  }
+
+  private fetchSensorData(config: any): Observable<SensorHistoryItem[]> {
+    return of(this.getMockData());
+  }
+
+  private getMockData(): SensorHistoryItem[] {
+    return [
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+    ];
+  }
+
+  private createPDF(config: any, data: SensorHistoryItem[]): void {
     const doc = new jsPDF();
-    const width = doc.internal.pageSize.getWidth();
-    const height = doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 5;
 
-    // ---------------- Cover Page ----------------
-    if (config.includeCoverPage !== false) {
-      this.cover.addCover(doc, config as any, width, height);
+    if (config.includeCoverPage) {
+      this.cover.addCover(
+        doc,
+        config,
+        pageWidth,
+        doc.internal.pageSize.getHeight()
+      );
       doc.addPage();
     }
 
-    // ---------------- Header ----------------
-    const startY = this.layout.addHeader(
+    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
+    this.layout.addMetadata(doc, config, pageWidth, startY);
+
+    this.chart.addTypeChart(doc, 10, 40, this.typeData);
+    this.chart.addStatusChart(doc, 110, 40, this.statusData);
+
+    this.table.addSensorTable(
       doc,
-      config.pdfTitle || 'Sensor Report',
-      width
+      config,
+      data,
+      startY + 120,
+      marginX,
+      pageWidth
     );
 
-    // ---------------- Metadata ----------------
-    this.layout.addMetadata(doc, config as any, width, startY);
-
-    // ---------------- Table ----------------
-    autoTable(doc, {
-      startY: startY + 15,
-      margin: {
-        left: marginX,
-        right: marginX,
-      },
-      tableWidth: width - marginX * 2,
-
-      head: [config.headers],
-      body: this.pdf.prepareTable(config),
-      styles: this.tableStyle.getDefaultStyles(),
-      headStyles: this.tableStyle.getHeadStyles(),
-      alternateRowStyles: this.tableStyle.getAlternateRowStyles(),
-      columnStyles: this.tableStyle.getColumnStyles(),
-      didDrawPage: () => {
-        this.layout.addHeader(doc, config.pdfTitle || '', width);
-        this.layout.addFooter(doc, width);
-      },
-    });
-
     doc.save(`${config.fileName}.pdf`);
+  }
+
+  updateChartData(typeData?: SensorTypeData, statusData?: SensorStatusData) {
+    if (typeData) this.typeData = typeData;
+    if (statusData) this.statusData = statusData;
   }
 }

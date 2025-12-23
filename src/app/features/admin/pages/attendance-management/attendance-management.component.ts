@@ -59,6 +59,8 @@ export class AttendanceManagementComponent {
   searchData: string = '';
   filterData: any = {};
   showFilterModal: boolean = false;
+  isGeneratingPDF: boolean = false;
+  isGeneratingExcel: boolean = false;
 
   // Pagination properties
   attendanceHistory: AttendanceHistoryItem[] = [];
@@ -112,6 +114,11 @@ export class AttendanceManagementComponent {
           this.resetAttendanceData();
         }
       },
+      error: (error) => {
+        console.error('Error loading attendance history:', error);
+        this.showError('Failed to load attendance data. Please try again.');
+        this.resetAttendanceData();
+      },
     });
   }
 
@@ -123,21 +130,6 @@ export class AttendanceManagementComponent {
     this.currentPage = 1;
     this.totalPages = 1;
     this.totalCount = 0;
-  }
-
-  /**
-   * Show informational message (non-error)
-   */
-  private showInfo(message: string): void {
-    Swal.fire({
-      icon: 'info',
-      title: 'Information',
-      text: message,
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-    });
   }
 
   /**
@@ -184,9 +176,56 @@ export class AttendanceManagementComponent {
 
   // ==================== EXPORT & PRINT ====================
 
+  /**
+   * Download filtered attendance data as PDF
+   * Now fetches data directly from API via service
+   */
   downloadAsPDF(): void {
-    this.attendanceReportService.generateAttendancePDF({
-      fileName: 'attendance_history',
+    this.isGeneratingPDF = true;
+
+    // Pass current filters to the PDF service
+    this.attendanceReportService
+      .generateAttendancePDF({
+        fileName: `attendance_history_${
+          new Date().toISOString().split('T')[0]
+        }`,
+        pdfTitle: 'Attendance History Report',
+        includeCoverPage: true,
+        reportInfo: {
+          reportDate: new Date(),
+          preparedBy: this.currentUserRole || 'Attendance System',
+          period: this.getDateRangeText(),
+        },
+        // Pass current filters so the service can fetch filtered data
+        filters: this.buildFilters(),
+      })
+      .subscribe({
+        next: () => {
+          this.isGeneratingPDF = false;
+          this.showSuccess('PDF generated and downloaded successfully.');
+        },
+        error: (error) => {
+          this.isGeneratingPDF = false;
+          console.error('Error generating PDF:', error);
+          this.showError('Failed to generate PDF. Please try again.');
+        },
+      });
+  }
+
+  /**
+   * Quick PDF generation (simplified version)
+   */
+  quickDownloadPDF(): void {}
+
+  /**
+   * Download as Excel using current component data
+   */
+  downloadAsExcel(): void {
+    this.isGeneratingExcel = true;
+
+    const exportConfig: ExportConfig = {
+      fileName: `attendance_history_${new Date().toISOString().split('T')[0]}`,
+      sheetName: 'Attendance History',
       headers: [
         'User',
         'Role',
@@ -208,45 +247,16 @@ export class AttendanceManagementComponent {
         'status',
         'shiftName',
       ],
-      pdfTitle: 'Attendance History Report',
-      includeCoverPage: true,
-      reportInfo: {
-        reportDate: new Date(),
-        preparedBy: 'Attendance System',
-      },
-    });
-  }
-
-  downloadAsExcel(): void {
-    const exportConfig: ExportConfig = {
-      fileName: 'attendance_history',
-      sheetName: 'Attendance History',
-      headers: [
-        'User',
-        'Role',
-        'Date',
-        'Clock In',
-        'Clock Out',
-        'Duration',
-        'Status',
-        'ShiftName',
-      ],
-      data: this.attendanceHistory,
-      columnKeys: [
-        'userName',
-        'role',
-        'date',
-        'clockIn',
-        'clockOut',
-        'duration',
-        'status',
-        'shiftName',
-      ],
     };
 
     this.exportService.exportToExcel(exportConfig);
+    this.isGeneratingExcel = false;
+    this.showSuccess('Excel file downloaded successfully.');
   }
 
+  /**
+   * Print PDF using current component data
+   */
   printPDF(): void {
     const exportConfig: ExportConfig = {
       fileName: 'attendance_history',
@@ -258,7 +268,7 @@ export class AttendanceManagementComponent {
         'Clock Out',
         'Duration',
         'Status',
-        'ShiftName',
+        'Shift Name',
       ],
       data: this.attendanceHistory.map((item) => ({
         ...item,
@@ -281,37 +291,9 @@ export class AttendanceManagementComponent {
     this.exportService.printPDF(exportConfig);
   }
 
-  // ==================== QUICK EXPORT METHODS ====================
-
-  /** Quick export using simplified methods */
-  quickDownloadPDF(): void {
-    const tableData = this.attendanceHistory.map((item) => [
-      item.userName,
-      item.role,
-      item.date,
-      item.clockIn,
-      item.clockOut || 'N/A',
-      item.duration || 'N/A',
-      item.status,
-      item.shiftName,
-    ]);
-
-    this.exportService.quickPDF(
-      'attendance_history',
-      [
-        'User',
-        'Role',
-        'Date',
-        'Clock In',
-        'Clock Out',
-        'Duration',
-        'Status',
-        'shiftName',
-      ],
-      tableData
-    );
-  }
-
+  /**
+   * Quick Excel export
+   */
   quickDownloadExcel(): void {
     const tableData = this.attendanceHistory.map((item) => [
       item.userName,
@@ -325,7 +307,7 @@ export class AttendanceManagementComponent {
     ]);
 
     this.exportService.quickExcel(
-      'attendance_history',
+      `attendance_quick_${new Date().toISOString().split('T')[0]}`,
       [
         'User',
         'Role',
@@ -334,10 +316,12 @@ export class AttendanceManagementComponent {
         'Clock Out',
         'Duration',
         'Status',
-        'shiftName',
+        'Shift Name',
       ],
       tableData
     );
+
+    this.showInfo('Quick Excel report downloaded.');
   }
 
   // ==================== ATTENDANCE ACTIONS ====================
@@ -368,6 +352,9 @@ export class AttendanceManagementComponent {
     );
   }
 
+  /**
+   * Build filters for API calls
+   */
   private buildFilters(): any {
     const f = this.filterData;
     return {
@@ -387,18 +374,71 @@ export class AttendanceManagementComponent {
       SectionId: f.selectedSection,
       PointId: f.selectedPoint,
       ProviderId: f.selectedProvider,
-      History: false, // Always true for history view
+      History: true, // For history view
     };
   }
 
+  /**
+   * Get readable date range text for report
+   */
+  private getDateRangeText(): string {
+    const f = this.filterData;
+    if (f.startDate && f.endDate) {
+      return `${f.startDate} to ${f.endDate}`;
+    } else if (f.startDate) {
+      return `From ${f.startDate}`;
+    } else if (f.endDate) {
+      return `Until ${f.endDate}`;
+    }
+    return 'All dates';
+  }
+
+  /**
+   * Show error message
+   */
   private showError(message: string): void {
-    Swal.fire({ icon: 'error', title: 'Error', text: message });
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: message,
+      timer: 3000,
+      showConfirmButton: false,
+    });
   }
 
+  /**
+   * Show success message
+   */
   private showSuccess(message: string): void {
-    Swal.fire({ icon: 'success', title: 'Success', text: message });
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: message,
+      timer: 2000,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end',
+    });
   }
 
+  /**
+   * Show info message
+   */
+  private showInfo(message: string): void {
+    Swal.fire({
+      icon: 'info',
+      title: 'Info',
+      text: message,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  }
+
+  /**
+   * Get base route based on user role
+   */
   private getBaseRouteByRole(): string {
     const roles: Record<string, string> = {
       Admin: 'admin',
@@ -409,10 +449,16 @@ export class AttendanceManagementComponent {
     return roles[this.currentUserRole] || 'admin';
   }
 
+  /**
+   * Open filter modal
+   */
   openFilterModal(): void {
     this.showFilterModal = true;
   }
 
+  /**
+   * Close filter modal
+   */
   closeFilterModal(): void {
     this.showFilterModal = false;
   }

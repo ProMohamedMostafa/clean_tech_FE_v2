@@ -1,67 +1,133 @@
 import { Injectable } from '@angular/core';
+import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
 import { PdfLayoutService } from '../general layout/pdf-layout.service';
-import { PdfStyleService } from '../general layout/pdf-style.service';
-import { StockPdfService } from './stock-pdf.service';
+import { StockChartService } from './stock-chart.service';
+import { StockTableService } from './stock-table.service';
 import { StockReportConfig } from '../models/stock-report.model';
-import { TableStyleService } from '../general layout/table-style.service';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { StockItem, StockCategoryData } from './stock-report.model';
 
 @Injectable({ providedIn: 'root' })
 export class StockReportService {
+  private categoryData: any = {
+    raw: 40,
+    finished: 500,
+    damaged: 10,
+    plastic: 120,
+    aluminum: 80,
+  };
+
   constructor(
     private cover: PdfCoverService,
     private layout: PdfLayoutService,
-    private style: PdfStyleService,
-    private pdf: StockPdfService,
-    private tableStyle: TableStyleService
+    private chart: StockChartService,
+    private table: StockTableService
   ) {}
 
-  generatePDF(config: StockReportConfig): void {
+  generateStockPDF(config: StockReportConfig): Observable<void> {
+    const fullConfig = this.buildConfig(config);
+
+    return this.fetchStockData(fullConfig).pipe(
+      map((data) => this.createPDF(fullConfig, data)),
+      catchError((err) => {
+        console.error('Error generating Stock PDF', err);
+        throw err;
+      })
+    );
+  }
+
+  private buildConfig(config: StockReportConfig) {
+    return {
+      fileName: config.fileName || 'stock_report',
+      pdfTitle: config.pdfTitle || 'Stock Report',
+      includeCoverPage: config.includeCoverPage ?? true,
+      reportInfo: config.reportInfo || {
+        reportDate: new Date(),
+        preparedBy: 'Stock System',
+      },
+      headers: config.headers || this.table.defaultHeaders,
+      columnKeys: config.columnKeys || this.table.defaultColumnKeys,
+      data: config.data || [],
+    };
+  }
+
+  private fetchStockData(config: any): Observable<StockItem[]> {
+    return of(this.getMockData());
+  }
+
+  private getMockData(): StockItem[] {
+    return [
+      {
+        itemName: 'Steel Rods',
+        category: 'Raw',
+        quantity: 100,
+        unit: 'kg',
+        status: 'In Stock',
+        lastUpdated: '2025-12-20',
+      },
+      {
+        itemName: 'Paint',
+        category: 'Finished',
+        quantity: 500,
+        unit: 'L',
+        status: 'Reserved',
+        lastUpdated: '2025-12-18',
+      },
+      {
+        itemName: 'Broken Glass',
+        category: 'Damaged',
+        quantity: 10,
+        unit: 'pcs',
+        status: 'Out of Stock',
+        lastUpdated: '2025-12-15',
+      },
+    ];
+  }
+
+  private createPDF(config: any, data: StockItem[]): void {
     const doc = new jsPDF();
-    const width = doc.internal.pageSize.getWidth();
-    const height = doc.internal.pageSize.getHeight();
-        const marginX = 5;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const marginX = 20;
 
-
-    // ---------------- Cover Page ----------------
-    if (config.includeCoverPage !== false) {
-      this.cover.addCover(doc, config as any, width, height);
+    if (config.includeCoverPage) {
+      this.cover.addCover(
+        doc,
+        config,
+        pageWidth,
+        doc.internal.pageSize.getHeight()
+      );
       doc.addPage();
     }
 
-    // ---------------- Header ----------------
-    const startY = this.layout.addHeader(
+    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
+    this.layout.addMetadata(doc, config, pageWidth, startY);
+
+    // Single horizontal bar chart
+    this.chart.addCategoryBarChart(
       doc,
-      config.pdfTitle || 'Stock Report',
-      width
+      marginX,
+      40,
+      pageWidth - 2 * marginX,
+      60,
+      this.categoryData
     );
 
-    // ---------------- Metadata ----------------
-    this.layout.addMetadata(doc, config as any, width, startY);
-
-    // ---------------- Table ----------------
-    autoTable(doc, {
-      startY: startY + 15,
-       margin: {
-        left: marginX,
-        right: marginX,
-      },
-      tableWidth: width - marginX * 2,
-
-      head: [config.headers],
-      body: this.pdf.prepareTable(config),
-      styles: this.tableStyle.getDefaultStyles(),
-      headStyles: this.tableStyle.getHeadStyles(),
-      alternateRowStyles: this.tableStyle.getAlternateRowStyles(),
-      columnStyles: this.tableStyle.getColumnStyles(),
-      didDrawPage: () => {
-        this.layout.addHeader(doc, config.pdfTitle || '', width);
-        this.layout.addFooter(doc, width);
-      },
-    });
+    // Table below the chart
+    this.table.addStockTable(
+      doc,
+      config,
+      data,
+      startY + 120,
+      marginX,
+      pageWidth
+    );
 
     doc.save(`${config.fileName}.pdf`);
+  }
+
+  updateChartData(categoryData?: StockCategoryData) {
+    if (categoryData) this.categoryData = categoryData;
   }
 }

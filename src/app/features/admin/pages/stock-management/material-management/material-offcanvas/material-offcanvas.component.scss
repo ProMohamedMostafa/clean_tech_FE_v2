@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /* Offcanvas Styles */
 .offcanvas-wide {
   width: 400px; /* or whatever width you prefer */
@@ -125,7 +127,7 @@
   border: none;
 
   &:hover {
-    background: darken(#025d8d, 10%);
+    background: color.adjust(#025d8d, $lightness: 10%);
   }
 }
 
@@ -144,7 +146,7 @@
   flex-grow: 0;
 
   &:hover {
-    background: darken(#c8ecff, 10%);
+    background: color.adjust(#c8ecff, $lightness: 10%);
   }
 }
 

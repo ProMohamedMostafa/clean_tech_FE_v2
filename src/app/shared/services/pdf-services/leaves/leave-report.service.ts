@@ -1,67 +1,135 @@
 import { Injectable } from '@angular/core';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
-import { LeavePdfService } from './leave-pdf.service';
-import { LeaveReportConfig } from '../models/leave-report.model';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
 import { PdfLayoutService } from '../general layout/pdf-layout.service';
-import { PdfStyleService } from '../general layout/pdf-style.service';
-import { TableStyleService } from '../general layout/table-style.service';
+import { LeaveChartService } from './leave-chart.service';
+import { LeaveTableService } from './leave-table.service';
+import { LeaveReportConfig } from '../models/leave-report.model';
+import {
+  LeaveHistoryItem,
+  LeaveStatusData,
+  LeaveTypeData,
+} from './leave-report.model';
+import jsPDF from 'jspdf';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class LeaveReportService {
+  private leaveStatusData: LeaveStatusData = {
+    total: 100,
+    pending: 15,
+    approved: 60,
+    rejected: 20,
+    cancelled: 5,
+  };
+
+  private leaveTypeData: LeaveTypeData = {
+    total: 100,
+    annual: 45,
+    sick: 30,
+    casual: 25,
+  };
+
   constructor(
     private cover: PdfCoverService,
     private layout: PdfLayoutService,
-    private leavePdf: LeavePdfService,
-    private style: PdfStyleService,
-    private tableStyle: TableStyleService
+    private chart: LeaveChartService,
+    private table: LeaveTableService
   ) {}
 
-  generateLeavePDF(config: LeaveReportConfig): void {
+  generateLeavePDF(config: LeaveReportConfig): Observable<void> {
+    const fullConfig = this.buildCompleteConfig(config);
+
+    return this.fetchLeaveData().pipe(
+      map((data) => this.createPDF(fullConfig, data)),
+      catchError((err) => {
+        console.error('Error generating PDF', err);
+        throw err;
+      })
+    );
+  }
+
+  private buildCompleteConfig(config: LeaveReportConfig) {
+    return {
+      fileName: config.fileName || 'leave_report',
+      pdfTitle: config.pdfTitle || 'Leave Report',
+      includeCoverPage: config.includeCoverPage ?? true,
+      reportInfo: {
+        reportDate: config.reportInfo?.reportDate || new Date(),
+        preparedBy: config.reportInfo?.preparedBy || 'Leave Management System',
+        ...config.reportInfo,
+      },
+      headers: config.headers || this.table.defaultHeaders,
+      data: config.data || [],
+      columnKeys: config.columnKeys || this.table.defaultColumnKeys,
+    };
+  }
+
+  private fetchLeaveData(): Observable<LeaveHistoryItem[]> {
+    return of(this.getMockData());
+  }
+
+  private getMockData(): LeaveHistoryItem[] {
+    return [
+      {
+        id: '1',
+        userId: 'u1',
+        userName: 'John Doe',
+        leaveType: 'Annual',
+        startDate: '2024-01-15',
+        endDate: '2024-01-20',
+        duration: '5 days',
+        status: 'Approved',
+        reason: 'Family vacation',
+      },
+      {
+        id: '2',
+        userId: 'u2',
+        userName: 'Jane Smith',
+        leaveType: 'Sick',
+        startDate: '2024-01-16',
+        endDate: '2024-01-17',
+        duration: '2 days',
+        status: 'Pending',
+        reason: 'Medical appointment',
+      },
+    ];
+  }
+
+  private createPDF(config: any, data: LeaveHistoryItem[]): void {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const marginX = 5;
 
-    // ---------------- Cover Page ----------------
-    if (config.includeCoverPage !== false) {
-      this.cover.addCover(doc, config as any, pageWidth, pageHeight);
+    if (config.includeCoverPage) {
+      this.cover.addCover(
+        doc,
+        config,
+        pageWidth,
+        doc.internal.pageSize.getHeight()
+      );
       doc.addPage();
     }
 
-    // ---------------- Header ----------------
-    const startY = this.layout.addHeader(
+    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
+    this.layout.addMetadata(doc, config, pageWidth, startY);
+
+    const chartsY = startY + 20;
+
+    this.chart.addStatusChart(doc, 8, chartsY, this.leaveStatusData);
+    this.chart.addTypeChart(
       doc,
-      config.pdfTitle || 'Leave Report',
-      pageWidth
+      pageWidth / 2 + 2,
+      chartsY,
+      this.leaveTypeData
     );
 
-    // ---------------- Metadata ----------------
-    this.layout.addMetadata(doc, config as any, pageWidth, startY);
-
-    // ---------------- Table ----------------
-    autoTable(doc, {
-      startY: startY + 15,
-      margin: {
-        left: marginX,
-        right: marginX,
-      },
-      tableWidth: pageWidth - marginX * 2,
-
-      head: [config.headers],
-      body: this.leavePdf.prepareTable(config),
-      styles: this.tableStyle.getDefaultStyles(), // Default cell styles
-      headStyles: this.tableStyle.getHeadStyles(), // Header styles
-      alternateRowStyles: this.tableStyle.getAlternateRowStyles(), // Alternating row colors
-      columnStyles: this.tableStyle.getColumnStyles(), // Column-specific styles
-      didDrawPage: () => {
-        this.layout.addHeader(doc, config.pdfTitle || '', pageWidth);
-        this.layout.addFooter(doc, pageWidth);
-      },
-    });
+    this.table.addLeaveTable(doc, config, data, chartsY + 70, 8, pageWidth);
 
     doc.save(`${config.fileName}.pdf`);
+  }
+
+  updateChartData(statusData?: LeaveStatusData, typeData?: LeaveTypeData) {
+    if (statusData) this.leaveStatusData = statusData;
+    if (typeData) this.leaveTypeData = typeData;
   }
 }

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 :host {
   height: calc(100vh - 80px);
   box-sizing: border-box;
@@ -64,7 +66,7 @@
         transition: all 0.3s ease;
 
         &:hover {
-          background: darken(#025d8d, 10%);
+          background: color.adjust(#025d8d, $lightness: 10%);
           transform: translateY(-1px);
         }
       }
@@ -176,7 +178,7 @@
       transition: color 0.2s;
 
       &:hover {
-        color: darken(#025d8d, 10%);
+        color: color.adjust(#025d8d, $lightness: 10%);
         text-decoration: underline;
       }
     }
@@ -229,7 +231,7 @@
         color: #ffffff;
 
         &:hover {
-          background: darken(#2571b1, 10%);
+          background: color.adjust(#2571b1, $lightness: 10%);
         }
       }
 
@@ -238,7 +240,7 @@
         color: #ffffff;
 
         &:hover {
-          background: darken(#ff383c, 10%);
+          background: color.adjust(#ff383c, $lightness: 10%);
         }
       }
 
@@ -252,7 +254,7 @@
         height: 3rem;
 
         &:hover {
-          background: darken(#e12121, 10%);
+          background: color.adjust(#e12121, $lightness: 10%);
         }
 
         @media (max-width: 768px) {
@@ -307,7 +309,7 @@
     background: #2571b1;
 
     &:hover {
-      background: darken(#2571b1, 10%);
+      background: color.adjust(#2571b1, $lightness: 10%);
     }
   }
 
@@ -315,7 +317,7 @@
     background: #ff383c;
 
     &:hover {
-      background: darken(#ff383c, 10%);
+      background: color.adjust(#ff383c, $lightness: 10%);
     }
   }
 }

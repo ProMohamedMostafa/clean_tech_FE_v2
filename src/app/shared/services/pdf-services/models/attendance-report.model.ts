@@ -5,8 +5,10 @@ export type ColorTuple = [number, number, number];
 
 export interface AttendanceReportConfig {
   fileName: string;
-  headers: string[];
-  data: any[];
+
+  // Make these optional since the service will provide defaults or fetch data
+  headers?: string[];
+  data?: any[];
 
   columnKeys?: string[];
   columnFormatter?: (data: any) => any[];
@@ -19,6 +21,9 @@ export interface AttendanceReportConfig {
     phone?: string;
     email?: string;
   };
+
+  // Optional filters for API calls
+  filters?: any;
 
   reportInfo?: {
     reportDate?: Date;

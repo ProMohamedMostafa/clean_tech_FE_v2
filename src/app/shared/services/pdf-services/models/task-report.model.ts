@@ -1,5 +1,5 @@
 export interface TaskReportConfig {
-  fileName: string;
+  fileName?: string;
   headers: string[];
   data: any[];
 

@@ -60,6 +60,7 @@ export class TaskManagementComponent implements OnInit {
   filterData: any = {};
   showFilterModal: boolean = false;
   currentRoute: string = '';
+  isGeneratingPDF: boolean = false;
 
   // Status value mapping with translation keys
   private statusValueMap: { [key: number]: string } = {
@@ -399,43 +400,57 @@ export class TaskManagementComponent implements OnInit {
   // ==================== EXPORT & PRINT ====================
 
   /** Export tasks list as PDF */
+  /**
+   * Download filtered tasks data as PDF
+   * Now fetches data directly from service via TaskReportService
+   */
   downloadAsPDF(): void {
-    this.translate
-      .get([
-        'TASK-MANAGEMENT.EXPORT.PDF_TITLE',
-        'TASK-MANAGEMENT.TABLE.TITLE',
-        'TASK-MANAGEMENT.TABLE.DESCRIPTION',
-        'TASK-MANAGEMENT.TABLE.DUE_DATE',
-        'TASK-MANAGEMENT.TABLE.PRIORITY',
-        'TASK-MANAGEMENT.TABLE.STATUS',
-      ])
-      .subscribe((translations) => {
-        this.taskReportService.generateTaskPDF({
-          fileName: `${this.currentRoute}-tasks`,
-          headers: [
-            translations['TASK-MANAGEMENT.TABLE.TITLE'],
-            translations['TASK-MANAGEMENT.TABLE.DESCRIPTION'],
-            translations['TASK-MANAGEMENT.TABLE.DUE_DATE'],
-            translations['TASK-MANAGEMENT.TABLE.PRIORITY'],
-            translations['TASK-MANAGEMENT.TABLE.STATUS'],
-          ],
-          data: this.tasks,
-          columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
-          columnFormatter: (task) => [
-            task.title,
-            task.description,
-            task.dueDate,
-            task.priority,
-            this.translate.instant(this.getStatusTranslationKey(task.status)),
-          ],
+    this.isGeneratingPDF = true;
+
+    // Prepare PDF configuration based on TaskReportConfig interface
+    const pdfConfig = {
+      fileName: `${this.currentRoute}-tasks_${
+        new Date().toISOString().split('T')[0]
+      }`,
       pdfTitle: 'Task Report',
-          includeCoverPage: true,
-          reportInfo: {
-            reportDate: new Date(),
-            preparedBy: 'Task Management System',
-          },
-        });
-      });
+      includeCoverPage: true,
+      reportInfo: {
+        reportDate: new Date(),
+        preparedBy: 'Task Management System',
+      },
+      // Required properties from TaskReportConfig interface
+      headers: [
+        this.translate.instant('TASK-MANAGEMENT.TABLE.TITLE'),
+        this.translate.instant('TASK-MANAGEMENT.TABLE.DESCRIPTION'),
+        this.translate.instant('TASK-MANAGEMENT.TABLE.DUE_DATE'),
+        this.translate.instant('TASK-MANAGEMENT.TABLE.PRIORITY'),
+        this.translate.instant('TASK-MANAGEMENT.TABLE.STATUS'),
+      ],
+      columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
+      data: this.tasks, // Current component data
+      // Optional: format each column if needed
+      columnFormatter: (task: any) => [
+        task.title,
+        task.description,
+        task.dueDate,
+        task.priority,
+        this.translate.instant(this.getStatusTranslationKey(task.status)),
+      ],
+      // Pass current filters so the service can fetch filtered data
+      filters: this.buildFilters(),
+    };
+
+    // Pass configuration to the TaskReportService
+    this.taskReportService.generateTaskPDF(pdfConfig).subscribe({
+      next: () => {
+        this.isGeneratingPDF = false;
+        this.showSuccess('PDF generated and downloaded successfully.');
+      },
+      error: (error) => {
+        this.isGeneratingPDF = false;
+        console.error('Error generating PDF:', error);
+      },
+    });
   }
 
   /** Export tasks list as Excel */

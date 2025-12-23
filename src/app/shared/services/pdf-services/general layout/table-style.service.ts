@@ -35,7 +35,7 @@ export class TableStyleService {
   }
 
   getColumnStyles(): any {
-     return {};
+    return {};
   }
 
   // Hook to hide vertical lines

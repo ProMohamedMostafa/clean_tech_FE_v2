@@ -189,64 +189,79 @@ export class TransactionsManagementComponent implements OnInit {
   }
 
   // ==================== EXPORT & PRINT ====================
-  downloadAsPDF(): void {
-    this.translate
-      .get([
-        'TRANSACTIONS.MATERIAL',
-        'TRANSACTIONS.QUANTITY',
-        'TRANSACTIONS.TYPE',
-        'TRANSACTIONS.PROVIDER',
-        'TRANSACTIONS.DATE',
-        'TRANSACTIONS.USER',
-        'TRANSACTIONS.CATEGORY',
-        'TRANSACTIONS.EXPORT.PDF_TITLE',
-      ])
-      .subscribe((t) => {
-        this.transactionReportService.generatePDF({
-          fileName: 'transactions',
-          pdfTitle: t['TRANSACTIONS.EXPORT.PDF_TITLE'],
+/**
+ * Download filtered transactions data as PDF
+ * Now fetches data directly from TransactionReportService
+ */
+downloadAsPDF(): void {
 
-          headers: [
-            t['TRANSACTIONS.MATERIAL'],
-            t['TRANSACTIONS.QUANTITY'],
-            t['TRANSACTIONS.TYPE'],
-            t['TRANSACTIONS.PROVIDER'],
-            t['TRANSACTIONS.DATE'],
-            t['TRANSACTIONS.USER'],
-            t['TRANSACTIONS.CATEGORY'],
-          ],
+  this.translate
+    .get([
+      'TRANSACTIONS.MATERIAL',
+      'TRANSACTIONS.QUANTITY',
+      'TRANSACTIONS.TYPE',
+      'TRANSACTIONS.PROVIDER',
+      'TRANSACTIONS.DATE',
+      'TRANSACTIONS.USER',
+      'TRANSACTIONS.CATEGORY',
+      'TRANSACTIONS.EXPORT.PDF_TITLE',
+    ])
+    .subscribe((t) => {
+      const pdfConfig = {
+        fileName: `transactions_${new Date().toISOString().split('T')[0]}`,
+        pdfTitle: t['TRANSACTIONS.EXPORT.PDF_TITLE'],
 
-          data: this.transactions,
+        headers: [
+          t['TRANSACTIONS.MATERIAL'],
+          t['TRANSACTIONS.QUANTITY'],
+          t['TRANSACTIONS.TYPE'],
+          t['TRANSACTIONS.PROVIDER'],
+          t['TRANSACTIONS.DATE'],
+          t['TRANSACTIONS.USER'],
+          t['TRANSACTIONS.CATEGORY'],
+        ],
 
-          columnKeys: [
-            'materialName',
-            'quantity',
-            'transactionType',
-            'providerName',
-            'transactionDate',
-            'userName',
-            'categoryName',
-          ],
+        columnKeys: [
+          'materialName',
+          'quantity',
+          'transactionType',
+          'providerName',
+          'transactionDate',
+          'userName',
+          'categoryName',
+        ],
 
-          columnFormatter: (transaction) => [
-            transaction.materialName,
-            transaction.quantity,
-            transaction.transactionType,
-            transaction.providerName,
-            transaction.transactionDate,
-            transaction.userName,
-            transaction.categoryName,
-          ],
+        data: this.transactions,
 
-          includeCoverPage: true,
+        columnFormatter: (transaction: any) => [
+          transaction.materialName,
+          transaction.quantity,
+          transaction.transactionType,
+          transaction.providerName,
+          transaction.transactionDate,
+          transaction.userName,
+          transaction.categoryName,
+        ],
 
-          reportInfo: {
-            reportDate: new Date(),
-            preparedBy: 'System',
-          },
-        });
+        includeCoverPage: true,
+
+        reportInfo: {
+          reportDate: new Date(),
+          preparedBy: 'System',
+        },
+      };
+
+      this.transactionReportService.generateTransactionPDF(pdfConfig).subscribe({
+        next: () => {
+          this.showSuccess('PDF generated and downloaded successfully.');
+        },
+        error: (error) => {
+          console.error('Error generating PDF:', error);
+        },
       });
-  }
+    });
+}
+
 
   downloadAsExcel(): void {
     this.translate

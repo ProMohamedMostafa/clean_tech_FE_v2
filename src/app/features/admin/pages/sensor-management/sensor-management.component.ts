@@ -159,14 +159,18 @@ export class SensorManagementComponent implements OnInit {
 
   // ==================== EXPORT & PRINT ====================
 
+  /**
+   * Download filtered sensor devices data as PDF
+   * Now fetches data directly from SensorReportService
+   */
   downloadAsPDF(): void {
-    this.sensorReportService.generatePDF({
-      fileName: 'sensors',
+
+    // Prepare PDF configuration based on SensorReportConfig interface
+    const pdfConfig = {
+      fileName: `sensors_${new Date().toISOString().split('T')[0]}`,
       pdfTitle: 'Sensors Report',
 
       headers: ['Name', 'Type', 'Status', 'Battery', 'Last Seen', 'Location'],
-
-      data: this.devices,
 
       columnKeys: [
         'name',
@@ -177,7 +181,9 @@ export class SensorManagementComponent implements OnInit {
         'location',
       ],
 
-      columnFormatter: (device) => [
+      data: this.devices,
+
+      columnFormatter: (device: any) => [
         device.name,
         device.applicationName,
         device.active ? 'Active' : 'Inactive',
@@ -191,8 +197,18 @@ export class SensorManagementComponent implements OnInit {
       includeCoverPage: true,
 
       reportInfo: {
-        generatedAt: new Date(),
+        reportDate: new Date(),
         preparedBy: 'System',
+      },
+    };
+
+    // Generate PDF via the service
+    this.sensorReportService.generateSensorPDF(pdfConfig).subscribe({
+      next: () => {
+        this.showSuccess('PDF generated and downloaded successfully.');
+      },
+      error: (error) => {
+        console.error('Error generating PDF:', error);
       },
     });
   }

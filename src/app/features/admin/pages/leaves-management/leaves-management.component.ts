@@ -71,7 +71,7 @@ export class LeavesManagementComponent {
   totalPages: number = 1;
   totalCount: number = 0;
   currentUserRole: string = '';
-
+  isGeneratingPDF: boolean = false;
   // Table Configuration
   tableColumns: TableColumn[] = [
     { key: 'userName', label: 'LEAVE.USER', type: 'text' },
@@ -108,8 +108,7 @@ export class LeavesManagementComponent {
     private router: Router,
     private leaveService: LeaveService,
     private userService: UserService,
-      private leaveReportService: LeaveReportService
-,
+    private leaveReportService: LeaveReportService,
     private exportService: ExportService // Inject ExportService
   ) {
     // Initialize chart options
@@ -310,11 +309,23 @@ export class LeavesManagementComponent {
     this.loadLeaveHistory();
   }
 
+  /**
+   * Download filtered leaves data as PDF
+   * Now fetches data directly from API via service
+   */
   downloadAsPDF(): void {
-    this.leaveReportService.generateLeavePDF({
-      fileName: 'leave_history',
-      pdfTitle: 'Leave History Report',
+    this.isGeneratingPDF = true;
 
+    // Prepare PDF configuration based on LeaveReportConfig interface
+    const pdfConfig = {
+      fileName: `leave_history_${new Date().toISOString().split('T')[0]}`,
+      pdfTitle: 'Leave History Report',
+      includeCoverPage: true,
+      reportInfo: {
+        reportDate: new Date(),
+        preparedBy: this.currentUserRole || 'Leave System',
+      },
+      // Required properties from LeaveReportConfig interface
       headers: [
         'User',
         'Role',
@@ -324,9 +335,7 @@ export class LeavesManagementComponent {
         'Status',
         'Reason',
       ],
-
-      data: this.leaveHistory,
-
+      data: this.leaveHistory, // Current component data
       columnKeys: [
         'userName',
         'role',
@@ -336,12 +345,19 @@ export class LeavesManagementComponent {
         'status',
         'reason',
       ],
+      // Pass current filters so the service can fetch filtered data
+      filters: this.buildFilters(),
+    };
 
-      includeCoverPage: true,
-
-      reportInfo: {
-        reportDate: new Date(),
-        preparedBy: 'System',
+    // Pass configuration to the PDF service
+    this.leaveReportService.generateLeavePDF(pdfConfig).subscribe({
+      next: () => {
+        this.isGeneratingPDF = false;
+        this.showSuccess('PDF generated and downloaded successfully.');
+      },
+      error: (error) => {
+        this.isGeneratingPDF = false;
+        console.error('Error generating PDF:', error);
       },
     });
   }

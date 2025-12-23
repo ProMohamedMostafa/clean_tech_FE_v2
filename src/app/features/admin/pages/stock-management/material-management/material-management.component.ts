@@ -111,18 +111,23 @@ export class MaterialManagementComponent implements OnInit {
 
   // ==================== EXPORT & PRINT ====================
 
+  /**
+   * Download filtered materials data as PDF
+   * Uses StockReportService to fetch data and generate PDF
+   */
   downloadAsPDF(): void {
-    this.stockReportService.generatePDF({
-      fileName: 'materials',
+    // Prepare PDF configuration using StockReportConfig interface
+    const pdfConfig = {
+      fileName: `materials_${new Date().toISOString().split('T')[0]}`,
       pdfTitle: 'Materials Inventory Report',
 
       headers: ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
 
-      data: this.materials,
-
       columnKeys: ['name', 'description', 'quantity', 'category.name', 'unit'],
 
-      columnFormatter: (material) => [
+      data: this.materials,
+
+      columnFormatter: (material: any) => [
         material.name,
         material.description,
         material.quantity,
@@ -135,6 +140,16 @@ export class MaterialManagementComponent implements OnInit {
       reportInfo: {
         generatedAt: new Date(),
         preparedBy: 'System',
+      },
+    };
+
+    // Use StockReportService to generate PDF
+    this.stockReportService.generateStockPDF(pdfConfig).subscribe({
+      next: () => {
+        this.showSuccess('PDF generated and downloaded successfully.');
+      },
+      error: (error) => {
+        console.error('Error generating PDF:', error);
       },
     });
   }

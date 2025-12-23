@@ -8,6 +8,13 @@ export interface LeaveReportConfig {
 
   pdfTitle?: string;
 
+  companyInfo?: {
+    name?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+  };
+
   includeCoverPage?: boolean;
 
   reportInfo?: {
@@ -23,4 +30,6 @@ export interface LeaveReportConfig {
     confidentiality?: string;
     footerText?: string;
   };
+
+  filters?: any;
 }
