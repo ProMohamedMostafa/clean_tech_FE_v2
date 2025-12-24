@@ -1,3 +1,4 @@
+// sensor-report.service.ts
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
@@ -86,6 +87,294 @@ export class SensorReportService {
         status: 'Error',
         recordedAt: '2025-12-20',
       },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S001',
+        name: 'Temp Sensor 1',
+        type: 'Temperature',
+        value: 25,
+        status: 'Active',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S002',
+        name: 'Humidity Sensor 1',
+        type: 'Humidity',
+        value: 60,
+        status: 'Inactive',
+        recordedAt: '2025-12-20',
+      },
+      {
+        id: 'S003',
+        name: 'Pressure Sensor 1',
+        type: 'Pressure',
+        value: 1012,
+        status: 'Error',
+        recordedAt: '2025-12-20',
+      },
     ];
   }
 
@@ -94,6 +383,7 @@ export class SensorReportService {
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 5;
 
+    // ================= COVER =================
     if (config.includeCoverPage) {
       this.cover.addCover(
         doc,
@@ -104,19 +394,38 @@ export class SensorReportService {
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= CONTENT =================
+    const fromDate = '01/12/2025'; // replace with dynamic start date if needed
+    const toDate = '24/12/2025'; // replace with dynamic end date if needed
 
-    this.chart.addTypeChart(doc, 10, 40, this.typeData);
-    this.chart.addStatusChart(doc, 110, 40, this.statusData);
-
-    this.table.addSensorTable(
+    const startY = this.layout.addHeader(
       doc,
-      config,
-      data,
-      startY + 120,
-      marginX,
-      pageWidth
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
+
+    // Charts
+    this.chart.addTypeChart(doc, 10, startY + 10, this.typeData);
+    this.chart.addStatusChart(
+      doc,
+      pageWidth / 2 + 10,
+      startY + 10,
+      this.statusData
+    );
+
+    // Table
+    const tableY = startY + 120;
+    this.table.addSensorTable(doc, config, data, tableY, marginX, pageWidth);
+
+    // Apply header & footer to all pages after cover
+    this.layout.applyHeaderFooterToAllPages(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
     );
 
     doc.save(`${config.fileName}.pdf`);

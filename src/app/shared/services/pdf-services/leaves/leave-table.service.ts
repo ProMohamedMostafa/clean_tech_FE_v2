@@ -3,10 +3,14 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { TableStyleService } from '../general layout/table-style.service';
 import { LeaveHistoryItem } from './leave-report.model';
+import { PdfLayoutService } from '../general layout/pdf-layout.service';
 
 @Injectable({ providedIn: 'root' })
 export class LeaveTableService {
-  constructor(private tableStyle: TableStyleService) {}
+  constructor(
+    private tableStyle: TableStyleService,
+    private layout: PdfLayoutService
+  ) {}
 
   defaultHeaders = [
     'User',
@@ -17,6 +21,7 @@ export class LeaveTableService {
     'Status',
     'Reason',
   ];
+
   defaultColumnKeys = [
     'userName',
     'leaveType',
@@ -36,17 +41,30 @@ export class LeaveTableService {
     pageWidth: number
   ) {
     autoTable(doc, {
+      // ✅ page 1 start
       startY,
-      margin: { left: marginX, right: marginX },
+
+      // ✅ reserve space for header on ALL pages
+      margin: {
+        top: this.layout.HEADER_HEIGHT + 10,
+        left: marginX,
+        right: marginX,
+        bottom: 15,
+      },
+
       tableWidth: pageWidth - marginX * 2,
+
       head: [config.headers],
       body: this.prepareTableBody(data, config.columnKeys),
+
       styles: this.tableStyle.getDefaultStyles(),
       headStyles: this.tableStyle.getHeadStyles(),
       alternateRowStyles: this.tableStyle.getAlternateRowStyles(),
       columnStyles: this.tableStyle.getColumnStyles(),
+
+      // ✅ redraw header after page breaks
       didDrawPage: () => {
-        // optional page header/footer
+        this.layout.addHeader(doc, config.pdfTitle, pageWidth);
       },
     });
   }

@@ -1,3 +1,4 @@
+// feedback-report.service.ts
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
@@ -7,11 +8,19 @@ import { FeedbackTableService } from './feedback-table.service';
 import { FeedbackReportConfig } from '../models/feedback-report.model';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { FeedbackHistoryItem, FeedbackRatingData } from './feedback-report.model';
+import {
+  FeedbackHistoryItem,
+  FeedbackRatingData,
+} from './feedback-report.model';
 
 @Injectable({ providedIn: 'root' })
 export class FeedbackReportService {
-  private ratingData: FeedbackRatingData = { excellent: 40, good: 30, average: 20, poor: 10 };
+  private ratingData: FeedbackRatingData = {
+    excellent: 40,
+    good: 30,
+    average: 20,
+    poor: 10,
+  };
 
   constructor(
     private cover: PdfCoverService,
@@ -37,7 +46,10 @@ export class FeedbackReportService {
       fileName: config.fileName || 'feedback_report',
       pdfTitle: config.pdfTitle || 'Feedback Report',
       includeCoverPage: config.includeCoverPage ?? true,
-      reportInfo: config.reportInfo || { reportDate: new Date(), preparedBy: 'System' },
+      reportInfo: config.reportInfo || {
+        reportDate: new Date(),
+        preparedBy: 'System',
+      },
       headers: config.headers || this.table.defaultHeaders,
       columnKeys: config.columnKeys || this.table.defaultColumnKeys,
       data: config.data || [],
@@ -50,9 +62,27 @@ export class FeedbackReportService {
 
   private getMockData(): FeedbackHistoryItem[] {
     return [
-      { userName: 'Alice', feedbackDate: '2025-12-01', rating: 'Excellent', comment: 'Great!', status: 'Reviewed' },
-      { userName: 'Bob', feedbackDate: '2025-12-02', rating: 'Good', comment: 'Satisfactory', status: 'Pending' },
-      { userName: 'Charlie', feedbackDate: '2025-12-03', rating: 'Poor', comment: 'Needs improvement', status: 'Reviewed' },
+      {
+        userName: 'Alice',
+        feedbackDate: '2025-12-01',
+        rating: 'Excellent',
+        comment: 'Great!',
+        status: 'Reviewed',
+      },
+      {
+        userName: 'Bob',
+        feedbackDate: '2025-12-02',
+        rating: 'Good',
+        comment: 'Satisfactory',
+        status: 'Pending',
+      },
+      {
+        userName: 'Charlie',
+        feedbackDate: '2025-12-03',
+        rating: 'Poor',
+        comment: 'Needs improvement',
+        status: 'Reviewed',
+      },
     ];
   }
 
@@ -61,17 +91,45 @@ export class FeedbackReportService {
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 5;
 
+    // ================= COVER =================
     if (config.includeCoverPage) {
-      this.cover.addCover(doc, config, pageWidth, doc.internal.pageSize.getHeight());
+      this.cover.addCover(
+        doc,
+        config,
+        pageWidth,
+        doc.internal.pageSize.getHeight()
+      );
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= CONTENT =================
+    const fromDate = '01/12/2025'; // replace with dynamic start date if needed
+    const toDate = '24/12/2025'; // replace with dynamic end date if needed
 
-    this.chart.addRatingChart(doc, 10, 40, this.ratingData);
+    // Header with title and date range
+    const startY = this.layout.addHeader(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
-    this.table.addFeedbackTable(doc, config, data, startY + 120, marginX, pageWidth);
+    // Charts
+    this.chart.addRatingChart(doc, 10, startY + 10, this.ratingData);
+
+    // Table
+    const tableY = startY + 120;
+    this.table.addFeedbackTable(doc, config, data, tableY, marginX, pageWidth);
+
+    // Footer and headers on all pages
+    this.layout.applyHeaderFooterToAllPages(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
     doc.save(`${config.fileName}.pdf`);
   }

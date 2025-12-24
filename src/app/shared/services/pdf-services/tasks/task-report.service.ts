@@ -1,3 +1,4 @@
+// task-report.service.ts
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
@@ -53,7 +54,8 @@ export class TaskReportService {
       pdfTitle: config.pdfTitle || 'Task Report',
       includeCoverPage: config.includeCoverPage ?? true,
       reportInfo: config.reportInfo || {
-        reportDate: new Date(),
+        fromDate: '01/12/2025', // replace with dynamic values
+        toDate: '24/12/2025',
         preparedBy: 'Task Management System',
       },
       headers: config.headers || this.table.defaultHeaders,
@@ -94,7 +96,9 @@ export class TaskReportService {
   private createPDF(config: any, data: TaskHistoryItem[]): void {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const marginX = 8;
 
+    // ================= COVER =================
     if (config.includeCoverPage) {
       this.cover.addCover(
         doc,
@@ -105,12 +109,22 @@ export class TaskReportService {
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= CONTENT =================
+    const fromDate = '01/12/2025'; // replace with dynamic start date if needed
+    const toDate = '24/12/2025'; // replace with dynamic end date if needed
+
+    const startY = this.layout.addHeader(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
     const chartsY = startY + 20;
 
-    this.chart.addStatusChart(doc, 8, chartsY, this.taskStatusData);
+    // Charts
+    this.chart.addStatusChart(doc, marginX, chartsY, this.taskStatusData);
     this.chart.addPriorityChart(
       doc,
       pageWidth / 2 + 2,
@@ -118,7 +132,18 @@ export class TaskReportService {
       this.taskPriorityData
     );
 
-    this.table.addTaskTable(doc, config, data, chartsY + 70, 8, pageWidth);
+    // Table below charts
+    const tableY = chartsY + 70;
+    this.table.addTaskTable(doc, config, data, tableY, marginX, pageWidth);
+
+    // Apply header & footer to all pages (after cover)
+    this.layout.applyHeaderFooterToAllPages(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
     doc.save(`${config.fileName}.pdf`);
   }

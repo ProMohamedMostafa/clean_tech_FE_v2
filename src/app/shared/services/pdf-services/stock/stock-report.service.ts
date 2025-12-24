@@ -1,3 +1,4 @@
+// stock-report.service.ts
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
@@ -11,7 +12,7 @@ import { StockItem, StockCategoryData } from './stock-report.model';
 
 @Injectable({ providedIn: 'root' })
 export class StockReportService {
-  private categoryData: any = {
+  private categoryData: StockCategoryData = {
     raw: 40,
     finished: 500,
     damaged: 10,
@@ -91,6 +92,7 @@ export class StockReportService {
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 20;
 
+    // ================= COVER =================
     if (config.includeCoverPage) {
       this.cover.addCover(
         doc,
@@ -101,27 +103,39 @@ export class StockReportService {
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= CONTENT =================
+    const fromDate = '01/12/2025'; // replace with dynamic start date if needed
+    const toDate = '24/12/2025'; // replace with dynamic end date if needed
+
+    const startY = this.layout.addHeader(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
     // Single horizontal bar chart
     this.chart.addCategoryBarChart(
       doc,
       marginX,
-      40,
+      startY + 10,
       pageWidth - 2 * marginX,
       60,
       this.categoryData
     );
 
     // Table below the chart
-    this.table.addStockTable(
+    const tableY = startY + 90;
+    this.table.addStockTable(doc, config, data, tableY, marginX, pageWidth);
+
+    // Apply header & footer to all pages after cover
+    this.layout.applyHeaderFooterToAllPages(
       doc,
-      config,
-      data,
-      startY + 120,
-      marginX,
-      pageWidth
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
     );
 
     doc.save(`${config.fileName}.pdf`);

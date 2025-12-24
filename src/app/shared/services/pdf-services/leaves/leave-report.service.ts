@@ -1,3 +1,4 @@
+// leave-report.service.ts
 import { Injectable } from '@angular/core';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
 import { PdfLayoutService } from '../general layout/pdf-layout.service';
@@ -100,6 +101,7 @@ export class LeaveReportService {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
+    // ================= COVER =================
     if (config.includeCoverPage) {
       this.cover.addCover(
         doc,
@@ -110,11 +112,20 @@ export class LeaveReportService {
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= CONTENT =================
+    const fromDate = '01/12/2025'; // replace with dynamic start date if needed
+    const toDate = '24/12/2025'; // replace with dynamic end date if needed
 
+    const startY = this.layout.addHeader(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
+
+    // Charts
     const chartsY = startY + 20;
-
     this.chart.addStatusChart(doc, 8, chartsY, this.leaveStatusData);
     this.chart.addTypeChart(
       doc,
@@ -123,7 +134,18 @@ export class LeaveReportService {
       this.leaveTypeData
     );
 
-    this.table.addLeaveTable(doc, config, data, chartsY + 70, 8, pageWidth);
+    // Table
+    const tableY = chartsY + 70;
+    this.table.addLeaveTable(doc, config, data, tableY, 8, pageWidth);
+
+    // Apply header & footer to all pages after cover
+    this.layout.applyHeaderFooterToAllPages(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
     doc.save(`${config.fileName}.pdf`);
   }

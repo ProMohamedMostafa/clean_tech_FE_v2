@@ -91,68 +91,65 @@ export class AttendanceReportService {
         status: 'Present',
         shiftName: 'Day',
       },
+      // Add more mock data as needed
     ];
   }
 
   private createPDF(config: any, data: AttendanceHistoryItem[]): void {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const marginX = 5;
-    const contentWidth = pageWidth - marginX * 2;
+    const contentStartY = this.layout.HEADER_HEIGHT + 10;
 
-    // Cover page
+    // ================= COVER =================
     if (config.includeCoverPage) {
-      this.cover.addCover(
-        doc,
-        config,
-        pageWidth,
-        doc.internal.pageSize.getHeight()
-      );
+      this.cover.addCover(doc, config, pageWidth, pageHeight);
       doc.addPage();
     }
 
-    // Header & Metadata
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= CONTENT =================
+    // Set the date range here
+    const fromDate = '01/12/2025'; // replace with actual start date
+    const toDate = '24/12/2025'; // replace with actual end date
 
-    // Charts Section
+    // Draw header with title and date range
+    this.layout.addHeader(doc, config.pdfTitle, pageWidth, fromDate, toDate);
+
+    // Charts
     const chartHeight = 80;
     const chartSpacing = 10;
+    const contentWidth = pageWidth - marginX * 2;
     const pieWidth = contentWidth / 3;
     const lineWidth = contentWidth - pieWidth - chartSpacing;
-    const chartY = startY + 12;
+    const chartY = contentStartY + 10;
 
-    // Pie chart (with proper padding & single border)
     this.chart.addStatusChart(doc, marginX, chartY, this.taskStatusData);
-
-    // Line chart (with proper padding & single border)
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    const monthlyValues = [50, 70, 65, 80, 90, 75, 60, 85, 95, 70, 55, 80];
     this.chart.addMonthlyLineChart(
       doc,
       marginX + pieWidth + chartSpacing,
       chartY,
       lineWidth,
       chartHeight,
-      months,
-      monthlyValues
+      [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ],
+      [50, 70, 65, 80, 90, 75, 60, 85, 95, 70, 55, 80]
     );
 
-    // Table Section
-    const tableY = chartY + chartHeight + 35;
+    // Table
+    const tableY = chartY + chartHeight + 20;
     this.table.addAttendanceTable(
       doc,
       config,
@@ -160,6 +157,15 @@ export class AttendanceReportService {
       tableY,
       marginX,
       pageWidth
+    );
+
+    // ================= APPLY HEADER & FOOTER =================
+    this.layout.applyHeaderFooterToAllPages(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
     );
 
     doc.save(`${config.fileName}.pdf`);

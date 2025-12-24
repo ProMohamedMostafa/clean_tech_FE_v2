@@ -1,3 +1,4 @@
+// transaction-report.service.ts
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { PdfCoverService } from '../general layout/pdf-cover.service';
@@ -20,7 +21,6 @@ export class TransactionReportService {
     expense: 30,
     transfer: 20,
   };
-
   private statusData: TransactionStatusData = {
     pending: 10,
     completed: 80,
@@ -52,7 +52,8 @@ export class TransactionReportService {
       pdfTitle: config.pdfTitle || 'Transaction Report',
       includeCoverPage: config.includeCoverPage ?? true,
       reportInfo: config.reportInfo || {
-        reportDate: new Date(),
+        fromDate: '01/12/2025',
+        toDate: '24/12/2025',
         preparedBy: 'Transaction System',
       },
       headers: config.headers || this.table.defaultHeaders,
@@ -99,6 +100,7 @@ export class TransactionReportService {
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 10;
 
+    // ================= COVER =================
     if (config.includeCoverPage) {
       this.cover.addCover(
         doc,
@@ -109,10 +111,18 @@ export class TransactionReportService {
       doc.addPage();
     }
 
-    const startY = this.layout.addHeader(doc, config.pdfTitle, pageWidth);
-    this.layout.addMetadata(doc, config, pageWidth, startY);
+    // ================= HEADER =================
+    const fromDate = config.reportInfo.fromDate;
+    const toDate = config.reportInfo.toDate;
+    const startY = this.layout.addHeader(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
+    );
 
-    /** Grouped bar chart data */
+    // ================= CHARTS =================
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const quantities = [120, 90, 150, 110, 130, 170];
     const costs = [500, 420, 610, 480, 530, 700];
@@ -125,6 +135,7 @@ export class TransactionReportService {
       costs
     );
 
+    // ================= TABLE =================
     this.table.addTransactionTable(
       doc,
       config,
@@ -132,6 +143,15 @@ export class TransactionReportService {
       startY + 160,
       marginX,
       pageWidth
+    );
+
+    // ================= HEADER & FOOTER =================
+    this.layout.applyHeaderFooterToAllPages(
+      doc,
+      config.pdfTitle,
+      pageWidth,
+      fromDate,
+      toDate
     );
 
     doc.save(`${config.fileName}.pdf`);
