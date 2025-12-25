@@ -6,6 +6,7 @@ import {
   Output,
   TemplateRef,
   ViewChild,
+  OnInit,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -20,7 +21,7 @@ import Swal from 'sweetalert2';
   templateUrl: './filter-bar.component.html',
   styleUrls: ['./filter-bar.component.scss'],
 })
-export class ReusableFilterBarComponent {
+export class ReusableFilterBarComponent implements OnInit {
   @ViewChild('exportSweetAlertTemplate')
   exportSweetAlertTemplate!: TemplateRef<any>;
 
@@ -36,6 +37,11 @@ export class ReusableFilterBarComponent {
   @Input() showSearchBar: boolean = true;
   @Input() showFilterButton: boolean = true;
 
+  // New input properties for filter values
+  @Input() selectedStatus?: number;
+  @Input() selectedPriority?: number;
+  @Input() selectedAssignee?: number;
+
   // Date range properties
   exportStartDate: string = '';
   exportEndDate: string = '';
@@ -45,13 +51,32 @@ export class ReusableFilterBarComponent {
   @Output() filterClick = new EventEmitter<void>();
   @Output() addClick = new EventEmitter<void>();
   @Output() recycleClick = new EventEmitter<void>();
-  @Output() exportPdf = new EventEmitter<{ from: string; to: string }>();
-  @Output() exportExcel = new EventEmitter<{ from: string; to: string }>();
+  @Output() exportPdf = new EventEmitter<{
+    from: string;
+    to: string;
+    status?: number;
+    priority?: number;
+    assignTo?: number;
+  }>();
+  @Output() exportExcel = new EventEmitter<{
+    from: string;
+    to: string;
+    status?: number;
+    priority?: number;
+    assignTo?: number;
+  }>();
   @Output() print = new EventEmitter<void>();
   @Output() showFilter = new EventEmitter<void>();
+  @Output() dateRangeChange = new EventEmitter<{ from: string; to: string }>();
+
   searchTerm: string = '';
 
   constructor(private router: Router, private translate: TranslateService) {}
+
+  ngOnInit() {
+    // Set default date range on initialization
+    this.setDefaultDateRange();
+  }
 
   onSearchChange() {
     this.searchChange.emit(this.searchTerm);
@@ -74,14 +99,30 @@ export class ReusableFilterBarComponent {
   onExportPdf() {
     const dateRange = this.validateDateRange();
     if (dateRange) {
-      this.exportPdf.emit(dateRange);
+      const exportData = {
+        from: dateRange.from,
+        to: dateRange.to,
+        status: this.selectedStatus,
+        priority: this.selectedPriority,
+        assignTo: this.selectedAssignee,
+      };
+      console.log('Exporting PDF with data:', exportData); // Debug log
+      this.exportPdf.emit(exportData);
     }
   }
 
   onExportExcel() {
     const dateRange = this.validateDateRange();
     if (dateRange) {
-      this.exportExcel.emit(dateRange);
+      const exportData = {
+        from: dateRange.from,
+        to: dateRange.to,
+        status: this.selectedStatus,
+        priority: this.selectedPriority,
+        assignTo: this.selectedAssignee,
+      };
+      console.log('Exporting Excel with data:', exportData); // Debug log
+      this.exportExcel.emit(exportData);
     }
   }
 
@@ -91,12 +132,21 @@ export class ReusableFilterBarComponent {
 
   onFilterClick() {
     this.filterClick.emit();
-    console.log('true from search-bar');
   }
 
   onShowFilter() {
     this.showFilter.emit();
-    console.log('Show filter button clicked');
+  }
+
+  // Update date range and emit changes
+  updateDateRange() {
+    if (this.exportStartDate && this.exportEndDate) {
+      const dateRange = {
+        from: this.exportStartDate,
+        to: this.exportEndDate,
+      };
+      this.dateRangeChange.emit(dateRange);
+    }
   }
 
   // Validate date range and return object if valid
@@ -138,6 +188,9 @@ export class ReusableFilterBarComponent {
 
     this.exportEndDate = endDate.toISOString().split('T')[0];
     this.exportStartDate = startDate.toISOString().split('T')[0];
+
+    // Emit the default date range
+    this.updateDateRange();
   }
 
   // New SweetAlert method for export options with date range
@@ -190,6 +243,8 @@ export class ReusableFilterBarComponent {
             >
           </div>
         </div>
+
+       
 
         <!-- Export Options -->
         <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -270,10 +325,12 @@ export class ReusableFilterBarComponent {
         // Add input event listeners
         startDateInput?.addEventListener('change', (event) => {
           this.exportStartDate = (event.target as HTMLInputElement).value;
+          this.updateDateRange();
         });
 
         endDateInput?.addEventListener('change', (event) => {
           this.exportEndDate = (event.target as HTMLInputElement).value;
+          this.updateDateRange();
         });
 
         // Style export option buttons

@@ -35,11 +35,6 @@ export class TaskChartService {
         value: data.completed,
         color: this.chartColors.status.completed,
       },
-      {
-        label: 'Blocked',
-        value: data.blocked,
-        color: this.chartColors.status.blocked,
-      },
     ]);
   }
 
@@ -166,5 +161,60 @@ export class TaskChartService {
       const percent = total ? Math.round((item.value / total) * 100) : 0;
       doc.text(`${item.label} (${percent}%)`, x + 6, yPos);
     });
+  }
+
+  // task-chart.service.ts (add this method)
+  addDynamicStatusChart(
+    doc: jsPDF,
+    x: number,
+    y: number,
+    data: TaskStatusData
+  ) {
+    // Convert TaskStatusData to chart format
+    const chartData = [];
+
+    if (data.pending > 0)
+      chartData.push({
+        label: 'Pending',
+        value: data.pending,
+        color: this.chartColors.status.pending,
+      });
+
+    if (data.inProgress > 0)
+      chartData.push({
+        label: 'In Progress',
+        value: data.inProgress,
+        color: this.chartColors.status.inProgress,
+      });
+
+    if (data.completed > 0)
+      chartData.push({
+        label: 'Completed',
+        value: data.completed,
+        color: this.chartColors.status.completed,
+      });
+
+    if (data.blocked > 0)
+      chartData.push({
+        label: 'Blocked',
+        value: data.blocked,
+        color: this.chartColors.status.blocked,
+      });
+
+    if (data.waitingForApproval && data.waitingForApproval > 0)
+      chartData.push({
+        label: 'Waiting',
+        value: data.waitingForApproval,
+        color: [255, 193, 7], // Yellow for waiting
+      });
+
+    if (data.overdue && data.overdue > 0)
+      chartData.push({
+        label: 'Overdue',
+        value: data.overdue,
+        color: [244, 67, 54], // Red for overdue
+      });
+
+    this.drawChartContainer(doc, x, y, 'Task Status Distribution', chartData);
   }
 }

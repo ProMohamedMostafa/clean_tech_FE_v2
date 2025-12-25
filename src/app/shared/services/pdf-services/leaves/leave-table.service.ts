@@ -1,3 +1,4 @@
+// leave-table.service.ts
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -14,55 +15,55 @@ export class LeaveTableService {
 
   defaultHeaders = [
     'User',
-    'Leave Type',
+    'Role',
     'Start Date',
     'End Date',
-    'Duration',
+    'Type',
     'Status',
     'Reason',
+    'Has File',
   ];
 
   defaultColumnKeys = [
     'userName',
-    'leaveType',
+    'role',
     'startDate',
     'endDate',
-    'duration',
+    'type',
     'status',
     'reason',
+    'hasFile',
   ];
 
   addLeaveTable(
     doc: jsPDF,
     config: any,
-    data: LeaveHistoryItem[],
+    data: any[],
     startY: number,
     marginX: number,
     pageWidth: number
   ) {
-    autoTable(doc, {
-      // ✅ page 1 start
-      startY,
+    // Transform hasFile boolean to Yes/No for display
+    const displayData = data.map((item) => ({
+      ...item,
+      hasFile: item.hasFile ? 'Yes' : 'No',
+    }));
 
-      // ✅ reserve space for header on ALL pages
+    autoTable(doc, {
+      startY,
       margin: {
         top: this.layout.HEADER_HEIGHT + 10,
         left: marginX,
         right: marginX,
         bottom: 15,
       },
-
       tableWidth: pageWidth - marginX * 2,
-
       head: [config.headers],
-      body: this.prepareTableBody(data, config.columnKeys),
-
+      body: this.prepareTableBody(displayData, config.columnKeys),
       styles: this.tableStyle.getDefaultStyles(),
       headStyles: this.tableStyle.getHeadStyles(),
       alternateRowStyles: this.tableStyle.getAlternateRowStyles(),
       columnStyles: this.tableStyle.getColumnStyles(),
-
-      // ✅ redraw header after page breaks
       didDrawPage: () => {
         this.layout.addHeader(doc, config.pdfTitle, pageWidth);
       },

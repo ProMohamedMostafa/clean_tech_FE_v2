@@ -15,48 +15,78 @@ export class LeaveChartService {
       annual: [33, 150, 243],
       sick: [255, 152, 0],
       casual: [156, 39, 176],
+      ordinary: [121, 85, 72],
     },
   };
 
   addStatusChart(doc: jsPDF, x: number, y: number, data: LeaveStatusData) {
-    this.drawChartContainer(doc, x, y, 'Leave Status Distribution', [
-      {
+    // Prepare chart data array
+    const chartData = [];
+
+    if (data.pending > 0)
+      chartData.push({
         label: 'Pending',
         value: data.pending,
         color: this.chartColors.status.pending,
-      },
-      {
+      });
+
+    if (data.approved > 0)
+      chartData.push({
         label: 'Approved',
         value: data.approved,
         color: this.chartColors.status.approved,
-      },
-      {
+      });
+
+    if (data.rejected > 0)
+      chartData.push({
         label: 'Rejected',
         value: data.rejected,
         color: this.chartColors.status.rejected,
-      },
-      {
+      });
+
+    if (data.cancelled && data.cancelled > 0)
+      chartData.push({
         label: 'Cancelled',
         value: data.cancelled,
         color: this.chartColors.status.cancelled,
-      },
-    ]);
+      });
+
+    this.drawChartContainer(doc, x, y, 'Leave Status Distribution', chartData);
   }
 
-  addTypeChart(doc: jsPDF, x: number, y: number, data: LeaveTypeData) {
-    this.drawChartContainer(doc, x, y, 'Leave Type Distribution', [
-      {
+  addTypeChart(doc: jsPDF, x: number, y: number, data: any) {
+    // Prepare chart data array
+    const chartData = [];
+
+    if (data.annual > 0)
+      chartData.push({
         label: 'Annual',
         value: data.annual,
         color: this.chartColors.type.annual,
-      },
-      { label: 'Sick', value: data.sick, color: this.chartColors.type.sick },
-      {
+      });
+
+    if (data.sick > 0)
+      chartData.push({
+        label: 'Sick',
+        value: data.sick,
+        color: this.chartColors.type.sick,
+      });
+
+    if (data.casual && data.casual > 0)
+      chartData.push({
         label: 'Casual',
         value: data.casual,
         color: this.chartColors.type.casual,
-      },
-    ]);
+      });
+
+    if (data.ordinary && data.ordinary > 0)
+      chartData.push({
+        label: 'Ordinary',
+        value: data.ordinary,
+        color: this.chartColors.type.ordinary,
+      });
+
+    this.drawChartContainer(doc, x, y, 'Leave Type Distribution', chartData);
   }
 
   private drawChartContainer(

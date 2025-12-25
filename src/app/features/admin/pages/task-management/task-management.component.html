@@ -15,7 +15,7 @@
     [showRecycleButton]="isRecycleVisible()"
     [recycleButtonRoute]="`/${this.currentUserRole.toLowerCase()}/deleted-tasks`"
     (searchChange)="onSearchChange($event)"
-    (exportPdf)="downloadAsPDF()"
+    (exportPdf)="onExportPdf($event)"
     (exportExcel)="downloadAsExcel()"
     (print)="printPDF()"
     (addClick)="openAddModal()"

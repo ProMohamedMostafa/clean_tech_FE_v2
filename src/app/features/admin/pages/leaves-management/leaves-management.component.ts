@@ -313,54 +313,77 @@ export class LeavesManagementComponent {
    * Download filtered leaves data as PDF
    * Now fetches data directly from API via service
    */
-  downloadAsPDF(): void {
-    this.isGeneratingPDF = true;
+// In your component.ts
+downloadAsPDF(exportData: {
+  from: string;
+  to: string;
+  userId?: number;
+  type?: number;
+  status?: number;
+}): void {
+  this.isGeneratingPDF = true;
 
-    // Prepare PDF configuration based on LeaveReportConfig interface
-    const pdfConfig = {
-      fileName: `leave_history_${new Date().toISOString().split('T')[0]}`,
-      pdfTitle: 'Leave History Report',
-      includeCoverPage: true,
-      reportInfo: {
-        reportDate: new Date(),
-        preparedBy: this.currentUserRole || 'Leave System',
-      },
-      // Required properties from LeaveReportConfig interface
-      headers: [
-        'User',
-        'Role',
-        'Start Date',
-        'End Date',
-        'Type',
-        'Status',
-        'Reason',
-      ],
-      data: this.leaveHistory, // Current component data
-      columnKeys: [
-        'userName',
-        'role',
-        'startDate',
-        'endDate',
-        'type',
-        'status',
-        'reason',
-      ],
-      // Pass current filters so the service can fetch filtered data
-      filters: this.buildFilters(),
-    };
+  // If dates are empty, use defaults (last 30 days)
+  let startDate = exportData.from;
+  let endDate = exportData.to;
 
-    // Pass configuration to the PDF service
-    this.leaveReportService.generateLeavePDF(pdfConfig).subscribe({
-      next: () => {
-        this.isGeneratingPDF = false;
-        this.showSuccess('PDF generated and downloaded successfully.');
-      },
-      error: (error) => {
-        this.isGeneratingPDF = false;
-        console.error('Error generating PDF:', error);
-      },
-    });
+  if (!startDate || !endDate) {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 30);
+
+    endDate = end.toISOString().split('T')[0];
+    startDate = start.toISOString().split('T')[0];
   }
+
+  const pdfConfig = {
+    fileName: `leave_history_${new Date().toISOString().split('T')[0]}`,
+    pdfTitle: 'Leave History Report',
+    includeCoverPage: true,
+    reportInfo: {
+      reportDate: new Date(),
+      preparedBy: this.currentUserRole || 'Leave System',
+    },
+    headers: [
+      'User',
+      'Role',
+      'Start Date',
+      'End Date',
+      'Type',
+      'Status',
+      'Reason',
+      'Has File'
+    ],
+    columnKeys: [
+      'userName',
+      'role',
+      'startDate',
+      'endDate',
+      'type',
+      'status',
+      'reason',
+      'hasFile'
+    ],
+    // Pass API parameters
+    startDate: startDate,
+    endDate: endDate,
+    userId: exportData.userId,
+    type: exportData.type,
+    status: exportData.status,
+  };
+
+  // Pass configuration to the PDF service
+  this.leaveReportService.generateLeavePDF(pdfConfig).subscribe({
+    next: () => {
+      this.isGeneratingPDF = false;
+      this.showSuccess('PDF generated and downloaded successfully.');
+    },
+    error: (error) => {
+      this.isGeneratingPDF = false;
+      console.error('Error generating PDF:', error);
+    },
+  });
+}
 
   downloadAsExcel(): void {
     const exportConfig: ExportConfig = {

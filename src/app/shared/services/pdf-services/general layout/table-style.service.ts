@@ -12,7 +12,7 @@ export class TableStyleService {
       halign: 'start',
       valign: 'middle',
       cellPadding: 2,
-      lineColor: '#000000',
+      lineColor: '#E0E0E0', // light gray, barely visible
       lineWidth: 0.1, // applies to all borders, we will hide vertical
       overflow: 'linebreak',
     };
@@ -23,7 +23,7 @@ export class TableStyleService {
       fillColor: '#F5F5F5',
       textColor: '#000000',
       fontStyle: 'bold',
-      lineColor: '#000000',
+      lineColor: '#E0E0E0', // light gray, barely visible
       lineWidth: 0.1,
     };
   }

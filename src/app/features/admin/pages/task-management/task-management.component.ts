@@ -62,6 +62,12 @@ export class TaskManagementComponent implements OnInit {
   currentRoute: string = '';
   isGeneratingPDF: boolean = false;
 
+  exportStartDate: string = '';
+  exportEndDate: string = '';
+  selectedStatus: number | undefined;
+  selectedPriority: number | undefined;
+  selectedAssignee: number | undefined;
+
   // Status value mapping with translation keys
   private statusValueMap: { [key: number]: string } = {
     0: 'TASK-MANAGEMENT.STATUS.PENDING',
@@ -404,43 +410,82 @@ export class TaskManagementComponent implements OnInit {
    * Download filtered tasks data as PDF
    * Now fetches data directly from service via TaskReportService
    */
-  downloadAsPDF(): void {
+  // In your component.ts
+  onExportPdf(exportData: {
+    from: string;
+    to: string;
+    status?: number;
+    priority?: number;
+    assignTo?: number;
+  }): void {
+    console.log('Exporting PDF with data:', exportData);
+    this.downloadAsPDF(exportData);
+  }
+
+  // In your component.ts - update the downloadAsPDF method
+  downloadAsPDF(exportData: {
+    from: string;
+    to: string;
+    status?: number;
+    priority?: number;
+    assignTo?: number;
+  }): void {
     this.isGeneratingPDF = true;
 
-    // Prepare PDF configuration based on TaskReportConfig interface
+    // Remove or keep the console log as needed
+    console.log('PDF Config with direct data task component :', exportData);
+
+    // If dates are empty, use defaults (last 30 days)
+    let startDate = exportData.from;
+    let endDate = exportData.to;
+
+    if (!startDate || !endDate) {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - 30);
+
+      endDate = end.toISOString().split('T')[0];
+      startDate = start.toISOString().split('T')[0];
+    }
+
     const pdfConfig = {
-      fileName: `${this.currentRoute}-tasks_${
-        new Date().toISOString().split('T')[0]
-      }`,
+      fileName: `tasks_${new Date().toISOString().split('T')[0]}`,
       pdfTitle: 'Task Report',
       includeCoverPage: true,
       reportInfo: {
         reportDate: new Date(),
         preparedBy: 'Task Management System',
       },
-      // Required properties from TaskReportConfig interface
       headers: [
         this.translate.instant('TASK-MANAGEMENT.TABLE.TITLE'),
         this.translate.instant('TASK-MANAGEMENT.TABLE.DESCRIPTION'),
-        this.translate.instant('TASK-MANAGEMENT.TABLE.DUE_DATE'),
+        'Start Date', // Added
+        'End Date', // Added
         this.translate.instant('TASK-MANAGEMENT.TABLE.PRIORITY'),
         this.translate.instant('TASK-MANAGEMENT.TABLE.STATUS'),
+        'Point', // Added
       ],
-      columnKeys: ['title', 'description', 'dueDate', 'priority', 'status'],
-      data: this.tasks, // Current component data
-      // Optional: format each column if needed
-      columnFormatter: (task: any) => [
-        task.title,
-        task.description,
-        task.dueDate,
-        task.priority,
-        this.translate.instant(this.getStatusTranslationKey(task.status)),
+      // Update column keys to match the new API response
+      columnKeys: [
+        'title',
+        'description',
+        'startDate',
+        'endDate',
+        'priority',
+        'status',
+        'point',
       ],
-      // Pass current filters so the service can fetch filtered data
-      filters: this.buildFilters(),
+      // Pass ALL filter parameters directly from exportData
+      startDate: startDate,
+      endDate: endDate,
+      status: exportData.status,
+      priority: exportData.priority,
+      assignTo: exportData.assignTo,
     };
 
-    // Pass configuration to the TaskReportService
+    // Remove or keep this console log as needed
+    console.log('Final PDF config to service:', pdfConfig);
+
     this.taskReportService.generateTaskPDF(pdfConfig).subscribe({
       next: () => {
         this.isGeneratingPDF = false;
@@ -449,8 +494,12 @@ export class TaskManagementComponent implements OnInit {
       error: (error) => {
         this.isGeneratingPDF = false;
         console.error('Error generating PDF:', error);
+        this.showError('Failed to generate PDF. Please try again.');
       },
     });
+  }
+  showError(arg0: string) {
+    throw new Error('Method not implemented.');
   }
 
   /** Export tasks list as Excel */

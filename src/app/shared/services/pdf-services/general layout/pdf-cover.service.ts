@@ -1,3 +1,4 @@
+// pdf-cover.service.ts
 import { Injectable } from '@angular/core';
 import { PdfStyleService } from './pdf-style.service';
 import jsPDF from 'jspdf';
@@ -42,35 +43,48 @@ export class PdfCoverService {
 
     y += 15;
 
-    // Static From and To date (labels gray, dates black & bold, consistent spacing)
-    const fromDate = '01-Jan-2025';
-    const toDate = '31-Dec-2025';
-    const labelFont = this.style.defaultStyling.font;
-    const spacing = 3; // space between label and date
+    // Get dates from config
+    const fromDate =
+      config.coverPageConfig?.fromDate || config.reportInfo?.fromDate || 'N/A';
 
-    // Draw "From:" label in gray
+    const toDate =
+      config.coverPageConfig?.toDate || config.reportInfo?.toDate || 'N/A';
+
+    const labelFont = this.style.defaultStyling.font;
+    const spacing = 3;
+
+    // -------------------------
+    // FROM label (size 10)
+    // -------------------------
     doc.setFont(labelFont, 'normal');
-    doc.setFontSize(12);
+    doc.setFontSize(10); // 👈 label font size
     doc.setTextColor(120, 120, 120);
+
     const fromLabelX = centerX - 35;
     doc.text('From:', fromLabelX, y, { align: 'left' });
 
-    // Draw from date in black & bold right next to label
+    // From date (size 12, bold)
     const fromLabelWidth = doc.getTextWidth('From:') + spacing;
     doc.setFont(labelFont, 'bold');
+    doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
     doc.text(fromDate, fromLabelX + fromLabelWidth, y, { align: 'left' });
 
-    // Draw "To:" label in gray
+    // -------------------------
+    // TO label (size 10)
+    // -------------------------
     const toLabelX =
       fromLabelX + fromLabelWidth + doc.getTextWidth(fromDate) + spacing * 2;
+
     doc.setFont(labelFont, 'normal');
+    doc.setFontSize(10); // 👈 label font size
     doc.setTextColor(120, 120, 120);
     doc.text('To:', toLabelX, y, { align: 'left' });
 
-    // Draw to date in black & bold right next to label (same spacing)
+    // To date (size 12, bold)
     const toLabelWidth = doc.getTextWidth('To:') + spacing;
     doc.setFont(labelFont, 'bold');
+    doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
     doc.text(toDate, toLabelX + toLabelWidth, y, { align: 'left' });
 
@@ -78,16 +92,19 @@ export class PdfCoverService {
 
     // Custom line with "solutions" in green
     const line1 = 'Smart operating solutions for more productive facilities';
+
     const words = line1.split(' ');
     let offsetX = 0;
 
     words.forEach((word) => {
       if (word === 'solutions') {
-        doc.setTextColor(0, 128, 0); // green
+        doc.setTextColor(0, 128, 0);
       } else {
-        doc.setTextColor(0, 0, 0); // black
+        doc.setTextColor(0, 0, 0);
       }
+
       doc.text(word, centerX + offsetX - doc.getTextWidth(line1) / 2, y);
+
       offsetX += doc.getTextWidth(word + ' ');
     });
 
