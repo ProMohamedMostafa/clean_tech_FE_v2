@@ -115,35 +115,60 @@ export class MaterialManagementComponent implements OnInit {
    * Download filtered materials data as PDF
    * Uses StockReportService to fetch data and generate PDF
    */
-  downloadAsPDF(): void {
-    // Prepare PDF configuration using StockReportConfig interface
+  downloadAsPDF(exportData: {
+    from: string;
+    to: string;
+    materialId?: number;
+  }): void {
+    // If dates are empty, use defaults (last 30 days)
+    let startDate = exportData.from;
+    let endDate = exportData.to;
+
+    if (!startDate || !endDate) {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - 30);
+
+      endDate = end.toISOString().split('T')[0];
+      startDate = start.toISOString().split('T')[0];
+    }
+
     const pdfConfig = {
-      fileName: `materials_${new Date().toISOString().split('T')[0]}`,
-      pdfTitle: 'Materials Inventory Report',
-
-      headers: ['Name', 'Description', 'Quantity', 'Category', 'Unit'],
-
-      columnKeys: ['name', 'description', 'quantity', 'category.name', 'unit'],
-
-      data: this.materials,
-
-      columnFormatter: (material: any) => [
-        material.name,
-        material.description,
-        material.quantity,
-        material.category?.name || 'N/A',
-        material.unit,
-      ],
-
+      fileName: `stock_report_${new Date().toISOString().split('T')[0]}`,
+      pdfTitle: 'Stock History Report',
       includeCoverPage: true,
-
       reportInfo: {
-        generatedAt: new Date(),
-        preparedBy: 'System',
+        reportDate: new Date(),
+        preparedBy: this.currentUserRole || 'Stock System',
       },
+      headers: [
+        'Item Name',
+        'Category',
+        'User',
+        'Date',
+        'Provider',
+        'Quantity',
+        'Price',
+        'Total',
+        'Has File',
+      ],
+      columnKeys: [
+        'name',
+        'category',
+        'userName',
+        'createdAt',
+        'provider',
+        'quantity',
+        'price',
+        'totalPrice',
+        'hasFile',
+      ],
+      // Pass API parameters
+      startDate: startDate,
+      endDate: endDate,
+      materialId: exportData.materialId,
     };
 
-    // Use StockReportService to generate PDF
     this.stockReportService.generateStockPDF(pdfConfig).subscribe({
       next: () => {
         this.showSuccess('PDF generated and downloaded successfully.');

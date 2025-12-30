@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
-import { StockCategoryData } from './stock-report.model';
 
 @Injectable({ providedIn: 'root' })
 export class StockChartService {
@@ -20,11 +19,11 @@ export class StockChartService {
     y: number,
     width: number,
     height: number,
-    data: StockCategoryData,
-    title = 'Stock Category Distribution'
+    data: any,
+    title = 'Stock Value by Month'
   ) {
-    const labels = Object.keys(data);
-    const values = Object.values(data);
+    const labels = data.labels || [];
+    const values = data.values || [];
 
     // Draw title
     doc.setFontSize(12);
@@ -34,14 +33,14 @@ export class StockChartService {
 
     const chartX = x;
     const chartY = y + 10;
-    const chartHeight = height;
+    const chartHeight = height - 15; // Adjusted for title
     const chartWidth = width;
 
     const maxValue = Math.max(...values, 10);
     const barHeight = chartHeight / values.length - 10;
 
     // Draw horizontal bars
-    values.forEach((value, index) => {
+    values.forEach((value: number, index: number) => {
       const barLength = (value / maxValue) * chartWidth;
       const barY = chartY + index * (barHeight + 10);
 
@@ -50,18 +49,28 @@ export class StockChartService {
       doc.setFillColor(color[0], color[1], color[2]);
       doc.rect(chartX, barY, barLength, barHeight, 'F');
 
-      // Draw Y-axis label
+      // Draw Y-axis label (month label)
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      doc.text(labels[index], chartX - 2, barY + barHeight / 2 + 2, {
-        align: 'right',
-      });
+      doc.text(
+        labels[index] || `Month ${index + 1}`,
+        chartX - 2,
+        barY + barHeight / 2 + 2,
+        {
+          align: 'right',
+        }
+      );
 
       // Draw value at end of bar
-      doc.text(`${value}`, chartX + barLength + 2, barY + barHeight / 2 + 2, {
-        align: 'left',
-      });
+      doc.text(
+        `$${value.toFixed(2)}`,
+        chartX + barLength + 2,
+        barY + barHeight / 2 + 2,
+        {
+          align: 'left',
+        }
+      );
     });
 
     // Draw X-axis line

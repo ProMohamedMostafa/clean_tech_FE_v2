@@ -10,7 +10,7 @@
     [showRecycleButton]="isAdmin()"
     [recycleButtonRoute]="'/admin/deleted-material'"
     (searchChange)="onSearchChange($event)"
-    (exportPdf)="downloadAsPDF()"
+    (exportPdf)="downloadAsPDF($event)"
     (exportExcel)="downloadAsExcel()"
     (print)="printPDF()"
     (addClick)="openAddModal()"

@@ -333,7 +333,7 @@ export class UserFormComponent implements OnInit {
       const users = await this.userService.getUsersByRole(roleId);
       this.managers = users || [];
       console.log(users);
-      
+
       console.log(
         `👥 Loaded ${this.managers.length} managers for role ${roleId}`
       );
